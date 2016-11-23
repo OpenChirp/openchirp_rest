@@ -1,0 +1,588 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Sensor Andrew REST API",
+        "description": "",
+        "version": "1.0.0"
+    },
+    "host": "iot.andrew.cmu.edu:10010",
+    "schemes": [
+        "http"
+    ],
+    "basePath": "/api",
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/location": {
+            "get": {
+                "summary": "Returns all locations",
+                "tags": [
+                    "Location"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "An array of Locations",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Location"
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "post":{
+                "summary": "Create new Location",
+                "tags": [
+                    "Location"
+                ],
+                "parameters": [
+                {
+                    "in": "formData",
+                    "name": "name",
+                    "description": "Name of location",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "formData",
+                    "name": "test",
+                    "description": "If test is set to true, then location is not visible in tree.",
+                    "required": false,
+                    "type": "boolean"
+                }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Request successful",
+                        "schema": {
+                            "$ref": "#/definitions/Location"
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/location/{id}": {
+            "get": {
+                "summary": "Returns location that matches the given ID.",
+                "tags": [
+                    "Location"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of location to return",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Request successful",
+                        "schema": {
+                            "$ref": "#/definitions/Location"
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Create a new child location",
+                "tags": [
+                    "Location"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of parent location",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "formData",
+                        "name": "name",
+                        "description": "Name of location",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "formData",
+                        "name": "test",
+                        "description": "If test is set to true, then location is not visible in tree.",
+                        "required": false,
+                        "type": "boolean"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Request successful",
+                        "schema": {
+                            "$ref": "#/definitions/Location"
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update location that matches the given ID.",
+                "tags": [
+                    "Location"
+                ],
+                "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "ID of location to update",
+                    "required": true,
+                    "type": "integer",
+                    "format": "int64"
+                },
+                {                                                                                   
+                    "name": "name",                                                                       
+                    "in": "formData",                                                                       
+                    "description": "ID of location to update",                                          
+                    "required": false,                                                                   
+                    "type": "string"                                                                
+                }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Request successful",
+                        "schema": {
+                            "$ref": "#/definitions/Location"
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete location with given ID.",
+                "tags": [
+                    "Location"
+                ],
+                "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "ID of location to delete",
+                    "required": true,
+                    "type": "integer",
+                    "format": "int64"
+                }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Request successful",
+                        "schema": {
+                            "$ref": "#/definitions/Location"
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/location/{id}/gateways": {
+            "get": {
+                "summary": "Returns all gateways at the location matching the given ID.",
+                "tags": [
+                    "Location"                    
+                ],
+                "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "Location ID.",
+                    "required": true,
+                    "type": "integer",
+                    "format": "int64"
+                }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A Location object containing an array of gateways.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Gateway"
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }           
+        },
+         "/location/{id}/devices": {
+            "get": {
+                "summary": "Returns all devices at the location matching the given ID.",
+                "tags": [
+                    "Location"                
+                ],
+                "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "Location ID.",
+                    "required": true,
+                    "type": "integer",
+                    "format": "int64"
+                }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A location object containing an array of devices. ",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Device"
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }           
+        },
+         "/gateway": {
+            "get": {
+                "summary": "Returns all gateways.",
+                "tags": [                  
+                    "Gateway"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "An array of gateways ",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Gateway"
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Create a new gateway",
+                "tags": [                  
+                    "Gateway"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A gateway object.",
+                        "schema": {                           
+                            "$ref": "#/definitions/Gateway"                           
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }          
+        },
+         "/gateway/{id}": {
+            "get": {
+                "summary": "Returns gateway that matches the given ID.",
+                "tags": [
+                    "Gateway"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of gateway to return",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Request successful",
+                        "schema": {
+                            "$ref": "#/definitions/Gateway"
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update gateway that matches the given ID.",
+                "tags": [
+                    "Gateway"
+                ],
+                "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "ID of gateway to update",
+                    "required": true,
+                    "type": "integer",
+                    "format": "int64"
+                },
+                {                                                                                   
+                    "name": "name",                                                                       
+                    "in": "formData",                                                                       
+                    "description": "Name of gateway to update",                                          
+                    "required": false,                                                                   
+                    "type": "string"                                                                
+                }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Request successful",
+                        "schema": {
+                            "$ref": "#/definitions/Location"
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete gateway that matches the given ID.",
+                "tags": [
+                    "Gateway"
+                ],
+                "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "ID of gateway to delete",
+                    "required": true,
+                    "type": "integer",
+                    "format": "int64"
+                }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Request successful",
+                        "schema": {
+                            "$ref": "#/definitions/Gateway"
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+         "/device": {
+            "post": {
+                "summary": "Create a new device",
+                "tags": [                  
+                    "Device"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A device object.",
+                        "schema": {                            
+                            "$ref": "#/definitions/Device"
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }          
+        }
+    },
+    "definitions": {
+        "Location": {
+            "type": "object",
+            "properties": {
+                "_id": {
+                    "type": "string",
+                    "description": "Unique identifier for each location."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of location."
+                },
+                "test": {
+                    "type": "boolean",
+                    "description": "If set to true then this location is not visible in tree.",
+                    "default": false
+                },
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Location"
+                    }
+                }
+            }
+        },
+        "Device": {
+            "type": "object",
+            "properties": {
+                "_id": {
+                    "type": "string",
+                    "description": "Unique identifier representing a device."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of device."
+                },
+                "type": {
+                    "type": "string",
+                    "description": "Type of device.",
+                    "enum": [
+                        "LORA",
+                        "BoschXDK"
+                    ]
+                },
+                "enabled": {
+                    "type": "boolean",
+                    "description": " Represents if the device is active or not. If set to false, the device will be excluded from monitoring processes",
+                    "default": true
+                },
+                "location_id": {
+                    "$ref": "#/definitions/Location"
+                },
+                "gateway_id": {
+                    "$ref": "#/definitions/Gateway"
+                },
+                "pubsub": {
+                    "$ref": "#/definitions/Pubsub"
+                },
+                "meta": {
+                    "type": "string",
+                    "description": "Metadata of device"
+                }
+            }
+        },
+        "Gateway": {
+            "type": "object",
+            "properties": {
+                "_id": {
+                    "type": "string",
+                    "description": "Unique identifier for a gateway."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Display name of gateway."
+                },
+                "type": {
+                    "type": "string",
+                    "description": "Type of gateway.",
+                    "enum": [
+                        "LORA",
+                        "Firefly",
+                        "Twist"
+                    ]
+                },
+                "pubsub": {
+                    "$ref": "#/definitions/Pubsub"
+                },
+                "location_id": {
+                    "$ref": "#/definitions/Location"
+                },
+                "enabled": {
+                    "type": "boolean",
+                    "description": " Represents if the gateway is active or not. If set to false, the device will be excluded from monitoring processes",
+                    "default": true
+                }
+            }
+        },
+        "Pubsub": {
+            "type": "object",
+            "properties": {
+                "protocol": {
+                    "type": "string",
+                    "description": "Pubsub protocol to use",
+                    "enum": [
+                        "XMPP",
+                        "MQTT",
+                        "AMQP"
+                    ]
+                },
+                "destination": {
+                    "type": "string",
+                    "description": "XMPP node or mqtt topic"
+                }
+            }
+        },
+        "Error": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "fields": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
