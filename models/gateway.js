@@ -8,7 +8,7 @@ var User = require('./user');
 
 //Schema
 var gatewaySchema = new Schema({
-  name:  { type: String, required: true },
+  name: { type: String, required: true },
   type: { type: String, enum: ['LORA','ZigBee'], required: true },
   location_id: { type: Schema.Types.ObjectId, ref: Location , required : true},
   pubsub : {

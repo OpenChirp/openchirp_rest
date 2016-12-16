@@ -19,7 +19,8 @@ var deviceSchema = new Schema({
   },
   owner: { type: Schema.Types.ObjectId, ref: User },  
   enabled: { type: Boolean, default: true },
-  meta : { type: Schema.Types.Mixed	}
+  meta : { type: Schema.Types.Mixed	},
+  keys : { type: Schema.Types.Mixed	}
 });
 
 deviceSchema.index({ location_id : 1 }, { type : 1 });
