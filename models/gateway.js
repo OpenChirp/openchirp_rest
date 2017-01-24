@@ -13,7 +13,7 @@ var gatewaySchema = new Schema({
   location_id: { type: Schema.Types.ObjectId, ref: Location , required : true},
   pubsub : {
   	protocol : { type: String, enum: ['XMPP', 'MQTT', 'AMQP']},
-  	destination : String  // xmpp node or mqtt topic
+  	endpoint : String  // xmpp node or mqtt topic
   },
   owner: { type: Schema.Types.ObjectId, ref: User },  
   enabled: { type: Boolean, default: true } 

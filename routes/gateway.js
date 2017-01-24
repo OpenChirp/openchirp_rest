@@ -45,20 +45,22 @@ router.get('/:_id', function(req, res, next) {
 
 /* Get all devices linked to this gateway */
 router.get('/:_id/devices', function(req, res, next) {
+    //TODO
     return res.json(req.gateway);
 });
 
 /* Update a gateway */
 router.put('/:_id', function(req, res, next) {
-    //TODO:
     var gatewayToUpdate = req.gateway;
  	if(req.body.name) gatewayToUpdate.name = req.body.name;
     if(req.body.location_id) gatewayToUpdate.location_id = req.body.location_id;
     if(req.body.type) gatewayToUpdate.type = req.body.type;
+    if(req.body.pubsub) gatewayToUpdate.pubsub = req.body.pubsub;
+    if( typeof req.body.enabled != 'undefined') gatewayToUpdate.enabled = req.body.enabled;
 
  	gatewayToUpdate.save( function(err, result){
  		if(err) { return next(err); }
- 		res.json(result);
+        res.json({ message : 'Update successfull'});
  	})  			
 });
 
