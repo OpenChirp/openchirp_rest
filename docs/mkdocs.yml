@@ -1,0 +1,6 @@
+site_name: OpenChirp REST API Documentation
+theme: readthedocs
+pages:
+    - Home: index.md
+    - About: about.md
+
