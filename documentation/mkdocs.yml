@@ -1,0 +1,11 @@
+site_name: OpenChirp REST API Documentation
+theme: readthedocs
+#extra_css: [extra.css]
+pages:
+    - Introduction : index.md
+    - REST API : 
+        - Location : location.md
+        - Gateway : gateway.md
+        - Device : device.md
+        - Service : service.md
+
