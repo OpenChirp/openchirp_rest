@@ -1,17 +1,13 @@
-# Welcome to MkDocs
+### Introduction
 
-For full documentation visit [mkdocs.org](http://mkdocs.org).
+The document specifies a RESTful API for interacting with the OpenChirp infrastructure. Usage of the API is via the HTTP protocol. All operations are defined as GET, POST, PUT, DELETE on resource URLs. Some examples of resources in the OpenChirp software stack are Location, Device, Gateway, Service etc. All these resources are represented in JSON.
 
-## Commands
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs help` - Print this help message.
 
-## Project layout
+### Authentication
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+
+
+### Error Codes
+
+  

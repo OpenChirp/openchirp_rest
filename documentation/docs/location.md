@@ -6,36 +6,35 @@
 | Name | Type | Description |
 |:----------|:-----|:------------|
 
+
 ### Create new Location 
 
 <span class ="operation">POST /api/location/:parent_location_id </span>
 
+- **Request parameters**
+	* parent_location_id (string) - ID of parent location
 
-** Request parameters**
-
-| Parameter | Type | Description |
-|:----------|:-----|:------------|
-|parent_location_id|string| ID of parent location|
-
-
-** Request body **
-
-| Parameter | Type | Description |
-|:----------|:-----|:------------|
+- **Request body**
+	* name (string) - Name of location to create
+	* test(boolean) - If the location is a test
 
 
 ** Example Request **
 ```http
 POST /api/location/582e2b2c065b2545ded3aabd HTTP/1.1
+{
+	"name":"CIC"
+}
 ```
+
 ** Example Response **
 ```http
 HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
-    "_id": "string",
-    "name": "string",
+    "_id": "5833479babdafd7b34858958",
+    "name": "CIC",
     "test": false,
     "children": [
      {}
@@ -47,17 +46,10 @@ Content-Type: application/json
 ### Get details of a location
 ** Request URL **
 
-```http
-GET /api/location/:id
-```
+<span class ="operation">GET /api/location/:location_id </span>
 
-** Request parameters**
-
-In the request URL, provide the following parameters with values.
-
-| Parameter | Type | Description |
-|:----------|:-----|:------------|
-
+- **Request parameters**
+	* location_id (string) - ID of location to get.
 
 ** Example Request **
 
@@ -83,31 +75,51 @@ Content-Type: application/json
 
 ```
 ### Update Location
-### Delete a location
+<span class ="operation">PUT /api/location/:location_id </span>
 
+- **Request parameters**
 
-** Request URL **
+	* location_id (string) - ID of location to update
 
-```http
-DELETE /api/location/:id
-```
-
-** Request parameters**
-
-In the request URL, provide the following parameters with values.
-
-| Parameter | Type | Description |
-|:----------|:-----|:------------|
-|id|string| ID of location to delete|
+- **Request body** 
+	* name(string) 
+	* test(boolean)
 
 ** Example Request **
+```http
+PUT /api/location/582e2b2c065b2545ded3aabd HTTP/1.1
 
+{
+	"name" : "CMU Campus"
+}
+```
+
+** Example Response **
+```http
+HTTP/1.1 200 OK
+{
+    "_id": "582e2b2c065b2545ded3aabd",
+    "name": "CMU Campus",
+    "test": false,
+    "children": [
+     	"5833479babdafd7b34858958"
+    ]
+}
+```
+
+### Delete a location
+<span class ="operation">DELETE /api/location/:location_id </span>
+
+- **Request parameters**
+
+	* location_id (string) - ID of location to delete
+
+** Example Request **
 ```http
 DELETE /api/location/582e2b2c065b2545ded3aabd HTTP/1.1
 ```
 
 ** Example Response **
-
 ```http
 HTTP/1.1 200 OK
 ```
