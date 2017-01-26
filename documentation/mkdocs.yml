@@ -1,6 +1,6 @@
 site_name: OpenChirp REST API Documentation
 theme: readthedocs
-#extra_css: [extra.css]
+extra_css: [extra.css]
 pages:
     - Introduction : index.md
     - REST API : 
