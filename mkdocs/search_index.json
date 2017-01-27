@@ -126,6 +126,21 @@
             "title": "Create new Gateway"
         }, 
         {
+            "location": "/transducer/", 
+            "text": "URLs\n\n\nModel\n\n\n\n\n\n\n\n\nName\n\n\nType\n\n\nDescription\n\n\nRequired\n\n\nDefault", 
+            "title": "Transducer"
+        }, 
+        {
+            "location": "/transducer/#urls", 
+            "text": "", 
+            "title": "URLs"
+        }, 
+        {
+            "location": "/transducer/#model", 
+            "text": "Name  Type  Description  Required  Default", 
+            "title": "Model"
+        }, 
+        {
             "location": "/service/", 
             "text": "", 
             "title": "Service"
