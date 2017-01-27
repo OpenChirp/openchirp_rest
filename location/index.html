@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Location - OpenChirp REST API Documentation</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+  <link href="../extra.css" rel="stylesheet">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Location";
+    var mkdocs_page_input_path = "location.md";
+    var mkdocs_page_url = "/location/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> OpenChirp REST API Documentation</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="..">Introduction</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>Resources</span></li>
+
+        
+            
+    <li class="toctree-l1 current">
+        <a class="current" href="./">Location</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#urls">URLs</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#model">Model</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#create-new-location">Create new Location</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#get-details-of-a-location">Get details of a location</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#update-location">Update Location</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#delete-a-location">Delete a location</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#find-gateways-at-a-location">Find gateways at a location</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#find-devices-at-a-location">Find devices at a location</a></li>
+                
+            
+            </ul>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../gateway/">Gateway</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../device/">Device</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../service/">Service</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">OpenChirp REST API Documentation</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Resources &raquo;</li>
+        
+      
+    
+    <li>Location</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h3 id="urls">URLs</h3>
+<table>
+<thead>
+<tr>
+<th align="left">URL</th>
+<th align="left">Supported HTTP verbs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">/api/location/:id</td>
+<td align="left">GET, PUT, POST, DELETE</td>
+</tr>
+<tr>
+<td align="left">/api/location/:id/gateways</td>
+<td align="left">GET</td>
+</tr>
+<tr>
+<td align="left">/api/location/:id/devices</td>
+<td align="left">GET</td>
+</tr>
+</tbody>
+</table>
+<h3 id="model">Model</h3>
+<table>
+<thead>
+<tr>
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+<th align="left">Required</th>
+<th align="left">Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">_id</td>
+<td align="left">String</td>
+<td align="left">Unique ID of location</td>
+<td align="left">Auto-Generated</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">name</td>
+<td align="left">String</td>
+<td align="left">Name of location</td>
+<td align="left">Yes</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">isBuilding</td>
+<td align="left">Boolean</td>
+<td align="left">If this location is building, then geoLoc should be set</td>
+<td align="left">No</td>
+<td align="left">False</td>
+</tr>
+<tr>
+<td align="left">test</td>
+<td align="left">Boolean</td>
+<td align="left">If set to true, then the location is not visible in tree</td>
+<td align="left">No</td>
+<td align="left">False</td>
+</tr>
+<tr>
+<td align="left">geoLoc.type</td>
+<td align="left">String</td>
+<td align="left">Type of geo-location : Point, Line etc</td>
+<td align="left">No</td>
+<td align="left">Point</td>
+</tr>
+<tr>
+<td align="left">geoLoc.coordinates</td>
+<td align="left">Number</td>
+<td align="left">Coordinates are in format [longitude, latitude]</td>
+<td align="left">No</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">children</td>
+<td align="left">Array</td>
+<td align="left">Pointer to child locations is maintained by database and returned in GET request</td>
+<td align="left">No</td>
+<td align="left">-</td>
+</tr>
+</tbody>
+</table>
+<h3 id="create-new-location">Create new Location</h3>
+<p><span class ="operation">POST /api/location/:parent_location_id </span></p>
+<ul>
+<li>
+<p><strong>Request parameters</strong></p>
+<ul>
+<li>parent_location_id (string) - ID of parent location</li>
+</ul>
+</li>
+<li>
+<p><strong>Request body</strong></p>
+<ul>
+<li>name </li>
+<li>test</li>
+<li>isBuilding</li>
+<li>geoLoc</li>
+</ul>
+</li>
+</ul>
+<p><strong> Example Request </strong></p>
+<pre><code class="http">POST /api/location/582e2b2c065b2545ded3aabd HTTP/1.1
+{
+    &quot;name&quot;:&quot;CIC&quot;,
+    &quot;geoLoc&quot;: {
+      &quot;coordinates&quot;: [
+        40.4509146,
+        -79.9024777
+      ]     
+    },
+    &quot;isBuilding&quot;: true
+}
+</code></pre>
+
+<p><strong> Example Response </strong></p>
+<pre><code class="http">HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    &quot;_id&quot;: &quot;5833479babdafd7b34858958&quot;,
+    &quot;name&quot;: &quot;CIC&quot;,
+    &quot;test&quot;: false,
+    &quot;children&quot;: [
+     {}
+    ],
+    &quot;geoLoc&quot;: {
+      &quot;coordinates&quot;: [
+        40.4509146,
+        -79.9024777
+      ],
+      &quot;type&quot;: &quot;Point&quot;
+    },
+    &quot;isBuilding&quot;: true
+}
+</code></pre>
+
+<h3 id="get-details-of-a-location">Get details of a location</h3>
+<p><strong> Request URL </strong></p>
+<p><span class ="operation">GET /api/location/:location_id </span></p>
+<ul>
+<li><strong>Request parameters</strong><ul>
+<li>location_id (string) - ID of location to get.</li>
+</ul>
+</li>
+</ul>
+<p><strong> Example Request </strong></p>
+<pre><code class="http">GET /api/location/582e2b2c065b2545ded3aabd HTTP/1.1
+
+</code></pre>
+
+<p><strong> Example Response </strong></p>
+<pre><code class="http">HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    &quot;_id&quot;: &quot;582e2b2c065b2545ded3aabd&quot;,
+    &quot;name&quot;: &quot;CMU&quot;,
+    &quot;test&quot;: false,
+    &quot;children&quot;: [
+        &quot;5833479babdafd7b34858958&quot;
+    ]
+}
+
+</code></pre>
+
+<h3 id="update-location">Update Location</h3>
+<p><span class ="operation">PUT /api/location/:location_id </span></p>
+<ul>
+<li>
+<p><strong>Request parameters</strong></p>
+<ul>
+<li>location_id (string) - ID of location to update</li>
+</ul>
+</li>
+<li>
+<p><strong>Request body</strong> </p>
+<ul>
+<li>name(string) </li>
+<li>test(boolean)</li>
+</ul>
+</li>
+</ul>
+<p><strong> Example Request </strong></p>
+<pre><code class="http">PUT /api/location/582e2b2c065b2545ded3aabd HTTP/1.1
+
+{
+    &quot;name&quot; : &quot;CMU Campus&quot;
+}
+</code></pre>
+
+<p><strong> Example Response </strong></p>
+<pre><code class="http">HTTP/1.1 200 OK
+{
+    &quot;_id&quot;: &quot;582e2b2c065b2545ded3aabd&quot;,
+    &quot;name&quot;: &quot;CMU Campus&quot;,
+    &quot;test&quot;: false,
+    &quot;children&quot;: [
+        &quot;5833479babdafd7b34858958&quot;
+    ]
+}
+</code></pre>
+
+<h3 id="delete-a-location">Delete a location</h3>
+<p><span class ="operation">DELETE /api/location/:id </span></p>
+<ul>
+<li>
+<p><strong>Request parameters</strong></p>
+<ul>
+<li>id (string) - ID of location to delete</li>
+</ul>
+</li>
+</ul>
+<p><strong> Example Request </strong></p>
+<pre><code class="http">DELETE /api/location/582e2b2c065b2545ded3aabd HTTP/1.1
+</code></pre>
+
+<p><strong> Example Response </strong></p>
+<pre><code class="http">HTTP/1.1 200 OK
+</code></pre>
+
+<h3 id="find-gateways-at-a-location">Find gateways at a location</h3>
+<p><span class ="operation">GET /api/location/:id/gateways</span></p>
+<ul>
+<li>
+<p><strong>Request parameters</strong></p>
+<ul>
+<li>id (string) - Location ID</li>
+</ul>
+</li>
+</ul>
+<p><strong> Example Request </strong></p>
+<pre><code class="http">GET /api/location/582e2b2c065b2545ded3aabd/gateways HTTP/1.1
+</code></pre>
+
+<p><strong> Example Response </strong></p>
+<pre><code class="http">TODO
+</code></pre>
+
+<h3 id="find-devices-at-a-location">Find devices at a location</h3>
+<p><span class ="operation">GET /api/location/:id/devices </span></p>
+<ul>
+<li>
+<p><strong>Request parameters</strong></p>
+<ul>
+<li>id (string) - Location ID</li>
+</ul>
+</li>
+</ul>
+<p><strong> Example Request </strong></p>
+<pre><code class="http">GET /api/location/582e2b2c065b2545ded3aabd/devices HTTP/1.1
+</code></pre>
+
+<p><strong> Example Response </strong></p>
+<pre><code class="http">TODO
+</code></pre>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../gateway/" class="btn btn-neutral float-right" title="Gateway">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href=".." class="btn btn-neutral" title="Introduction"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+    
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../gateway/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script src="../js/theme.js"></script>
+
+</body>
+</html>
