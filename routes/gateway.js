@@ -60,7 +60,7 @@ router.put('/:_id', function(req, res, next) {
 
  	gatewayToUpdate.save( function(err, result){
  		if(err) { return next(err); }
-        res.json({ message : 'Update successfull'});
+        res.json(gatewayToUpdate);
  	})  			
 });
 

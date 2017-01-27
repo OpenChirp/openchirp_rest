@@ -10,7 +10,7 @@ var User = require('./user');
 //Schema
 var deviceSchema = new Schema({
   name: { type: String, required: true },
-  type: { type: String, enum: ['LORA','Firefly','Twist','BoschXDK'] },
+  type: { type: String, enum: ['LORA','FIREFLY','TWIST','BOSCHXDK'] },
   location_id: { type: Schema.Types.ObjectId, ref: Location },
   gateway_id: { type: Schema.Types.ObjectId, ref: Gateway },
   pubsub : {
@@ -19,8 +19,7 @@ var deviceSchema = new Schema({
   },
   owner: { type: Schema.Types.ObjectId, ref: User },  
   enabled: { type: Boolean, default: true },
-  meta : { type: Schema.Types.Mixed	},
-  keys : { type: Schema.Types.Mixed	}
+  meta : { type: Schema.Types.Mixed	}
 });
 
 deviceSchema.index({ location_id : 1 }, { type : 1 });

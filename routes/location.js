@@ -108,6 +108,7 @@ router.delete('/:_id', function(req, res, next) {
         res.json({ error : { message: "Location is not empty. Cannot delete it."}});
     }  
     // TODO: Can't delete a location if there are devices and gateways pointing to it.
+    
     // Search for parent and remove child reference
     Location.findOneAndUpdate({ children: req.params._id}, { $pull: { children: req.params._id}}, function (err, result) {
         if(err) { return next(err); }

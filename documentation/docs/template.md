@@ -1,3 +1,15 @@
+### URLs
+
+|URL | Supported HTTP verbs|
+|:----------|:-----|
+|/api/location/:id | GET, PUT, POST, DELETE|
+
+### Model
+| Name | Type | Description | Required | Default|
+|:----------|:-----|:------------|:-----|:-------|
+
+
+
 ### Create new Location 
 
 <span class ="operation">POST /api/location/:parent_location_id </span>

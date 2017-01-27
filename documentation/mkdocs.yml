@@ -3,9 +3,10 @@ theme: readthedocs
 extra_css: [extra.css]
 pages:
     - Introduction : index.md
-    - REST API : 
+    - Resources : 
         - Location : location.md
         - Gateway : gateway.md
         - Device : device.md
+        - Transducer : transducer.md
         - Service : service.md
 

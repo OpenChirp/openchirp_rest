@@ -12,7 +12,7 @@ var gatewaySchema = new Schema({
   type: { type: String, enum: ['LORA','ZigBee'], required: true },
   location_id: { type: Schema.Types.ObjectId, ref: Location , required : true},
   pubsub : {
-  	protocol : { type: String, enum: ['XMPP', 'MQTT', 'AMQP']},
+  	protocol : { type: String, enum: ['XMPP', 'MQTT', 'AMQP'], default:"MQTT"},
   	endpoint : String  // xmpp node or mqtt topic
   },
   owner: { type: Schema.Types.ObjectId, ref: User },  
