@@ -11,7 +11,7 @@
 |:----------|:-----|:------------|:----|:--------|
 |_id|String| Unique ID for each device| Auto-Generated| -|
 |name|String| Name of device| Yes|-|
-|type|Enum {LORA, TWIST, FIREFLY, BOSCHXDK}| Type of device.| Yes | -|
+|type|Enum {LORA, TWIST, FIREFLY, BOSCH_XDK}| Type of device.| Yes | -|
 
 ### Create new Gateway 
 

@@ -14,6 +14,7 @@
 |_id|String| Unique ID for each gateway| Auto-Generated| -|
 |name|String| Name of gateway| Yes|-|
 |type|Enum {LORA, ZIGBEE}| Type of gateway.| Yes | -|
+|location_id| String| Location ID | 
 |enabled | Boolean| If set to false, then the gateway is not monitored| No | True|
 |pubsub.protocol| Enum {XMPP, MQTT, AMQP}| Pubsub protocol used by this gateway | No |MQTT|
 |pubsub.endpoint| String| Endpoint could be mqtt topic or xmpp node| No |-|
