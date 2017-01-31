@@ -36,10 +36,13 @@ app.use('/api/location', require('./routes/location'));
 app.use('/api/gateway', require('./routes/gateway'));
 app.use('/api/device', require('./routes/device'));
 
+//TODO: Add logger for all errors 
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
+  var err = new Error();
   err.status = 404;
+  err.message = 'Not Found '+ req.url;
   next(err);
 });
 
@@ -47,7 +50,7 @@ app.use(function(req, res, next) {
 
 // development error handler
 // will print stacktrace
-if (app.get('env') === 'development') {
+/*if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.render('error', {
@@ -56,15 +59,15 @@ if (app.get('env') === 'development') {
     });
   });
 }
-
+*/
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res, next) {
+app.use(function(err, req, res, next) {  
+
   res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {}
-  });
+  res.send({ error: err });
+   
+
 });
 
 

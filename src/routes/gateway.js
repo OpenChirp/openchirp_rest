@@ -18,7 +18,10 @@ router.get('/', function(req, res, next) {
 router.post('/', function(req, res, next) {
 	var gateway = new Gateway(req.body);
 	gateway.save(function (err, result) {
-		if(err) { return next(err); }
+		if(err) { 
+            return next(err);
+            //return next(err); }
+        }
   		res.json(result);
 	})
 });
@@ -31,7 +34,8 @@ router.param('_id', function(req, res, next, id) {
     Gateway.findById(id, function (err, result) {
         if (err) next(err);
         if (result == null ) { 
-           return next(new Error('No gateway with id :'+ id));
+            return res.status(404).jsonp({message: 'No gateway with id :' +id});
+           //return next(new Error('No gateway with id :'+ id));
         }
         req.gateway = result;
         next();

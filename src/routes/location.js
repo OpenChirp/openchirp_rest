@@ -26,12 +26,16 @@ router.post('/', function(req, res, next) {
 /*Validate _id in all request URLs*/
 router.param('_id', function(req, res, next, id) {
     if(!ObjectId.isValid(id)){
-        return next(new Error('Invalid location id '+id));
+        var error = new Error();
+        error.message = "Invalid Object ID "+id ;
+        return next(error);
     }
     Location.findById(id, function (err, result) {
         if (err) next(err);
         if (result == null ) { 
-           return next(new Error('Could not find a location with id :'+ id));
+            var error = new Error();
+            error.message = 'Could not find a location with id :'+ id ;
+            return next(error);
         }
         req.location = result;
         next();
@@ -48,7 +52,6 @@ router.get('/:_id/gateways', function(req, res, next) {
     var location = req.location.toObject();
     Gateway.find({ location_id : req.params._id }).exec(function (err, result) {
         if(err) { return next(err); }
-        console.log("Found gateways");
         location.gateways = result;
         return res.json(location);
     })
@@ -60,7 +63,6 @@ router.get('/:_id/devices', function(req, res, next) {
     var location = req.location.toObject();
     Device.find({ location_id : req.params._id }).exec(function (err, result) {
         if(err) { return next(err); }
-        console.log("Found devices");
         location.devices = result;
         return res.json(location);
     })
