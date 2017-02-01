@@ -11,7 +11,7 @@
 |:----------|:-----|:------------|:-----|:-------|
 |_id|String| Unique ID of location| Auto-Generated|-|
 |name|String| Name of location| Yes|-|
-|isBuilding|Boolean| If this location is building, then geoLoc should be set| No | False|
+|type|Enum {BUILDING, INDOOR}| If the location is a building or an indoor location inside a building. If this location is a building, then geoLoc should be set| No | -|
 |test | Boolean| If set to true, then the location is not visible in tree| No | False|
 |geoLoc.type | String| Type of geo-location : Point, Line etc| No| Point|
 |geoLoc.coordinates|Number| Coordinates are in format [longitude, latitude]| No| -| 
@@ -28,8 +28,8 @@
 - **Request body**
 	* name 
 	* test
-    * isBuilding
-    * geoLoc
+  * type
+  * geoLoc
 
 
 ** Example Request **
@@ -37,13 +37,13 @@
 POST /api/location/582e2b2c065b2545ded3aabd HTTP/1.1
 {
 	"name":"CIC",
+  "type":"BUILDING",
     "geoLoc": {
       "coordinates": [
         40.4509146,
         -79.9024777
       ]     
-    },
-    "isBuilding": true
+    }    
 }
 ```
 
@@ -56,6 +56,7 @@ Content-Type: application/json
     "_id": "5833479babdafd7b34858958",
     "name": "CIC",
     "test": false,
+    "type":"BUILDING"
     "children": [
      {}
     ],
@@ -65,8 +66,7 @@ Content-Type: application/json
         -79.9024777
       ],
       "type": "Point"
-    },
-    "isBuilding": true
+    }
 }
 ```
 

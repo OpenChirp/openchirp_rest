@@ -7,7 +7,7 @@ var Schema = mongoose.Schema;
 //Schema
 var locationSchema = new Schema({
   name:  {type: String, required: true},
-  isBuilding: {type: Boolean, required: false, default: false},
+  type: {type: String, enum: ['BUILDING', 'INDOOR'], required: false},
   geoLoc:{
   	type: { type: String, default: 'Point'}, 
     coordinates: [Number]
