@@ -5,6 +5,7 @@ var ObjectId = require('mongoose').Types.ObjectId;
 var Location = require('../models/location')
 var Gateway = require('../models/gateway');
 var Device = require('../models/device');
+var locationManager = require('../middleware/location_manager');
 
 /* GET all locations. */
 router.get('/', function(req, res, next) {
@@ -92,13 +93,12 @@ router.post('/:_id', function(req, res, next) {
 
 /* Update a location */
 router.put('/:_id', function(req, res, next) {
-    var locationToUpdate = req.location;
- 	if(req.body.name) locationToUpdate.name = req.body.name;
- 	if(req.body.test) locationToUpdate.test = req.body.test;
- 	locationToUpdate.save( function(err, result){
- 		if(err) { return next(err); }
- 		res.json(result);
- 	})  			
+    locationManager.updateLocation(req, function(err, result){
+        if(err){
+            return next(err);
+        }
+        return res.json(result);
+    })			
 });
 
 /* Delete a location */

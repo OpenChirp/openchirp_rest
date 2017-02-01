@@ -13,6 +13,7 @@
     "jade": "~1.11.0",
     "mongoose": "^4.6.6",
     "morgan": "~1.7.0",
-    "serve-favicon": "~2.3.0"
+    "serve-favicon": "~2.3.0",
+    "supervisor": "^0.12.0"
   }
 }
