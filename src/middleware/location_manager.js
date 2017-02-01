@@ -1,12 +1,14 @@
 
+var Location = require('../models/location')
 
-exports.updateLocation = function(req ){
+exports.updateLocation = function(req, callback){
+    console.log("Inside location manager");
 	var locationToUpdate = req.location;
  	if(typeof req.body.name != 'undefined') locationToUpdate.name = req.body.name;
- 	if(req.body.test) locationToUpdate.test = req.body.test;
+ 	if(typeof req.body.test != 'undefined') locationToUpdate.test = req.body.test;
+    console.log("About to save");
  	locationToUpdate.save( function(err, result){
- 		if(err) { return err; }
- 		return result;
+        callback(err, result);
  	})  
 };
 

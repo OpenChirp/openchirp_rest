@@ -7,7 +7,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 
-mongoose.connect('mongodb://iot.andrew.cmu.edu/openchirp_test');
+mongoose.connect('mongodb://localhost/openchirp_test');
 
 var app = express();
 

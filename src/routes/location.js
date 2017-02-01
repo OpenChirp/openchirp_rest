@@ -93,12 +93,19 @@ router.post('/:_id', function(req, res, next) {
 
 /* Update a location */
 router.put('/:_id', function(req, res, next) {
-    locationManager.updateLocation(req, function(err, result){
-        if(err){
-            return next(err);
-        }
-        return res.json(result);
-    })			
+   /* var locationToUpdate = req.location;
+    if(typeof req.body.name != 'undefined') locationToUpdate.name = req.body.name;
+    if(typeof req.body.test != 'undefined' ) locationToUpdate.test = req.body.test;
+    locationToUpdate.save( function(err, result){
+    if(err) { return next(err); }
+          return res.json(result);
+    })*/
+
+        locationManager.updateLocation(req, function(err, result) {
+                if(err) { console.log("inside error "); return next(err); }
+                console.log("returning result in router");
+                return res.json(result);
+              })
 });
 
 /* Delete a location */
