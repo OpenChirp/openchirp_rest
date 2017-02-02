@@ -1,7 +1,7 @@
 // Dependencies
 var mongoose = require('mongoose');
-
 var Schema = mongoose.Schema;
+
 // Other schemas
 var Location = require('./location');
 var Gateway = require('./gateway');

@@ -26,11 +26,11 @@
 	* parent_location_id (string) - ID of parent location
 
 - **Request body**
+
 	* name 
 	* test
   * type
   * geoLoc
-
 
 ** Example Request **
 ```http
@@ -110,8 +110,11 @@ Content-Type: application/json
 	* location_id (string) - ID of location to update
 
 - **Request body** 
-	* name(string) 
-	* test(boolean)
+
+	* name 
+	* test
+  * type
+  * geoLoc
 
 ** Example Request **
 ```http

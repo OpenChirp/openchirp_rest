@@ -7,7 +7,7 @@ var locationManager = require('../middleware/location_manager');
 
 /* GET all locations. */
 router.get('/', function(req, res, next) {
- 	locationManager.getRootLocation( function(err, result){
+ 	locationManager.getRootLocation(function(err, result){
         if(err) { return next(err); }
         res.json(result);
     })

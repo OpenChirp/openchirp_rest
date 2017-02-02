@@ -1,7 +1,5 @@
 // Dependencies
 var mongoose = require('mongoose');
-
-
 var Schema = mongoose.Schema;
 
 //Schema
@@ -17,6 +15,6 @@ var locationSchema = new Schema({
   test: { type: Boolean, default: false }
 });
 
-locationSchema.index({ children:1 });
+locationSchema.index({name : 1}, { children :1 });
 // Return model
 module.exports = mongoose.model('Location', locationSchema);

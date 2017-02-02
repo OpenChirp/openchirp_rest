@@ -13,7 +13,7 @@
 |name|String| Name of device| Yes|-|
 |type|Enum {LORA, TWIST, FIREFLY, BOSCH_XDK}| Type of device.| Yes | -|
 
-### Create new Gateway 
+### Create new Device 
 
 <span class ="operation">POST /api/device/ </span>
 

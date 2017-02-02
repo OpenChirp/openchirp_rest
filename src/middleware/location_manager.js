@@ -3,10 +3,11 @@ var Location = require('../models/location')
 var Gateway = require('../models/gateway');
 var Device = require('../models/device');
 
-exports.getRootLocation = function(id, callback){
+exports.getRootLocation = function(callback){
     //TODO: Change it to return root only
-    Location.find().exec( callback);
-}
+    Location.find().exec(callback);
+
+};
 exports.getLocationById = function(id, callback){
 	Location.findById(id, function (err, result) {
         if(err) callback(err);
@@ -17,7 +18,7 @@ exports.getLocationById = function(id, callback){
         }
         callback(null, result);
     })
-}
+};
 
 exports.createNewLocation = function(req, callback){
     //TODO: Add validation for not null name and type and geoloc
@@ -50,10 +51,12 @@ exports.createNewChildLocation = function(req, callback){
 
 exports.updateLocation = function(req, callback){
 	var locationToUpdate = req.location;
-    //TODO : Add other fields
+    
  	if(typeof req.body.name != 'undefined') locationToUpdate.name = req.body.name;
  	if(typeof req.body.test != 'undefined') locationToUpdate.test = req.body.test;
-   
+    if(typeof req.body.type != 'undefined') locationToUpdate.type = req.body.type;
+    if(typeof req.body.geoLoc != 'undefined') locationToUpdate.geoLoc = req.body.geoLoc;
+    
  	locationToUpdate.save( function(err, result){
         callback(err, result);
  	})  
