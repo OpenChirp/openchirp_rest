@@ -75,7 +75,7 @@
                 <li class="toctree-l3"><a href="#urls">URLs</a></li>
                 
             
-                <li class="toctree-l3"><a href="#model">Model</a></li>
+                <li class="toctree-l3"><a href="#gateway-resource-description">Gateway Resource Description</a></li>
                 
             
                 <li class="toctree-l3"><a href="#create-new-gateway">Create new Gateway</a></li>
@@ -164,23 +164,23 @@
 <tr>
 <th align="left">URL</th>
 <th align="left">Supported HTTP verbs</th>
-<th align="center">Action</th>
+<th align="left">Action</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td align="left">/api/gateway</td>
 <td align="left">GET, POST</td>
-<td align="center">Get all gateways or create new gateway</td>
+<td align="left">Return all gateways or create new gateway</td>
 </tr>
 <tr>
 <td align="left">/api/gateway/:id</td>
 <td align="left">GET, PUT, DELETE</td>
-<td align="center">Get, update, delete a gateway</td>
+<td align="left">Read, update, delete a gateway</td>
 </tr>
 </tbody>
 </table>
-<h3 id="model">Model</h3>
+<h3 id="gateway-resource-description">Gateway Resource Description</h3>
 <table>
 <thead>
 <tr>
@@ -238,6 +238,20 @@
 <td align="left">pubsub.endpoint</td>
 <td align="left">String</td>
 <td align="left">Endpoint could be mqtt topic or xmpp node</td>
+<td align="left">No</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">properties</td>
+<td align="left">Mixed</td>
+<td align="left">JSON object that can include any number of key-value pairs</td>
+<td align="left">No</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">transducers</td>
+<td align="left">Array of Transducers</td>
+<td align="left">See the transducer resource description for more details</td>
 <td align="left">No</td>
 <td align="left">-</td>
 </tr>
