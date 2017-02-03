@@ -1,12 +1,12 @@
 ### URLs
 
-|URL | Supported HTTP verbs|
-|:----------|:-----|
-|/api/location/:id | GET, PUT, POST, DELETE|
-|/api/location/:id/gateways| GET|
-|/api/location/:id/devices| GET|
+|URL | Supported HTTP verbs| Action
+|:----------|:-------|:-------------|
+|/api/location/:id | POST, GET, PUT, DELETE| Create, read, update, delete a location respectively|
+|/api/location/:id/gateways| GET| Get all gateways at a location|
+|/api/location/:id/devices| GET| Get all devices at a location|
 
-### Model
+### Location Resource Description
 | Name | Type | Description | Required | Default|
 |:----------|:-----|:------------|:-----|:-------|
 |_id|String| Unique ID of location| Auto-Generated|-|

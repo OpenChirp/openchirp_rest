@@ -6,6 +6,7 @@ var Schema = mongoose.Schema;
 var Location = require('./location');
 var Gateway = require('./gateway');
 var User = require('./user');
+var Transducer = require('./transducer');
 
 //Schema
 var deviceSchema = new Schema({
@@ -17,9 +18,10 @@ var deviceSchema = new Schema({
   	protocol : { type: String, enum: ['XMPP', 'MQTT', 'AMQP']},
   	destination : String  // xmpp node or mqtt topic
   },
+  transducers: [{type: Schema.Types.ObjectId, ref : Transducer}],
   owner: { type: Schema.Types.ObjectId, ref: User },  
   enabled: { type: Boolean, default: true },
-  meta : { type: Schema.Types.Mixed	}
+  properties : { type: Schema.Types.Mixed	}
 });
 
 deviceSchema.index({ location_id : 1 }, { type : 1 });

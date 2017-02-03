@@ -1,13 +1,13 @@
 
 ### URLs 
 
-|URL | Supported HTTP verbs|
-|:----------|:-----|
-|/api/gateway | GET, POST|
-|/api/gateway/:id | GET, PUT, DELETE|
+|URL | Supported HTTP verbs| Action
+|:----------|:-------|:-------------|
+|/api/gateway | GET, POST| Return all gateways or create new gateway|
+|/api/gateway/:id | GET, PUT, DELETE| Read, update, delete a gateway|
 
 
-### Model 
+### Gateway Resource Description
 
 | Name | Type | Description | Required | Default|
 |:----------|:-----|:------------|:----|:--------|
@@ -18,7 +18,8 @@
 |enabled | Boolean| If set to false, then the gateway is not monitored| No | True|
 |pubsub.protocol| Enum {XMPP, MQTT, AMQP}| Pubsub protocol used by this gateway | No |MQTT|
 |pubsub.endpoint| String| Endpoint could be mqtt topic or xmpp node| No |-|
-
+|properties | Mixed| JSON object that can include any number of key-value pairs| No|-|
+|transducers| Array of Transducers| See the transducer resource description for more details | No|-|
 
 ### Create new Gateway 
 
