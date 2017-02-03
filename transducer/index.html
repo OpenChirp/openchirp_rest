@@ -144,6 +144,15 @@
             <div class="section">
               
                 <h3 id="urls">URLs</h3>
+<table>
+<thead>
+<tr>
+<th align="left">URL</th>
+<th align="left">Supported HTTP verbs</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
 <h3 id="model">Model</h3>
 <table>
 <thead>
@@ -155,7 +164,36 @@
 <th align="left">Default</th>
 </tr>
 </thead>
-<tbody></tbody>
+<tbody>
+<tr>
+<td align="left">_id</td>
+<td align="left">String</td>
+<td align="left">Unique ID of each transducer</td>
+<td align="left">Auto-generated</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">name</td>
+<td align="left">String</td>
+<td align="left">Name of transducer, example: Temperature</td>
+<td align="left">Yes</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">unit</td>
+<td align="left">String</td>
+<td align="left">Unit of transducer, example: Celsius</td>
+<td align="left">Yes</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">properties</td>
+<td align="left">Mixed</td>
+<td align="left">JSON object that can include any number of key-value pairs</td>
+<td align="left">No</td>
+<td align="left">-</td>
+</tr>
+</tbody>
 </table>
               
             </div>
