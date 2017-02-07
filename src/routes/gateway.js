@@ -2,26 +2,21 @@ var express = require('express');
 var router = express.Router();
 var ObjectId = require('mongoose').Types.ObjectId;
 
-//Models
-var Gateway = require('../models/gateway');
-var Location = require('../models/location');
+var gatewayManager = require('../middleware/gateway_manager');
+
 
 /* GET all gateways */
 router.get('/', function(req, res, next) {
- 	Gateway.find().exec(function (err, result) {
+ 	gatewayManager.getAllGateways(function (err, result) {
  		if(err) { return next(err); }
   		res.json(result);
 	})
 });
 
 /* Create new gateway */
-router.post('/', function(req, res, next) {
-	var gateway = new Gateway(req.body);
-	gateway.save(function (err, result) {
-		if(err) { 
-            return next(err);
-            //return next(err); }
-        }
+router.post('/', function(req, res, next) {	
+    gatewayManager.createNewGateway(function (err, result) {
+		if(err) { return next(err); }
   		res.json(result);
 	})
 });
@@ -31,15 +26,12 @@ router.param('_id', function(req, res, next, id) {
     if(!ObjectId.isValid(id)){
         return next(new Error('Invalid gateway id :'+ id));
     }
-    Gateway.findById(id, function (err, result) {
-        if (err) next(err);
-        if (result == null ) { 
-            return res.status(404).jsonp({message: 'No gateway with id :' +id});
-           //return next(new Error('No gateway with id :'+ id));
-        }
+    gatewayManager.getGatewayById(id, function(err, result) {
+        if(err) { return next(err); }
         req.gateway = result;
         next();
     })
+   
 });
 
 /* GET a gateway */
@@ -55,33 +47,18 @@ router.get('/:_id/devices', function(req, res, next) {
 
 /* Update a gateway */
 router.put('/:_id', function(req, res, next) {
-    var gatewayToUpdate = req.gateway;
- 	if(req.body.name) gatewayToUpdate.name = req.body.name;
-    if(req.body.location_id) gatewayToUpdate.location_id = req.body.location_id;
-    if(req.body.type) gatewayToUpdate.type = req.body.type;
-    if(req.body.pubsub) gatewayToUpdate.pubsub = req.body.pubsub;
-    if( typeof req.body.enabled != 'undefined') gatewayToUpdate.enabled = req.body.enabled;
-
- 	gatewayToUpdate.save( function(err, result){
+   gatewayManager.updateGateway(function(err, result){
  		if(err) { return next(err); }
-        res.json(gatewayToUpdate);
+        res.json(result);
  	})  			
 });
 
 /* Delete a gateway */
 router.delete('/:_id', function(req, res, next) {
-	gatewayToDelete = req.gateway;
-    //TODO: Search for devices and if there are some, then can't delete gateway
-    /*var children = gatewayToDelete.children;
-    if (children != null && children.length > 0){
-        console.log("Can't delete location that has devices");   
-        res.json({ error : { message: "Location is not empty. Cannot delete it."}});
-    }  
-    */ 
-    gatewayToDelete.remove(function(err){
+    
+   gatewayManager.deleteGateway(function(err){
         if(err) { return next(err); }
     })
-
     res.json({message: 'Delete successful'});
 	
 });

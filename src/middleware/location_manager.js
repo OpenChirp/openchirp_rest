@@ -27,6 +27,7 @@ exports.createNewLocation = function(req, callback){
 };
 
 exports.createNewChildLocation = function(req, callback){
+      //TODO: Add validation for not null name and type and geoloc
     var newLocation = new Location(req.body);
     var parentId = req.params._id;
 
@@ -57,9 +58,7 @@ exports.updateLocation = function(req, callback){
     if(typeof req.body.type != 'undefined') locationToUpdate.type = req.body.type;
     if(typeof req.body.geoLoc != 'undefined') locationToUpdate.geoLoc = req.body.geoLoc;
     
- 	locationToUpdate.save( function(err, result){
-        callback(err, result);
- 	})  
+ 	locationToUpdate.save(callback);  
 };
 
 exports.deleteLocation = function(req, callback){

@@ -3,7 +3,7 @@
 
 |URL | Supported HTTP verbs| Action
 |:----------|:-------|:-------------|
-|/api/gateway | GET, POST| Return all gateways or create new gateway|
+|/api/gateway | GET, POST| Return all gateways, create new gateway|
 |/api/gateway/:id | GET, PUT, DELETE| Read, update, delete a gateway|
 
 

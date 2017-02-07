@@ -12,11 +12,10 @@ mkdocs gh-deploy
 
 # Setup
 ## Install
+After cloning the repository, run the following command. This will download all the javascript dependencies.
 ```
 npm install
 ```
-This command will download all the javascript dependencies.
-
 
 ## Deploy
 ```
@@ -25,3 +24,5 @@ npm start
 
 ## Config
 \\ TODO
+
+

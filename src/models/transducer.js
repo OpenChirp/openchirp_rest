@@ -2,16 +2,13 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-// Other schemas
-var Device = require('./device');
-var Gateway = require('./gateway');
+
 
 //Schema
 var transducerSchema = new Schema({
 	name: {type: String , required: true},
 	unit: {type: String, required : true},
-	device_id: {type: Schema.Types.ObjectId, ref: Device},
-	gateway_id: {type: Schema.Types.ObjectId, ref: Gateway},
+	isActuable: {type : Boolean, default: false },
 	properties : { type: Schema.Types.Mixed }	
 });
 
