@@ -9,7 +9,7 @@ var deviceManager = require('../middleware/device_manager');
 router.get('/', function(req, res, next) {
     deviceManager.getAllDevices(function (err, result) {
         if(err) { return next(err); }
-        res.json(result);
+        return res.json(result);
     })
 });
 
@@ -17,7 +17,7 @@ router.get('/', function(req, res, next) {
 router.post('/', function(req, res, next) {
 	deviceManager.createNewDevice(req, function (err, result) {
 		if(err) { return next(err); }
-  		res.json(result);
+  		return res.json(result);
 	})
 });
 
@@ -43,7 +43,7 @@ router.put('/:_id', function(req, res, next) {
     //TODO: 
   deviceManager.updateDevice(req, function(err, result){
  		if(err) { return next(err); }
- 		res.json(result);
+ 		return res.json(result);
  	})  			
 });
 
@@ -56,5 +56,16 @@ router.delete('/:_id', function(req, res, next) {
 });
 
 /* Add a transducer to device */
-//router.post('/:_id/transducer', )
+router.post('/:_id/transducer', function(req, res, next ){
+    transducerManager.createNewTransducer(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
+/* Get all transducers for a given device*/
+/*router.get('/:_id/transducer', function(req, res, next){
+
+});*/
+
 module.exports = router;

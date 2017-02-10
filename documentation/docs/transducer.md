@@ -1,7 +1,3 @@
-### URLs 
-
-|URL | Supported HTTP verbs|
-|:----------|:-----|
 
 ### Transducer Resource Description
 
