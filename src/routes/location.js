@@ -17,7 +17,7 @@ router.get('/', function(req, res, next) {
 router.post('/', function(req, res, next) {
 	locationManager.createNewLocation(req, function(err, result){
         if(err) { return next(err); }
-        res.json(result);
+        return res.json(result);
 
     })
 	
@@ -78,10 +78,10 @@ router.put('/:_id', function(req, res, next) {
 
 /* Delete a location */
 router.delete('/:_id', function(req, res, next) {
-	locationManager.deleteLocation(req, function(err, result){
+	locationManager.deleteLocation(req, function(err, result) {
         if(err) { return next(err); }
         return res.json(result);
-    } )
+    })
 	
 });
 

@@ -4,19 +4,19 @@ var Gateway = require('../models/gateway');
 var Device = require('../models/device');
 
 exports.getRootLocation = function(callback){
-    //TODO: Change it to return root only
-    Location.find().exec(callback);
+    
+    Location.find({"name":"root"}).exec(callback);
 
 };
 exports.getLocationById = function(id, callback){
 	Location.findById(id, function (err, result) {
-        if(err) callback(err);
+        if(err) { return callback(err) } ;
         if (result == null ) { 
             var error = new Error();
             error.message = 'Could not find a location with id :'+ id ;
-            callback(error);
+            return callback(error);
         }
-        callback(null, result);
+        return callback(null, result);
     })
 };
 
@@ -31,7 +31,7 @@ exports.createNewChildLocation = function(req, callback){
     var newLocation = new Location(req.body);
     var parentId = req.params._id;
 
-    newLocation.save( function(err, result){
+    newLocation.save(function(err, result){
         if(err) { return callback(err); }
         newLocation = result;
     })
@@ -45,8 +45,8 @@ exports.createNewChildLocation = function(req, callback){
             })
             return callback(err);
         }   
-        console.log("Added reference to parent "+result);
-        callback(null, result);
+        console.log("Added reference to parent "+ parentId);
+        return callback(null, newLocation);
     })
 };
 
@@ -65,9 +65,9 @@ exports.deleteLocation = function(req, callback){
     locationToDelete = req.location;
     var children = locationToDelete.children;
     if (children != null && children.length > 0){
-        var error = new Error();
+        var error = new Error();       
         error.message =  "Location is not empty. Cannot delete it.";
-        callback(error);
+        return callback(error);
     }  
     // TODO: Can't delete a location if there are devices and gateways pointing to it.
     
@@ -81,7 +81,7 @@ exports.deleteLocation = function(req, callback){
     })
     var result = new Object();
     result.message = "Delete successful";
-    callback(null, result);
+    return callback(null, result);
 };
 
 exports.getGateways = function(req, callback){
@@ -94,7 +94,7 @@ exports.getGateways = function(req, callback){
 exports.getDevices = function(req, callback){
    //TODO: Change it to return all gateways in child locations too only 
     // if it is a building or with a deep flag
-    Device.find({ location_id : req.params._id }).exec(callback);
-    
+    Device.find({ location_id : req.params._id }).exec(callback);    
 };
+
 module.exports = exports;

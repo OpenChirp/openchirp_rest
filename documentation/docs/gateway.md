@@ -4,8 +4,8 @@
 |URL | Supported HTTP verbs| Action
 |:----------|:-------|:-------------|
 |/api/gateway | GET, POST| Return all gateways, create new gateway|
-|/api/gateway/:id | GET, PUT, DELETE| Read, update, delete a gateway|
-
+|/api/gateway/{*gatewayId*} | GET, PUT, DELETE| Read, update, delete a gateway|
+|/api/gateway/{*gatewayId*}/devices/ | GET | Get devices linked to a gateway |
 
 ### Gateway Resource Description
 
@@ -109,7 +109,7 @@ Content-Type: application/json
 ### Get details of a gateway
 ** Request URL **
 
-<span class ="operation">GET /api/gateway/:id </span>
+<span class ="operation">GET /api/gateway/{*gatewayId*} </span>
 
 - **Request parameters**
 	* id (string) - ID of gateway to get.
@@ -140,7 +140,7 @@ Content-Type: application/json
 }
 ```
 ### Update gateway
-<span class ="operation">PUT /api/gateway/:id </span>
+<span class ="operation">PUT /api/gateway/{*gatewayId*} </span>
 
 - **Request parameters**
 	* id (string) - ID of gateway to update
@@ -179,7 +179,7 @@ HTTP/1.1 200 OK
 ```
 
 ### Delete a gateway
-<span class ="operation">DELETE /api/gateway/:id </span>
+<span class ="operation">DELETE /api/gateway/{*gatewayId*} </span>
 
 - **Request parameters**
 

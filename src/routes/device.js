@@ -4,9 +4,18 @@ var ObjectId = require('mongoose').Types.ObjectId;
 
 var deviceManager = require('../middleware/device_manager');
 
+
+/* GET all devices */
+router.get('/', function(req, res, next) {
+    deviceManager.getAllDevices(function (err, result) {
+        if(err) { return next(err); }
+        res.json(result);
+    })
+});
+
 /* Create new device */
 router.post('/', function(req, res, next) {
-	deviceManager.createNewDevice(function (err, result) {
+	deviceManager.createNewDevice(req, function (err, result) {
 		if(err) { return next(err); }
   		res.json(result);
 	})
@@ -18,7 +27,7 @@ router.param('_id', function(req, res, next, id) {
         return next(new Error('Invalid device id :'+ id));
     }
     deviceManager.getDeviceById(id, function (err, result) {
-        if (err) next(err);    
+        if (err) { return next(err)};    
         req.device = result;
         next();
     })
@@ -32,7 +41,7 @@ router.get('/:_id', function(req, res, next) {
 /* Update a device */
 router.put('/:_id', function(req, res, next) {
     //TODO: 
-  deviceManager.updateDevice( function(err, result){
+  deviceManager.updateDevice(req, function(err, result){
  		if(err) { return next(err); }
  		res.json(result);
  	})  			
@@ -40,10 +49,12 @@ router.put('/:_id', function(req, res, next) {
 
 /* Delete a device */
 router.delete('/:_id', function(req, res, next) {   
-	deviceManager.deleteDevice(function(err){
+	deviceManager.deleteDevice(req, function(err){
         if(err) { return next(err); }
     })
-    res.json({ message: 'Delete successful'});	
+    return res.json({ message: 'Delete successful'});	
 });
 
+/* Add a transducer to device */
+//router.post('/:_id/transducer', )
 module.exports = router;

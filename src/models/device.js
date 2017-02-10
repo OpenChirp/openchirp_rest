@@ -16,7 +16,7 @@ var deviceSchema = new Schema({
   gateway_id: { type: Schema.Types.ObjectId, ref: Gateway },
   pubsub : {
   	protocol : { type: String, enum: ['XMPP', 'MQTT', 'AMQP']},
-  	destination : String  // xmpp node or mqtt topic
+  	endpoint: String  // xmpp node or mqtt topic
   },
   transducers: [{type: Schema.Types.ObjectId, ref : Transducer}],
   owner: { type: Schema.Types.ObjectId, ref: User },  

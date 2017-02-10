@@ -2,9 +2,11 @@
 
 |URL | Supported HTTP verbs| Action
 |:----------|:-------|:-------------|
-|/api/location/:id | POST, GET, PUT, DELETE| Create, read, update, delete a location respectively|
-|/api/location/:id/gateways| GET| Get all gateways at a location|
-|/api/location/:id/devices| GET| Get all devices at a location|
+|/api/location| GET | Get Root Location|
+|/api/location/{*parentLocationId*} |POST| Create new location under a given parent location|
+|/api/location/{*locationId*} | GET, PUT, DELETE| Create, read, update, delete a location respectively|
+|/api/location/{*locationId*}/gateways| GET| Get all gateways at a location|
+|/api/location/{*locationId*}/devices| GET| Get all devices at a location|
 
 ### Location Resource Description
 | Name | Type | Description | Required | Default|
@@ -20,10 +22,10 @@
 
 ### Create new Location 
 
-<span class ="operation">POST /api/location/:parent_location_id </span>
+<span class ="operation">POST /api/location/{*parentLocationId*} </span>
 
 - **Request parameters**
-	* parent_location_id (string) - ID of parent location
+	* parentLocationId (string) - ID of parent location
 
 - **Request body**
 
@@ -74,10 +76,10 @@ Content-Type: application/json
 ### Get details of a location
 ** Request URL **
 
-<span class ="operation">GET /api/location/:location_id </span>
+<span class ="operation">GET /api/location/{*locationId*} </span>
 
 - **Request parameters**
-	* location_id (string) - ID of location to get.
+	* locationId (string) - ID of location to get.
 
 ** Example Request **
 
@@ -103,11 +105,11 @@ Content-Type: application/json
 
 ```
 ### Update Location
-<span class ="operation">PUT /api/location/:location_id </span>
+<span class ="operation">PUT /api/location/{*locationId*} </span>
 
 - **Request parameters**
 
-	* location_id (string) - ID of location to update
+	* locationId (string) - ID of location to update
 
 - **Request body** 
 
@@ -139,11 +141,11 @@ HTTP/1.1 200 OK
 ```
 
 ### Delete a location
-<span class ="operation">DELETE /api/location/:id </span>
+<span class ="operation">DELETE /api/location/{*locationId*} </span>
 
 - **Request parameters**
 
-	* id (string) - ID of location to delete
+	* locationId (string) - ID of location to delete
 
 ** Example Request **
 ```http
@@ -156,7 +158,7 @@ HTTP/1.1 200 OK
 ```
 
 ### Find gateways at a location 
-<span class ="operation">GET /api/location/:id/gateways</span>
+<span class ="operation">GET /api/location/{*locationId*}/gateways</span>
 
 - **Request parameters**
 
@@ -174,7 +176,7 @@ TODO
 
 ### Find devices at a location
 
-<span class ="operation">GET /api/location/:id/devices </span>
+<span class ="operation">GET /api/location/{*locationId*}/devices </span>
 
 - **Request parameters**
 

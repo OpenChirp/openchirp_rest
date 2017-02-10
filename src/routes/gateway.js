@@ -15,7 +15,7 @@ router.get('/', function(req, res, next) {
 
 /* Create new gateway */
 router.post('/', function(req, res, next) {	
-    gatewayManager.createNewGateway(function (err, result) {
+    gatewayManager.createNewGateway(req, function (err, result) {
 		if(err) { return next(err); }
   		res.json(result);
 	})
@@ -41,13 +41,15 @@ router.get('/:_id', function(req, res, next) {
 
 /* Get all devices linked to this gateway */
 router.get('/:_id/devices', function(req, res, next) {
-    //TODO
-    return res.json(req.gateway);
+   gatewayManager.getDevices(req, function(err, result){
+        if(err) { return next(err); }
+        res.json(result);
+   })
 });
 
 /* Update a gateway */
 router.put('/:_id', function(req, res, next) {
-   gatewayManager.updateGateway(function(err, result){
+   gatewayManager.updateGateway(req, function(err, result){
  		if(err) { return next(err); }
         res.json(result);
  	})  			
@@ -55,8 +57,8 @@ router.put('/:_id', function(req, res, next) {
 
 /* Delete a gateway */
 router.delete('/:_id', function(req, res, next) {
-    
-   gatewayManager.deleteGateway(function(err){
+
+   gatewayManager.deleteGateway(req, function(err){
         if(err) { return next(err); }
     })
     res.json({message: 'Delete successful'});
