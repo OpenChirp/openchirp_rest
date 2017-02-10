@@ -93,6 +93,12 @@
         
             <ul>
             
+                <li class="toctree-l3"><a href="#urls">URLs</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#service-resource-description">Service Resource Description</a></li>
+                
+            
             </ul>
         
     </li>
@@ -137,7 +143,103 @@
           <div role="main">
             <div class="section">
               
-                
+                <h3 id="urls">URLs</h3>
+<table>
+<thead>
+<tr>
+<th align="left">URL</th>
+<th align="left">Supported HTTP verbs</th>
+<th align="left">Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">/api/service</td>
+<td align="left">GET, POST</td>
+<td align="left">Return all service, create new service</td>
+</tr>
+<tr>
+<td align="left">/api/service/{<em>serviceId</em>}</td>
+<td align="left">GET, PUT, DELETE</td>
+<td align="left">Read, update, delete a service</td>
+</tr>
+<tr>
+<td align="left">/api/service/{<em>serviceId</em>}/device/{<em>deviceId</em>}</td>
+<td align="left">POST</td>
+<td align="left">Add device to service</td>
+</tr>
+</tbody>
+</table>
+<h3 id="service-resource-description">Service Resource Description</h3>
+<table>
+<thead>
+<tr>
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+<th align="left">Required</th>
+<th align="left">Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">_id</td>
+<td align="left">String</td>
+<td align="left">Unique ID of each service</td>
+<td align="left">Auto-generated</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">name</td>
+<td align="left">String</td>
+<td align="left">Name of service, example: InfluxDBStorageService</td>
+<td align="left">Yes</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">description</td>
+<td align="left">String</td>
+<td align="left">A short description of what this service does</td>
+<td align="left">Yes</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">pubsub.protocol</td>
+<td align="left">Enum {XMPP, MQTT, AMQP}</td>
+<td align="left">Pubsub protocol used by this device</td>
+<td align="left">No</td>
+<td align="left">MQTT</td>
+</tr>
+<tr>
+<td align="left">pubsub.endpoint</td>
+<td align="left">String</td>
+<td align="left">Endpoint could be mqtt topic or xmpp node</td>
+<td align="left">No</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">properties</td>
+<td align="left">Mixed</td>
+<td align="left">Custom properties of this service. JSON object that can include any number of key-value pairs</td>
+<td align="left">No</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">device_config</td>
+<td align="left">DeviceConfig</td>
+<td align="left">Config required from services.</td>
+<td align="left">No</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">devices</td>
+<td align="left">Array</td>
+<td align="left">Array of devices that are linked to this service. This data is maintained by the database and returned in a GET request</td>
+<td align="left">No</td>
+<td align="left">-</td>
+</tr>
+</tbody>
+</table>
               
             </div>
           </div>
