@@ -162,9 +162,19 @@
 <td align="left">Create new device</td>
 </tr>
 <tr>
-<td align="left">/api/device/{deviceId}</td>
+<td align="left">/api/device/{<em>deviceId</em>}</td>
 <td align="left">GET, PUT, DELETE</td>
 <td align="left">Read, Update , Delete a device</td>
+</tr>
+<tr>
+<td align="left">/api/device/{<em>deviceId</em>}/transducer</td>
+<td align="left">POST, GET</td>
+<td align="left">Create new transducer, get all transducers for a given device</td>
+</tr>
+<tr>
+<td align="left">/api/device/{<em>deviceId</em>}/transducer/{<em>transducerId</em>}</td>
+<td align="left">POST, PUT, DELETE</td>
+<td align="left">Publish to , Update, Delete a transducer</td>
 </tr>
 </tbody>
 </table>
