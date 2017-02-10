@@ -31,10 +31,11 @@ app.use(allowCrossDomain);
 
 // Routes
 //app.use('/', require('./routes/index'));
-app.use('/api/users', require('./routes/users'));
-app.use('/api/location', require('./routes/location'));
-app.use('/api/gateway', require('./routes/gateway'));
-app.use('/api/device', require('./routes/device'));
+app.use('/api/user', require('./routes/user_router'));
+app.use('/api/location', require('./routes/location_router'));
+app.use('/api/gateway', require('./routes/gateway_router'));
+app.use('/api/device', require('./routes/device_router'));
+app.use('/api/service', require('./routes/service_router'));
 
 //TODO: Add logger for all errors 
 

@@ -57,7 +57,7 @@ router.delete('/:_id', function(req, res, next) {
 
 /* Add a transducer to device */
 router.post('/:_id/transducer', function(req, res, next ){
-    transducerManager.createTransducerForDevice(req, function(err, result){
+    transducerManager.createNewTransducer(req, function(err, result){
         if(err) { return next(err); }
         return res.json(result);
     })

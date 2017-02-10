@@ -24,14 +24,14 @@ exports.getDeviceById = function(id, callback){
 };
 
 exports.updateDevice = function(req, callback){
-	
+	//TODO : Add logic to update properties
     var deviceToUpdate = req.device;
-    if(req.body.name) deviceToUpdate.name = req.body.name;
-    if(req.body.location_id) deviceToUpdate.location_id = req.body.location_id;
-    if(req.body.gateway_id) deviceToUpdate.gateway_id = req.body.gateway_id;
-    if(req.body.type) deviceToUpdate.type = req.body.type;
-    if(req.body.pubsub) deviceToUpdate.pubsub = req.body.pubsub;
-    if( typeof req.body.enabled != 'undefined') deviceToUpdate.enabled = req.body.enabled;
+    if(typeof req.body.name != 'undefined') deviceToUpdate.name = req.body.name;
+    if(typeof req.body.location_id != 'undefined') deviceToUpdate.location_id = req.body.location_id;
+    if(typeof req.body.gateway_id != 'undefined') deviceToUpdate.gateway_id = req.body.gateway_id;
+    if(typeof req.body.type != 'undefined') deviceToUpdate.type = req.body.type;
+    if(typeof req.body.pubsub != 'undefined') deviceToUpdate.pubsub = req.body.pubsub;
+    if(typeof req.body.enabled != 'undefined') deviceToUpdate.enabled = req.body.enabled;
 
  	deviceToUpdate.save(callback);
 };

@@ -1,15 +1,16 @@
 var Device = require('../models/device');
 var Transducer = require('../models/transducer');
 
-exports.createNewTransducer = function(req, callback){
+exports.createTransducerForDevice = function(req, callback){
 	var transducer = new Transducer(req.body);
-	var deviceId = req.params._id;
 
 	transducer.save(function(err, result){
 		if(err) { return callback(err); }
 		transducer = result;
 	})
-	
+
+	var deviceId = req.params._id;
+
 	Device.findByIdAndUpdate(deviceId, { $addToSet: {transducer: transducer._id}}, function(err, result){
 		if(err){
 			//Rollback.. Delete the newly created transducer
@@ -24,4 +25,5 @@ exports.createNewTransducer = function(req, callback){
 	})
 };
 
+exports.getAllTransducersForDevice
 module.exports = exports;
