@@ -174,12 +174,12 @@
 <td align="left">Return all gateways, create new gateway</td>
 </tr>
 <tr>
-<td align="left">/api/gateway/:id</td>
+<td align="left">/api/gateway/{gatewayId}</td>
 <td align="left">GET, PUT, DELETE</td>
 <td align="left">Read, update, delete a gateway</td>
 </tr>
 <tr>
-<td align="left">/api/gateway/:id/devices/</td>
+<td align="left">/api/gateway/{gatewayId}/devices/</td>
 <td align="left">GET</td>
 <td align="left">Get devices linked to a gateway</td>
 </tr>
@@ -345,7 +345,7 @@ Content-Type: application/json
 
 <h3 id="get-details-of-a-gateway">Get details of a gateway</h3>
 <p><strong> Request URL </strong></p>
-<p><span class ="operation">GET /api/gateway/:id </span></p>
+<p><span class ="operation">GET /api/gateway/{gatewayId} </span></p>
 <ul>
 <li><strong>Request parameters</strong><ul>
 <li>id (string) - ID of gateway to get.</li>
@@ -375,7 +375,7 @@ Content-Type: application/json
 </code></pre>
 
 <h3 id="update-gateway">Update gateway</h3>
-<p><span class ="operation">PUT /api/gateway/:id </span></p>
+<p><span class ="operation">PUT /api/gateway/{gatewayId} </span></p>
 <ul>
 <li>
 <p><strong>Request parameters</strong></p>
@@ -419,7 +419,7 @@ Content-Type: application/json
 </code></pre>
 
 <h3 id="delete-a-gateway">Delete a gateway</h3>
-<p><span class ="operation">DELETE /api/gateway/:id </span></p>
+<p><span class ="operation">DELETE /api/gateway/{gatewayId} </span></p>
 <ul>
 <li>
 <p><strong>Request parameters</strong></p>

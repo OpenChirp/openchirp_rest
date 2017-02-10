@@ -177,17 +177,22 @@
 <td align="left">Get Root Location</td>
 </tr>
 <tr>
-<td align="left">/api/location/:id</td>
-<td align="left">POST, GET, PUT, DELETE</td>
+<td align="left">/api/location/{parentLocationId}</td>
+<td align="left">POST</td>
+<td align="left">Create new location under a given parent location</td>
+</tr>
+<tr>
+<td align="left">/api/location/{locationId}</td>
+<td align="left">GET, PUT, DELETE</td>
 <td align="left">Create, read, update, delete a location respectively</td>
 </tr>
 <tr>
-<td align="left">/api/location/:id/gateways</td>
+<td align="left">/api/location/{locationId}/gateways</td>
 <td align="left">GET</td>
 <td align="left">Get all gateways at a location</td>
 </tr>
 <tr>
-<td align="left">/api/location/:id/devices</td>
+<td align="left">/api/location/{locationId}/devices</td>
 <td align="left">GET</td>
 <td align="left">Get all devices at a location</td>
 </tr>
@@ -257,12 +262,12 @@
 </tbody>
 </table>
 <h3 id="create-new-location">Create new Location</h3>
-<p><span class ="operation">POST /api/location/:parent_location_id </span></p>
+<p><span class ="operation">POST /api/location/{parentLocationId} </span></p>
 <ul>
 <li>
 <p><strong>Request parameters</strong></p>
 <ul>
-<li>parent_location_id (string) - ID of parent location</li>
+<li>parentLocationId (string) - ID of parent location</li>
 </ul>
 </li>
 <li>
@@ -313,10 +318,10 @@ Content-Type: application/json
 
 <h3 id="get-details-of-a-location">Get details of a location</h3>
 <p><strong> Request URL </strong></p>
-<p><span class ="operation">GET /api/location/:location_id </span></p>
+<p><span class ="operation">GET /api/location/{locationId} </span></p>
 <ul>
 <li><strong>Request parameters</strong><ul>
-<li>location_id (string) - ID of location to get.</li>
+<li>locationId (string) - ID of location to get.</li>
 </ul>
 </li>
 </ul>
@@ -341,12 +346,12 @@ Content-Type: application/json
 </code></pre>
 
 <h3 id="update-location">Update Location</h3>
-<p><span class ="operation">PUT /api/location/:location_id </span></p>
+<p><span class ="operation">PUT /api/location/{locationId} </span></p>
 <ul>
 <li>
 <p><strong>Request parameters</strong></p>
 <ul>
-<li>location_id (string) - ID of location to update</li>
+<li>locationId (string) - ID of location to update</li>
 </ul>
 </li>
 <li>
@@ -380,12 +385,12 @@ Content-Type: application/json
 </code></pre>
 
 <h3 id="delete-a-location">Delete a location</h3>
-<p><span class ="operation">DELETE /api/location/:id </span></p>
+<p><span class ="operation">DELETE /api/location/{locationId} </span></p>
 <ul>
 <li>
 <p><strong>Request parameters</strong></p>
 <ul>
-<li>id (string) - ID of location to delete</li>
+<li>locationId (string) - ID of location to delete</li>
 </ul>
 </li>
 </ul>
@@ -398,7 +403,7 @@ Content-Type: application/json
 </code></pre>
 
 <h3 id="find-gateways-at-a-location">Find gateways at a location</h3>
-<p><span class ="operation">GET /api/location/:id/gateways</span></p>
+<p><span class ="operation">GET /api/location/{locationId}/gateways</span></p>
 <ul>
 <li>
 <p><strong>Request parameters</strong></p>
@@ -416,7 +421,7 @@ Content-Type: application/json
 </code></pre>
 
 <h3 id="find-devices-at-a-location">Find devices at a location</h3>
-<p><span class ="operation">GET /api/location/:id/devices </span></p>
+<p><span class ="operation">GET /api/location/{locationId}/devices </span></p>
 <ul>
 <li>
 <p><strong>Request parameters</strong></p>
