@@ -2,24 +2,18 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-// Other schemas
-var Location = require('./location');
-var Gateway = require('./gateway');
-var User = require('./user');
-var Transducer = require('./transducer');
-
 //Schema
 var deviceSchema = new Schema({
   name: { type: String, required: true },
   type: { type: String, enum: ['LORA','FIREFLY','TWIST','BOSCH_XDK'] },
-  location_id: { type: Schema.Types.ObjectId, ref: Location },
-  gateway_id: { type: Schema.Types.ObjectId, ref: Gateway },
+  location_id: { type: Schema.Types.ObjectId, ref: "Location" },
+  gateway_id: { type: Schema.Types.ObjectId, ref: "Gateway" },
   pubsub : {
   	protocol : { type: String, enum: ['XMPP', 'MQTT', 'AMQP']},
   	endpoint: String  // xmpp node or mqtt topic
   },
-  transducers: [{type: Schema.Types.ObjectId, ref : Transducer}],
-  owner: { type: Schema.Types.ObjectId, ref: User },  
+  transducers: [{type: Schema.Types.ObjectId, ref : "Transducer"}],
+  owner: { type: Schema.Types.ObjectId, ref: "User" },  
   enabled: { type: Boolean, default: true },
   properties : { type: Schema.Types.Mixed	}
 });

@@ -12,7 +12,7 @@ exports.createNewDevice = function(req, callback){
 };
 
 exports.getDeviceById = function(id, callback){
-	Device.findById(id, function (err, result) {
+	Device.findById(id).populate("gateway_id").populate("location_id").exec(function (err, result) {
         if(err) { return callback(err) };
         if (result == null ) { 
             var error = new Error();

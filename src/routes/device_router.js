@@ -3,7 +3,7 @@ var router = express.Router();
 var ObjectId = require('mongoose').Types.ObjectId;
 
 var deviceManager = require('../middleware/device_manager');
-
+var transducerManager = require('../middleware/transducer_manager');
 
 /* GET all devices */
 router.get('/', function(req, res, next) {
@@ -33,6 +33,19 @@ router.param('_id', function(req, res, next, id) {
     })
 });
 
+/* Validate _transducerId in all request URLs */
+router.param('_transducerId', function(req, res, next, id) {
+    if(!ObjectId.isValid(id)){
+        return next(new Error('Invalid device id :'+ id));
+    }
+    //TODO: Change to transducer
+    /*deviceManager.getDeviceById(id, function (err, result) {
+        if (err) { return next(err)};    
+        req.device = result;
+        next();
+    })*/
+});
+
 /* GET a device */
 router.get('/:_id', function(req, res, next) {
  	return res.json(req.device);
@@ -57,7 +70,7 @@ router.delete('/:_id', function(req, res, next) {
 
 /* Add a transducer to device */
 router.post('/:_id/transducer', function(req, res, next ){
-    transducerManager.createNewTransducer(req, function(err, result){
+    transducerManager.createDeviceTransducer(req, function(err, result){
         if(err) { return next(err); }
         return res.json(result);
     })
@@ -65,7 +78,27 @@ router.post('/:_id/transducer', function(req, res, next ){
 
 /* Get all transducers for a given device */
 router.get('/:_id/transducer', function(req, res, next){
-
+    transducerManager.getAllDeviceTransducers(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
 });
+
+/* Publish to device transducer */
+router.post('/:_id/transducer/:_transducerId', function(req, res, next ){
+    transducerManager.publishToDeviceTransducer(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
+/* Delete transducer */
+router.delete('/:_id/transducer/:_transducerId', function(req, res, next ){
+    transducerManager.deleteDeviceTransducer(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
 
 module.exports = router;

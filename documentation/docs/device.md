@@ -6,7 +6,7 @@
 |/api/device |  POST| Create new device |
 |/api/device/{*deviceId*} | GET, PUT, DELETE| Read, Update , Delete a device|
 |/api/device/{*deviceId*}/transducer | POST, GET | Create new transducer, get all transducers for a given device|
-|/api/device/{*deviceId*}/transducer/{*transducerId*}| POST, PUT, DELETE| Publish to , Update, Delete a transducer|
+|/api/device/{*deviceId*}/transducer/{*transducerId*}| POST,  DELETE| Publish to, Delete a transducer|
 
 ### Device Resource Description
 

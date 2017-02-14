@@ -1,17 +1,17 @@
 var Device = require('../models/device');
 var Transducer = require('../models/transducer');
 
-exports.createTransducerForDevice = function(req, callback){
+exports.createDeviceTransducer = function(req, callback ){
 	var transducer = new Transducer(req.body);
 
 	transducer.save(function(err, result){
 		if(err) { return callback(err); }
 		transducer = result;
 	})
-
+	
 	var deviceId = req.params._id;
 
-	Device.findByIdAndUpdate(deviceId, { $addToSet: {transducer: transducer._id}}, function(err, result){
+	Device.findByIdAndUpdate(deviceId, { $addToSet: { transducers: transducer._id}}, function(err, result){
 		if(err){
 			//Rollback.. Delete the newly created transducer
             console.log("Error in adding to device");
@@ -25,5 +25,24 @@ exports.createTransducerForDevice = function(req, callback){
 	})
 };
 
-exports.getAllTransducersForDevice
+exports.getAllDeviceTransducers = function(req, callback ){
+	var deviceId = req.device._id;
+	Device.findById(deviceId).populate("transducers").exec(function(err, result){
+		if(err) { return callback(err) } ;
+		//TODO: Get last value from tsdb api
+		var transducers = result.transducers;
+		return callback(null, transducers)
+	})
+};
+
+exports.publishToDeviceTransducer = function(req, callback ){
+	//TODO
+	return callback(null, null);
+};
+
+exports.deleteDeviceTransducer = function(req, callback){
+	//TODO
+	return callback(null, null);
+};
+
 module.exports = exports;
