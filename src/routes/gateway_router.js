@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var ObjectId = require('mongoose').Types.ObjectId;
 
-var gatewayManager = require('../middleware/gateway_manager');
+var gatewayManager = require('../middleware/resource_managers/gateway_manager');
 
 
 /* GET all gateways */

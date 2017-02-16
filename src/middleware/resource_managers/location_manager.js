@@ -1,7 +1,7 @@
 
-var Location = require('../models/location')
-var Gateway = require('../models/gateway');
-var Device = require('../models/device');
+var Location = require('../../models/location')
+var Gateway = require('../../models/gateway');
+var Device = require('../../models/device');
 
 exports.getRootLocation = function(callback){
     

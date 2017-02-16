@@ -1,5 +1,5 @@
-var Device = require('../models/device');
-var Transducer = require('../models/transducer');
+var Device = require('../../models/device');
+var Transducer = require('../../models/transducer');
 
 exports.createDeviceTransducer = function(req, callback ){
 	var transducer = new Transducer(req.body);

@@ -1,7 +1,7 @@
 
-var Gateway = require('../models/gateway');
-var Device = require('../models/device');
-var Service = require('../models/service');
+var Gateway = require('../../models/gateway');
+var Device = require('../../models/device');
+var Service = require('../../models/service');
 
 exports.getAllServices = function(callback){
 	Service.find().exec(callback);

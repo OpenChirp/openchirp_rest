@@ -3,7 +3,7 @@ var router = express.Router();
 var ObjectId = require('mongoose').Types.ObjectId;
 //Models
 
-var locationManager = require('../middleware/location_manager');
+var locationManager = require('../middleware/resource_managers/location_manager');
 
 /* GET all locations. */
 router.get('/', function(req, res, next) {

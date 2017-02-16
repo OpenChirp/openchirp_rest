@@ -2,8 +2,8 @@ var express = require('express');
 var router = express.Router();
 var ObjectId = require('mongoose').Types.ObjectId;
 
-var deviceManager = require('../middleware/device_manager');
-var transducerManager = require('../middleware/transducer_manager');
+var deviceManager = require('../middleware/resource_managers/device_manager');
+var transducerManager = require('../middleware/resource_managers/transducer_manager');
 
 /* GET all devices */
 router.get('/', function(req, res, next) {
