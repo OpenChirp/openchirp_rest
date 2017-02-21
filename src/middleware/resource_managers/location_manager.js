@@ -8,6 +8,7 @@ exports.getRootLocation = function(callback){
     Location.find({"name":"root"}).exec(callback);
 
 };
+
 exports.getLocationById = function(id, callback){
 	Location.findById(id, function (err, result) {
         if(err) { return callback(err) } ;

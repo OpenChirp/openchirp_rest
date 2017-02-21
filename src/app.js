@@ -6,8 +6,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
-
-mongoose.connect('mongodb://localhost/openchirp_test');
+var config = require('./config/config');
 
 var app = express();
 
@@ -28,6 +27,19 @@ var allowCrossDomain = function(req, res, next) {
 };
 
 app.use(allowCrossDomain);
+
+var dbConnect = function(){
+   var options = {
+      server: {
+         socketOptions:{
+            keepAlive : 1
+         }
+      }
+   };
+   mongoose.connect(config.db,options);
+};
+dbConnect();
+
 
 // Routes
 //app.use('/', require('./routes/index'));
@@ -64,11 +76,8 @@ app.use(function(req, res, next) {
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {  
-
   res.status(err.status || 500);
   res.send({ error: err });
-   
-
 });
 
 
