@@ -6,18 +6,25 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
-var config = require('./config/config');
+var nconf = require('nconf');
 
 var app = express();
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
+nconf.env();
+
+var environment = process.env.NODE_ENV || 'development';
+var filename = path.join(__dirname, '../config/'+environment+".json")
+nconf.file({ file: filename });
+
+
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static());
 
 var allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
@@ -36,9 +43,10 @@ var dbConnect = function(){
          }
       }
    };
-   mongoose.connect(config.db,options);
+   mongoose.connect(nconf.get('db'),options);
 };
 dbConnect();
+
 
 
 // Routes
