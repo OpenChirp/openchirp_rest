@@ -1,11 +1,40 @@
 var mqtt = require('mqtt');
-var config = require('../../config/config');
+var nconf = require('nconf');
 
-var options = {
-    username: config.mqtt.user,
-    password: config.mqtt.pass
+var connect = function(){
+	var options = {
+		port: nconf.get('mqtt:port'),
+    	username: nconf.get('mqtt:user'),
+    	password: nconf.get('mqtt:pass')
+	};
+	
+	return mqtt.connect(nconf.get('mqtt:broker'), options);
 };
 
-var client  = mqtt.connect(config.mqtt.broker_url, options);
 
+exports.publish = function(topic, message, callback ){
+	client = connect();
+	client.on('connect', function () {
+		client.publish(topic, message, function(err){
+			if(err){
+				console.log("Error in publishing");
+				return callback(err);
+			}
+		});
 
+		client.end();
+		var result = new Object();
+    	result.message = "Done";
+    	return callback(null, result);
+	})
+
+	client.on('error', function () {
+		console.log("Error in connecting to mqtt client ");
+		client.end();
+		var error = new Error();
+        error.message = 'Could not connect to mqtt broker';
+        return callback(error);
+	})	
+};
+
+module.exports = exports;

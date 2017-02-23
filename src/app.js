@@ -13,12 +13,11 @@ var app = express();
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
+//Setup Config
 nconf.env();
-
 var environment = process.env.NODE_ENV || 'development';
 var filename = path.join(__dirname, '../config/'+environment+".json")
 nconf.file({ file: filename });
-
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -47,8 +46,6 @@ var dbConnect = function(){
 };
 dbConnect();
 
-
-
 // Routes
 //app.use('/', require('./routes/index'));
 app.use('/api/user', require('./routes/user_router'));
@@ -67,22 +64,8 @@ app.use(function(req, res, next) {
   next(err);
 });
 
-// error handlers
+// error handler
 
-// development error handler
-// will print stacktrace
-/*if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err
-    });
-  });
-}
-*/
-// production error handler
-// no stacktraces leaked to user
 app.use(function(err, req, res, next) {  
   res.status(err.status || 500);
   res.send({ error: err });

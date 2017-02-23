@@ -1,5 +1,18 @@
 var Device = require('../../models/device');
 var Transducer = require('../../models/transducer');
+var mqttClient = require('../pubsub/mqtt_client');
+
+exports.getById = function(req, callback){
+	Transducer.findById(id, function (err, result) {
+        if(err) { return callback(err) };
+        if (result == null ) { 
+            var error = new Error();
+            error.message = 'Could not find a transducer with id :'+ id ;
+            return callback(error);
+        }
+        return callback(null, result);
+    })
+};
 
 exports.createDeviceTransducer = function(req, callback ){
 	var transducer = new Transducer(req.body);
@@ -36,8 +49,18 @@ exports.getAllDeviceTransducers = function(req, callback ){
 };
 
 exports.publishToDeviceTransducer = function(req, callback ){
-	//TODO
-	return callback(null, null);
+	
+	/*if (! req.transducer.isActuable) {
+		//TODO: This logic not working
+		console.log("here inside not actuable");
+		var error = new Error();
+        error.message = 'Transducer not actuable';
+        return callback(error);
+	}*/
+	//TODO: fix topic hardcoding
+	var topic = 'devices/'+req.device._id+'/transducer/' ;
+	var message = JSON.stringify(req.body);
+	mqttClient.publish(topic, message, callback);	
 };
 
 exports.deleteDeviceTransducer = function(req, callback){

@@ -34,14 +34,17 @@ router.param('_id', function(req, res, next, id) {
 });
 
 /* Validate _transducerId in all request URLs */
-router.param('_transducerId', function(req, res, next, id) {
-    if(!ObjectId.isValid(id)){
-        return next(new Error('Invalid transducer id :'+ id));
+router.param('_transducerId', function(req, res, next, transducerId) {
+    if(!ObjectId.isValid(transducerId)){
+        var error = new Error();
+        error.message = "Invalid Object ID " + transducerId ;
+        return next(error);
     }
-    //TODO: Change to transducer
-    /*deviceManager.getDeviceById(id, function (err, result) {
+     next();
+     //TODO
+   /* transducerManager.getById(transducerId, function (err, result) {
         if (err) { return next(err)};    
-        req.device = result;
+        req.transducer = result;
         next();
     })*/
 });
