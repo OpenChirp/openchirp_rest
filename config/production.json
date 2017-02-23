@@ -1,6 +1,8 @@
+{
 "db": "mongodb://localhost/openchirp",
 "mqtt": {
    	"broker": "mqtts://localhost/",
    	"user":"openchirp_rest",
    	"pass":""
+}
 }
