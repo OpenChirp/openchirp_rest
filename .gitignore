@@ -1,4 +1,5 @@
 .*
 *.log
+config/*.json
 documentation/site
 node_modules/
