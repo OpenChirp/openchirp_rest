@@ -1,8 +1,9 @@
 {
 "db": "mongodb://localhost/openchirp_test",
 "mqtt": {
-   	"broker": "mqtts://localhost/",
+   	"broker": "tls://iot.andrew.cmu.edu",
+   	"port":"1883",
    	"user":"openchirp_rest",
-   	"pass":""
+   	"pass":"fL82tE8xTq"
 }
 }

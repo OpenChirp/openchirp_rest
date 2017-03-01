@@ -35,19 +35,18 @@ exports.createNewChildLocation = function(req, callback){
     newLocation.save(function(err, result){
         if(err) { return callback(err); }
         newLocation = result;
-    })
-
-    Location.findByIdAndUpdate(parentId, { $addToSet: { children: newLocation._id }}, function (err, result) {
-        if(err) {
-            //Rollback.. Delete the newly created location
-            console.log("Error in adding to parent");
-            newLocation.remove( function(err) { 
+        Location.findByIdAndUpdate(parentId, { $addToSet: { children: newLocation._id }}, function (err, result) {
+            if(err) {
+             //Rollback.. Delete the newly created location
+             console.log("Error in adding to parent");
+             newLocation.remove( function(err) { 
                 if(err) return callback(err); 
             })
             return callback(err);
-        }   
-        console.log("Added reference to parent "+ parentId);
-        return callback(null, newLocation);
+         }   
+         console.log("Added reference to parent "+ parentId);
+         return callback(null, newLocation);
+        })
     })
 };
 
