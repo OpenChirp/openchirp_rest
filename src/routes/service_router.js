@@ -26,7 +26,7 @@ router.param('_id', function(req, res, next, id) {
     if(!ObjectId.isValid(id)){
         return next(new Error('Invalid service id :'+ id));
     }
-    serviceManager.getServiceById(id, function (err, result) {
+    serviceManager.getById(id, function (err, result) {
         if (err) { return next(err)};    
         req.service = result;
         next();
@@ -38,9 +38,15 @@ router.get('/:_id', function(req, res, next) {
  	return res.json(req.service);
 });
 
+router.get('/:_id/things', function(req, res, next){
+    serviceManager.getThings(req, function(err, result){
+        if(err) {return next(err); }
+        return res.json(result);
+    })
+});
+
 /* Update a service */
-router.put('/:_id', function(req, res, next) {
-    
+router.put('/:_id', function(req, res, next) {    
   serviceManager.updateService(req, function(err, result){
  		if(err) { return next(err); }
  		return res.json(result);

@@ -4,10 +4,11 @@ var ObjectId = require('mongoose').Types.ObjectId;
 
 var deviceManager = require('../middleware/resource_managers/device_manager');
 var transducerManager = require('../middleware/resource_managers/transducer_manager');
+var serviceManager = require('../middleware/resource_managers/service_manager');
 
 /* GET all devices */
 router.get('/', function(req, res, next) {
-    deviceManager.getAllDevices(function (err, result) {
+    deviceManager.getAllDevices( function(err, result) {
         if(err) { return next(err); }
         return res.json(result);
     })
@@ -24,10 +25,12 @@ router.post('/', function(req, res, next) {
 /* Validate _id in all request URLs */
 router.param('_id', function(req, res, next, id) {
     if(!ObjectId.isValid(id)){
-        return next(new Error('Invalid device id :'+ id));
+        var error = new Error();
+        error.message = "Invalid Object ID " + id ;
+        return next(err);
     }
     deviceManager.getDeviceById(id, function (err, result) {
-        if (err) { return next(err)};    
+        if (err) { return next(err); }    
         req.device = result;
         next();
     })
@@ -40,13 +43,20 @@ router.param('_transducerId', function(req, res, next, transducerId) {
         error.message = "Invalid Object ID " + transducerId ;
         return next(error);
     }
-     next();
-     //TODO
-   /* transducerManager.getById(transducerId, function (err, result) {
-        if (err) { return next(err)};    
-        req.transducer = result;
+    next();
+});
+/* Validate _serviceId in all request URLs */
+router.param('_serviceId', function(req, res, next, serviceId) {
+    if(!ObjectId.isValid(serviceId)){
+        var error = new Error();
+        error.message = "Invalid Object ID " + serviceId ;
+        return next(error);
+    }
+    serviceManager.getById(serviceId, function(err, result){
+        if(err) { return next(err); }
+        req.service = result;
         next();
-    })*/
+    })
 });
 
 /* GET a device */
@@ -55,8 +65,7 @@ router.get('/:_id', function(req, res, next) {
 });
 
 /* Update a device */
-router.put('/:_id', function(req, res, next) {
-    //TODO: 
+router.put('/:_id', function(req, res, next) {  
   deviceManager.updateDevice(req, function(err, result){
  		if(err) { return next(err); }
  		return res.json(result);
@@ -103,5 +112,19 @@ router.delete('/:_id/transducer/:_transducerId', function(req, res, next ){
     })
 });
 
+/* Link device to a service */
+router.post('/:_id/service/:_serviceId', function(req, res, next ){
+    deviceManager.linkService(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
+router.delete('/:_id/service/:_serviceId', function(req, res, next){
+    deviceManager.delinkService(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
 
 module.exports = router;

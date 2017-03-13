@@ -9,12 +9,13 @@ exports.getAllServices = function(callback){
 
 exports.createNewService = function(req, callback){
 	var service = new Service(req.body);
+    service.owner = req.user._id;
 	service.save(callback);
 };
 
-exports.getServiceById = function(id, callback){
+exports.getById = function(id, callback){
 	Service.findById(id, function (err, result) {
-        if(err) { return callback(err) };
+        if(err) { return callback(err) ; }
         if (result == null ) { 
             var error = new Error();
             error.message = 'Could not find a service with id :'+ id ;
@@ -29,14 +30,44 @@ exports.updateService = function(req, callback){
     var serviceToUpdate = req.service;
     if(typeof req.body.name != 'undefined') serviceToUpdate.name = req.body.name;
     if(typeof req.body.description != 'undefined') serviceToUpdate.location_id = req.body.location_id;
-    if(typeof req.body.pubsub != 'undefined') serviceToUpdate.pubsub = req.body.pubsub;
-    
+   
  	serviceToUpdate.save(callback);
 };
 
 exports.deleteService = function(req, callback){
-    serviceToDelete = req.device;    
+    serviceToDelete = req.service;    
     serviceToDelete.remove(callback);  
 };
+
+exports.getServicesByOwner = function(req, callback) {
+    var userId = req.user._id;
+    if(req.query && req.query.name ){
+        var name = req.query.name;
+    }
+    if(name){
+        Service.find({"owner" : userId , $text: { $search: name }}).exec(callback);
+    }else{
+        Service.find({"owner" : userId}).exec(callback);
+    }
+};
+
+exports.getThings = function(req, callback){
+    var serviceId = req.service._id;
+    var things = [];
+    Device.find({"linked_services.service_id" : serviceId }, {"linked_services.$" :1 }).select("pubsub linked_services.config").exec(function(err, result){
+        if(err) { return callback(err); }
+        for (var i = 0; i < result.length; i++) {
+             var thing = {};
+             thing.id = result[i]._id;
+             thing.type = 'device';
+             thing.pubsub = result[i].pubsub;
+             thing.service_config = result[i].linked_services[0].config;
+             things.push(thing);
+        }
+       
+        return callback(null, things);
+    })
+};
+
 
 module.exports = exports;

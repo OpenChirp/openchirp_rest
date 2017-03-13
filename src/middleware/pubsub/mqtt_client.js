@@ -1,7 +1,7 @@
 var mqtt = require('mqtt');
 var nconf = require('nconf');
 
-var connect = function(){
+var createClient = function(){
 	var options = {
 		port: nconf.get('mqtt:port'),
     	username: nconf.get('mqtt:user'),
@@ -13,7 +13,7 @@ var connect = function(){
 
 
 exports.publish = function(topic, message, callback ){
-	client = connect();
+	client = createClient();
 	client.on('connect', function () {
 		client.publish(topic, message, function(err){
 			if(err){
