@@ -26,7 +26,7 @@ exports.getUserById = function(id, callback){
 exports.getUserByEmail = function(email, callback){
 	User.find({"email": email}).exec( function(err, result){
         if(err) { return callback(err); } 
-        if(!result) {return callback(null, null); }
+        if(!result) { return callback(null, null); }
         if(result.length == 1) { return callback(null, result[0]); } 
         if(result.length > 1 ){
             var error = new Error();

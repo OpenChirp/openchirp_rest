@@ -15,8 +15,8 @@
 |name|String| Name of location| Yes|-|
 |type|Enum {BUILDING, INDOOR}| If the location is a building or an indoor location inside a building. If this location is a building, then geoLoc should be set| No | -|
 |test | Boolean| If set to true, then the location is not visible in tree| No | False|
-|geoLoc.type | String| Type of geo-location : Point, Line etc| No| Point|
-|geoLoc.coordinates|Number| Coordinates are in format [longitude, latitude]| No| -| 
+|geo_loc.type | String| Type of geo-location : Point, Line etc| No| Point|
+|geo_loc.coordinates|Number| Coordinates are in format [longitude, latitude]| No| -| 
 |children| Array | Pointer to child locations is maintained by database and returned in GET request|No | -|
 
 

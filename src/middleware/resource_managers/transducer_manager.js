@@ -1,14 +1,9 @@
 var Device = require('../../models/device');
-
 var mqttClient = require('../pubsub/mqtt_client');
 
 exports.createDeviceTransducer = function(req, callback ){
-	var transducer = new Object(req.body);	
-	var deviceId = req.params._id;	
-	Device.findByIdAndUpdate(deviceId, { $addToSet: { transducers: transducer}}, function(err, result){
-		if(err){ return callback(err); }
-		return callback(null, result);
-	})	
+	req.device.transducers.push(req.body);
+	req.device.save(callback);
 };
 
 exports.getAllDeviceTransducers = function(req, callback ){
@@ -22,16 +17,20 @@ exports.getAllDeviceTransducers = function(req, callback ){
 };
 
 exports.publishToDeviceTransducer = function(req, callback ){
-	var transducer = req.device.transducers.id(req.params._transducerId);	
-	if (! transducer.isActuable) {	
-		var error = new Error();
+    exports.publish(req.device, req.params._transducerId, req.body, callback);
+};
+
+exports.publish = function(device, transducerId, jsonMessage, callback){    
+    var transducer = device.transducers.id(transducerId);
+    if (! transducer.is_actuable) {
+        var error = new Error();
         error.message = 'Transducer not actuable';
         return callback(error);
-	}
-	//TODO: fix topic hardcoding
-	var topic = 'devices/'+req.device._id +'/transducer/'+ transducer.name ;
-	var message = JSON.stringify(req.body);
-	mqttClient.publish(topic, message, callback);	
+    }
+    //TODO: fix topic hardcoding
+    var topic = 'devices/'+ device._id +'/transducer/'+ transducer.name ;
+    var message = JSON.stringify(jsonMessage);
+    mqttClient.publish(topic, message, callback);
 };
 
 exports.deleteDeviceTransducer = function(req, callback){	

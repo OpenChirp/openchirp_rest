@@ -60,8 +60,9 @@ exports.getThings = function(req, callback){
              var thing = {};
              thing.id = result[i]._id;
              thing.type = 'device';
+             thing.name = result[i].name;
              thing.pubsub = result[i].pubsub;
-             thing.service_config = result[i].linked_services[0].config;
+             thing.service_config = result[i].linked_services[0].config; // The search query ensures that only 1 object is returned in linked_services.
              things.push(thing);
         }
        

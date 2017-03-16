@@ -6,5 +6,5 @@
 |_id| String| Unique ID of each transducer| Auto-generated| - |
 |name | String| Name of transducer, example: Temperature| Yes| - |
 |unit| String| Unit of transducer, example: Celsius | Yes | - |
-|isActuable| Boolean | If the transducer can be actuated | No | False|
+|is_actuable| Boolean | If the transducer can be actuated | No | False|
 |properties | Mixed| JSON object that can include any number of key-value pairs| No|-|

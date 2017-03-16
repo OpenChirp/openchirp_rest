@@ -4,14 +4,19 @@ var Schema = mongoose.Schema;
 // Other schemas
 var User = require('./user');
 var Service = require('./service');
+
 //Schema
-
-
 var transducerSchema = new Schema({
   name: { type: String , required: true },
   unit: { type: String, required : true },
-  isActuable: { type : Boolean, default: false },
+  is_actuable: { type : Boolean, default: false },
   properties : { type: Schema.Types.Mixed } 
+});
+
+var commandSchema = new Schema({
+  name: { type: String , required: true },
+  transducer_id : { type: Schema.Types.ObjectId, required: true},
+  value : { type: String, required: true }
 });
 
 var deviceSchema = new Schema({
@@ -24,6 +29,7 @@ var deviceSchema = new Schema({
   	endpoint: String  // xmpp node or mqtt topic
   },
   transducers: [transducerSchema],
+  commands: [commandSchema],
   linked_services : [{
     _id : false,
     service_id : { type: Schema.Types.ObjectId, ref: Service, required: true },
@@ -32,8 +38,9 @@ var deviceSchema = new Schema({
   owner: { type: Schema.Types.ObjectId, ref: User , required : true },  
   enabled: { type: Boolean, default: true },
   properties : { type: Schema.Types.Mixed	}
- }, 
-  {timestamps : true});
+  }, 
+  {timestamps : true}
+);
 
 deviceSchema.index({ location_id : 1});
 deviceSchema.index({ owner : 1, name : "text"});

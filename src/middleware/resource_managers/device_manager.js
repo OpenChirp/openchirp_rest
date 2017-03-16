@@ -80,10 +80,47 @@ exports.linkService = function(req, callback){
             message.thing = {};
             message.thing.type ="device";
             message.thing.id = deviceId;
-            message.thing.service_config = serviceLink.config;
+            message.thing.config = serviceLink.config;
             mqttClient.publish(topic, JSON.stringify(message), callback);        
         })  
     }      
+};
+
+exports.updateServiceConfig = function(req, callback){
+    var serviceId = req.params._serviceId;
+    var deviceId = req.device._id;
+    var linkedServices = req.device.linked_services;
+    for (var i = 0; i < linkedServices.length; i++) {
+        if( linkedServices[i].service_id == serviceId){
+            var linkToUpdate = linkedServices[i];
+            break;            
+        }
+    }
+
+    for (var key in req.body) {
+        linkToUpdate.config[key] = req.body[key];
+    }
+    req.device.save(function(err, result ){
+        if(err) {return callback(err); }
+        //TODO: fix topic hardcoding
+            var topic = 'services/'+serviceLink.service_id +'/update_thing';
+            var message = {};
+            message.thing = {};
+            message.thing.type ="device";
+            message.thing.id = deviceId;
+            message.thing.config = req.body;
+            mqttClient.publish(topic, JSON.stringify(message), callback);       
+       
+    })
+    /*Device.findOneAndUpdate({"_id" : deviceId , "linked_services.service_id" : serviceId }, { 
+        "$set": {
+            "linked_services.$.config": linkToUpdate.config
+        }
+    }).exec(function(err, result){
+        if(err) { return callback(err); }
+        return callback(null, result);
+
+    })*/
 };
 
 exports.delinkService = function(req, callback){
