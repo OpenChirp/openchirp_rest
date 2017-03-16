@@ -6,6 +6,12 @@ var Schema = mongoose.Schema;
 var User = require('./user');
 var Location = require('./location');
 
+ var schemaOptions = {
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true },
+    timestamps :  { createdAt: 'created_at' , updatedAt : 'updated_at'}
+  };
+
 //Schema
 var locationSchema = new Schema({
   name:  {type: String, required: true},
@@ -18,7 +24,8 @@ var locationSchema = new Schema({
   owner: { type: Schema.Types.ObjectId, ref: User , required: true }, 
   test: { type: Boolean, default: false }
 },
- { timestamps : true});
+ schemaOptions
+);
 
 locationSchema.index({ children : 1 });
 locationSchema.index({ owner : 1 , name : "text" });

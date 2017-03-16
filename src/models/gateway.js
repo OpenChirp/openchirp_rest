@@ -6,6 +6,11 @@ var Schema = mongoose.Schema;
 var Location = require('./location');
 var User = require('./user');
 
+var schemaOptions = {
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true },
+    timestamps :  { createdAt: 'created_at' , updatedAt : 'updated_at'}
+};
 
 //Schema
 var gatewaySchema = new Schema({
@@ -20,7 +25,7 @@ var gatewaySchema = new Schema({
   enabled: { type: Boolean, default: true },
   properties : { type: Schema.Types.Mixed	}
 },
-{ timestamps : true});
+schemaOptions);
 
 gatewaySchema.index({ location_id : 1 }, { type : 1 });
 // Return model

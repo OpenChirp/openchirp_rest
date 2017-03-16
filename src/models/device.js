@@ -19,14 +19,19 @@ var commandSchema = new Schema({
   value : { type: String, required: true }
 });
 
+ var schemaOptions = {
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true },
+    timestamps :  { createdAt: 'created_at' , updatedAt : 'updated_at'}
+  };
+
 var deviceSchema = new Schema({
   name: { type: String, required: true },
   type: { type: String, enum: ['LORA','FIREFLY','TWIST','BOSCH_XDK'] },
   location_id: { type: Schema.Types.ObjectId, ref: "Location"},
   gateway_id: { type: Schema.Types.ObjectId, ref: "Gateway" },
   pubsub : {
-  	protocol : { type: String, enum: ['XMPP', 'MQTT', 'AMQP'], default: 'MQTT'},
-  	endpoint: String  // xmpp node or mqtt topic
+  	protocol : { type: String, enum: ['XMPP', 'MQTT', 'AMQP'], default: 'MQTT'}
   },
   transducers: [transducerSchema],
   commands: [commandSchema],
@@ -39,8 +44,12 @@ var deviceSchema = new Schema({
   enabled: { type: Boolean, default: true },
   properties : { type: Schema.Types.Mixed	}
   }, 
-  {timestamps : true}
+  schemaOptions
 );
+
+deviceSchema.virtual('pubsub.endpoint').get(function () {
+  return '/devices/' + this._id;
+});
 
 deviceSchema.index({ location_id : 1});
 deviceSchema.index({ owner : 1, name : "text"});

@@ -27,8 +27,9 @@ exports.publish = function(device, transducerId, jsonMessage, callback){
         error.message = 'Transducer not actuable';
         return callback(error);
     }
-    //TODO: fix topic hardcoding
-    var topic = 'devices/'+ device._id +'/transducer/'+ transducer.name ;
+    console.log("here");
+    var topic = device.pubsub.endpoint+'/transducer/'+ transducer.name ;
+    console.log(topic);
     var message = JSON.stringify(jsonMessage);
     mqttClient.publish(topic, message, callback);
 };

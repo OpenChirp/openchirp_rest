@@ -19,6 +19,7 @@ exports.getDeviceById = function(id, callback){
             error.message = 'Could not find a device with id :'+ id ;
             return callback(error);
         }
+
         return callback(null, result);
     })
 };
@@ -74,8 +75,7 @@ exports.linkService = function(req, callback){
     }else{
         Device.findByIdAndUpdate(deviceId, { $addToSet: { linked_services: serviceLink }}, function(err, result){
             if(err) { return callback(err); }
-            //TODO: fix topic hardcoding
-            var topic = 'services/'+serviceLink.service_id +'/new_thing';
+            var topic = req.service.pubsub.new_thing_endpoint;
             var message = {};
             message.thing = {};
             message.thing.type ="device";
@@ -102,8 +102,8 @@ exports.updateServiceConfig = function(req, callback){
     }
     req.device.save(function(err, result ){
         if(err) {return callback(err); }
-        //TODO: fix topic hardcoding
-            var topic = 'services/'+serviceLink.service_id +'/update_thing';
+        
+            var topic = req.service.pubsub.update_thing_endpoint;
             var message = {};
             message.thing = {};
             message.thing.type ="device";
@@ -112,15 +112,7 @@ exports.updateServiceConfig = function(req, callback){
             mqttClient.publish(topic, JSON.stringify(message), callback);       
        
     })
-    /*Device.findOneAndUpdate({"_id" : deviceId , "linked_services.service_id" : serviceId }, { 
-        "$set": {
-            "linked_services.$.config": linkToUpdate.config
-        }
-    }).exec(function(err, result){
-        if(err) { return callback(err); }
-        return callback(null, result);
-
-    })*/
+ 
 };
 
 exports.delinkService = function(req, callback){
@@ -135,8 +127,8 @@ exports.delinkService = function(req, callback){
     if(linkToDelete){
         Device.findByIdAndUpdate(req.device._id, { $pull: { linked_services: { "service_id" : serviceId }}}, function(err, result){
             if(err) { return callback(err); }    
-            //TODO: fix topic hardcoding
-            var topic = 'services/'+serviceId +'/remove_thing';
+        
+            var topic = req.service.pubsub.remove_thing_endpoint;
             var message = {};
             message.thing = {};
             message.thing.type = "device";
