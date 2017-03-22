@@ -1,25 +1,34 @@
 var Device = require('../../models/device');
 var mqttClient = require('../pubsub/mqtt_client');
+var deviceTemplateManager = require('./device_template_manager');
 
 exports.getAllDevices = function(callback){
 	Device.find().exec(callback);
 };
 
 exports.createNewDevice = function(req, callback){
-	var device = new Device(req.body);
+    var template_id = req.body.template_id;
+    var device = new Device(req.body);
     device.owner = req.user._id;
-	device.save(callback);
+    if(template_id){
+        deviceTemplateManager.createDeviceFromTemplate(device, template_id, function(err, result){
+            if(err ){ return callback(err); }
+            var device = result;
+            device.save(callback);
+        })
+    }else{    	
+        device.save(callback);
+    }    
 };
 
 exports.getDeviceById = function(id, callback){
-	Device.findById(id).populate("location_id").exec(function (err, result) {
+	Device.findById(id).exec(function (err, result) {
         if(err) { return callback(err) ; }
         if (result == null ) { 
             var error = new Error();
             error.message = 'Could not find a device with id :'+ id ;
             return callback(error);
         }
-
         return callback(null, result);
     })
 };
@@ -61,6 +70,7 @@ exports.linkService = function(req, callback){
     var linkedServices = req.device.linked_services;
     var linkExists = false;
 
+    //TODO: Make this code better
     for (var i = 0; i < linkedServices.length; i++) {
         if( linkedServices[i].service_id == serviceLink.service_id){
             linkExists = true;    

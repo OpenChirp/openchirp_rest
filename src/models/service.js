@@ -5,12 +5,7 @@ var Schema = mongoose.Schema;
 // Other schemas
 var Device = require('./device');
 var User = require('./user');
-
- var schemaOptions = {
-    toObject: { virtuals: true },
-    toJSON: { virtuals: true },
-    timestamps :  { createdAt: 'created_at' , updatedAt : 'updated_at'}
-  };
+var schemaOptions = require('./schema_options');
 
 //Schema
 var serviceSchema = new Schema({
@@ -36,15 +31,15 @@ serviceSchema.virtual('pubsub.endpoint').get(function () {
 });
 
 serviceSchema.virtual('pubsub.new_thing_endpoint').get(function(){
-  return this.pubsub.endpoint + '/new_thing';
+  return this.pubsub.endpoint + '/thing/new';
 });
 
 serviceSchema.virtual('pubsub.update_thing_endpoint').get(function(){
-  return this.pubsub.endpoint + '/udpate_thing';
+  return this.pubsub.endpoint + '/thing/update';
 });
 
 serviceSchema.virtual('pubsub.remove_thing_endpoint').get(function(){
-  return this.pubsub.endpoint + '/remove_thing';
+  return this.pubsub.endpoint + '/thing/remove';
 });
 
 serviceSchema.index({ name :"text" , description : "text" });

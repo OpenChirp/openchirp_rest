@@ -24,7 +24,9 @@ router.post('/', function(req, res, next) {
 /* Validate _id in all request URLs */
 router.param('_id', function(req, res, next, id) {
     if(!ObjectId.isValid(id)){
-        return next(new Error('Invalid gateway id :'+ id));
+        var error = new Error();
+        error.message = "Invalid Object ID :"+id ;
+        return next(error);
     }
     gatewayManager.getGatewayById(id, function(err, result) {
         if(err) { return next(err); }
@@ -61,7 +63,7 @@ router.delete('/:_id', function(req, res, next) {
    gatewayManager.deleteGateway(req, function(err){
         if(err) { return next(err); }
     })
-    res.json({message: 'Delete successful'});
+    res.json({message: 'Done'});
 	
 });
 

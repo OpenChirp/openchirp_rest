@@ -27,20 +27,25 @@ exports.publish = function(device, transducerId, jsonMessage, callback){
         error.message = 'Transducer not actuable';
         return callback(error);
     }
-    console.log("here");
     var topic = device.pubsub.endpoint+'/transducer/'+ transducer.name ;
-    console.log(topic);
     var message = JSON.stringify(jsonMessage);
     mqttClient.publish(topic, message, callback);
 };
 
 exports.deleteDeviceTransducer = function(req, callback){	
 	var tdcId = req.params._transducerId;
+	var commands = req.device.commands;
+	if(commands){
+		for (var i = 0; i < commands.length; i++) {
+			if(commands[i].transducer_id == tdcId)
+				req.device.commands.id(commands[i]._id).remove();
+		}
+	}
 	req.device.transducers.id(tdcId).remove();
 	req.device.save( function(err) {
 		if(err) { return callback(err); }
 		var result = new Object();
-        result.message = "Delete successful";
+        result.message = "Done";
         return callback(null, result);		
 	})
 };

@@ -1,13 +1,8 @@
 // Dependencies
 var mongoose = require('mongoose');
-
 var Schema = mongoose.Schema;
 
- var schemaOptions = {
-    toObject: { virtuals: true },
-    toJSON: { virtuals: true },
-    timestamps :  { createdAt: 'created_at' , updatedAt : 'updated_at'}
-  };
+var schemaOptions = require('./schema_options');
 
 //Schema
 var userSchema = new Schema({

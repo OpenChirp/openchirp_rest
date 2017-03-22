@@ -38,7 +38,7 @@ router.param('_id', function(req, res, next, id) {
 });
 
 /* Validate _transducerId in all request URLs */
-router.param('_transducerId', function(req, res, next, transducerId) {
+router.param('_transducerId', function(req, res, next, transducerId) {   
     if(!ObjectId.isValid(transducerId)){
         var error = new Error();
         error.message = "Invalid Object ID " + transducerId ;
@@ -46,6 +46,7 @@ router.param('_transducerId', function(req, res, next, transducerId) {
     }
     next();
 });
+
 /* Validate _serviceId in all request URLs */
 router.param('_serviceId', function(req, res, next, serviceId) {
     if(!ObjectId.isValid(serviceId)){
@@ -126,7 +127,7 @@ router.post('/:_id/command', function(req, res, next ){
 });
 
 /* Get all commands for a given device */
-router.get('/:_id/commands', function(req, res, next){
+router.get('/:_id/command', function(req, res, next){
     commandManager.getAllCommands(req, function(err, result){
         if(err) { return next(err); }
         return res.json(result);

@@ -19,8 +19,7 @@ router.post('/', function(req, res, next) {
         if(err) { return next(err); }
         return res.json(result);
 
-    })
-	
+    })	
 });
 
 /*Validate _id in all request URLs*/

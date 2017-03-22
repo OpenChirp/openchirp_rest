@@ -1,30 +1,15 @@
 // Dependencies
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+
 // Other schemas
 var User = require('./user');
 var Service = require('./service');
+var schemaOptions = require('./schema_options');
+var commandSchema = require('./command_schema');
+var transducerSchema = require('./transducer_schema');
 
 //Schema
-var transducerSchema = new Schema({
-  name: { type: String , required: true },
-  unit: { type: String, required : true },
-  is_actuable: { type : Boolean, default: false },
-  properties : { type: Schema.Types.Mixed } 
-});
-
-var commandSchema = new Schema({
-  name: { type: String , required: true },
-  transducer_id : { type: Schema.Types.ObjectId, required: true},
-  value : { type: String, required: true }
-});
-
- var schemaOptions = {
-    toObject: { virtuals: true },
-    toJSON: { virtuals: true },
-    timestamps :  { createdAt: 'created_at' , updatedAt : 'updated_at'}
-  };
-
 var deviceSchema = new Schema({
   name: { type: String, required: true },
   type: { type: String, enum: ['LORA','FIREFLY','TWIST','BOSCH_XDK'] },

@@ -5,12 +5,7 @@ var Schema = mongoose.Schema;
 // Other schemas
 var User = require('./user');
 var Location = require('./location');
-
- var schemaOptions = {
-    toObject: { virtuals: true },
-    toJSON: { virtuals: true },
-    timestamps :  { createdAt: 'created_at' , updatedAt : 'updated_at'}
-  };
+var schemaOptions = require('./schema_options');
 
 //Schema
 var locationSchema = new Schema({

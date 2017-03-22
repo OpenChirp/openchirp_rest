@@ -24,7 +24,9 @@ router.post('/', function(req, res, next) {
 /* Validate _id in all request URLs */
 router.param('_id', function(req, res, next, id) {
     if(!ObjectId.isValid(id)){
-        return next(new Error('Invalid service id :'+ id));
+        var error = new Error();
+        error.message = "Invalid Object ID " + id ;
+        return next(error);
     }
     serviceManager.getById(id, function (err, result) {
         if (err) { return next(err)};    
