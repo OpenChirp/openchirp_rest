@@ -71,7 +71,7 @@ exports.createDeviceFromTemplate = function(device, template_id, callback){
     exports.getById(template_id, function(err, result){
         if(err) { return callback(err); }
             var deviceTemplate = result;
-            device.linked_service = deviceTemplate.linked_services;
+            device.linked_services = deviceTemplate.linked_services;
             var transducers = deviceTemplate.transducers;
             transducers.forEach(function(tdc){
                 var tdcCopy = {};
