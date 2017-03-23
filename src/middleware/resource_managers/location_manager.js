@@ -81,12 +81,17 @@ exports.deleteLocation = function(req, callback){
 
     ],
     function(err, results){
-    if(err) {return callback(err); }
-    if(results  && results.length >0 ){
-    var error = new Error();
-    error.message = "Location has gateways/devices. Cannot delete it.";
-    return callback(error);
-    }
+        if(err) { return callback(err); }
+        var locationEmpty = true;
+        results.forEach(function(result){
+            if(result && result.length >0 )
+                locationEmpty = false;
+        })
+        if(! locationEmpty){
+            var error = new Error();
+            error.message = "Location has gateways/devices. Cannot delete it.";
+            return callback(error);
+        }
 
     // Search for parent and remove child reference
     Location.findOneAndUpdate({ children: req.params._id}, { $pull: { children: req.params._id}}, function (err, result) {
