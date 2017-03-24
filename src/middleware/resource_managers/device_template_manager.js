@@ -1,4 +1,5 @@
 var DeviceTemplate = require('../../models/device_template');
+//TODO: Fix cyclic dependency
 var deviceManager = require('./device_manager');
 
 
@@ -71,7 +72,8 @@ exports.createDeviceFromTemplate = function(device, template_id, callback){
     exports.getById(template_id, function(err, result){
         if(err) { return callback(err); }
             var deviceTemplate = result;
-            device.linked_services = deviceTemplate.linked_services;
+            //TODO: handle publish
+           device.linked_services= deviceTemplate.linked_services;
             var transducers = deviceTemplate.transducers;
             transducers.forEach(function(tdc){
                 var tdcCopy = {};

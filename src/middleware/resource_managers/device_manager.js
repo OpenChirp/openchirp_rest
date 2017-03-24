@@ -63,34 +63,35 @@ exports.getDevicesByOwner = function(req, callback) {
 };
 
 exports.linkService = function(req, callback){
-    var serviceLink = {};
-    serviceLink.service_id = req.params._serviceId;
-    serviceLink.config = req.body;
+    var newLink = {};
+    newLink.service_id = req.params._serviceId;
+    newLink.config = req.body;
+   
     var deviceId = req.device._id;
     var linkedServices = req.device.linked_services;
     var linkExists = false;
 
-    //TODO: Make this code better
-    for (var i = 0; i < linkedServices.length; i++) {
-        if( linkedServices[i].service_id == serviceLink.service_id){
-            linkExists = true;    
-            break;       
+    linkedServices.forEach(function(link){
+        if(link.service_id.equals(newLink.service_id)){
+            linkExists = true;
+            break;
         }
-    }
+    })  
     
     if(linkExists){
         var result = new Object();
-        result.message = "Service " + serviceLink.service_id + " already linked to device";
+        result.message = "Service " + newLink.service_id + " already linked to device";
         return callback(null, result);  
     }else{
-        Device.findByIdAndUpdate(deviceId, { $addToSet: { linked_services: serviceLink }}, function(err, result){
+        Device.findByIdAndUpdate(deviceId, { $addToSet: { linked_services: newLink }}, function(err, result){
             if(err) { return callback(err); }
             var topic = req.service.pubsub.new_thing_endpoint;
+            //TODO: Modularize this code.
             var message = {};
             message.thing = {};
             message.thing.type ="device";
             message.thing.id = deviceId;
-            message.thing.config = serviceLink.config;
+            message.thing.config = newLink.config;
             mqttClient.publish(topic, JSON.stringify(message), callback);        
         })  
     }      
