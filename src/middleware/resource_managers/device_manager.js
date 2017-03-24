@@ -1,6 +1,6 @@
 var Device = require('../../models/device');
-var mqttClient = require('../pubsub/mqtt_client');
 var deviceTemplateManager = require('./device_template_manager');
+var service_pubsub = require('../pubsub/service_pubsub');
 
 exports.getAllDevices = function(callback){
 	Device.find().exec(callback);
@@ -85,14 +85,8 @@ exports.linkService = function(req, callback){
     }else{
         Device.findByIdAndUpdate(deviceId, { $addToSet: { linked_services: newLink }}, function(err, result){
             if(err) { return callback(err); }
-            var topic = req.service.pubsub.new_thing_endpoint;
-            //TODO: Modularize this code.
-            var message = {};
-            message.thing = {};
-            message.thing.type ="device";
-            message.thing.id = deviceId;
-            message.thing.config = newLink.config;
-            mqttClient.publish(topic, JSON.stringify(message), callback);        
+            service_pubsub.publishNewDevice(req.service,req.device, newLink , callback);
+           
         })  
     }      
 };
@@ -113,15 +107,7 @@ exports.updateServiceConfig = function(req, callback){
     }
     req.device.save(function(err, result ){
         if(err) {return callback(err); }
-        
-            var topic = req.service.pubsub.update_thing_endpoint;
-            var message = {};
-            message.thing = {};
-            message.thing.type ="device";
-            message.thing.id = deviceId;
-            message.thing.config = req.body;
-            mqttClient.publish(topic, JSON.stringify(message), callback);       
-       
+        service_pubsub.publishUpdateDevice(req.service, req.device, req.body, callback);
     })
  
 };
@@ -137,14 +123,9 @@ exports.delinkService = function(req, callback){
     }
     if(linkToDelete){
         Device.findByIdAndUpdate(req.device._id, { $pull: { linked_services: { "service_id" : serviceId }}}, function(err, result){
-            if(err) { return callback(err); }    
+            if(err) { return callback(err); }   
+            service_pubsub.publishDeleteDevice(req.service, req.device, callback); 
         
-            var topic = req.service.pubsub.remove_thing_endpoint;
-            var message = {};
-            message.thing = {};
-            message.thing.type = "device";
-            message.thing.id = req.device._id;
-            mqttClient.publish(topic, JSON.stringify(message), callback); 
         })
     }else{
         var result = new Object();
