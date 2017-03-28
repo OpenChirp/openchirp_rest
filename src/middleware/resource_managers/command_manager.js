@@ -1,6 +1,4 @@
 var Device = require('../../models/device');
-var mqttClient = require('../pubsub/mqtt_client');
-
 var transducerManager = require('./transducer_manager');
 
 exports.createCommand = function(req, callback ){

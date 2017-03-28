@@ -1,6 +1,8 @@
 var Device = require('../../models/device');
+var Service = require('../../models/service');
 var deviceTemplateManager = require('./device_template_manager');
 var service_pubsub = require('../pubsub/service_pubsub');
+var async = require('async');
 
 exports.getAllDevices = function(callback){
 	Device.find().exec(callback);
@@ -10,14 +12,39 @@ exports.createNewDevice = function(req, callback){
     var template_id = req.body.template_id;
     var device = new Device(req.body);
     device.owner = req.user._id;
+    
+    /* If there are linked services,
+    this callback function takes care of notifying the services about this new device. */
+    var notifyServiceCallback = function(err, result){
+
+        //If there is an error in saving device, return now
+        if(err) { return callback(err); }
+        var newDevice = result;
+        var linkedServices = newDevice.linked_services;
+
+
+        var iteration = function(link, next){
+            Service.findById(link.service_id, function (err, service) {
+               if(err) { return next(err) ; }
+               if(service){
+                    service_pubsub.publishNewDevice(service, newDevice, link.config, next);
+                }               
+            });
+        };
+        async.each(linkedServices, iteration, function(err){
+            if(err) { return callback(err); }
+            return callback(null, newDevice);
+        });                
+     };
+   
     if(template_id){
         deviceTemplateManager.createDeviceFromTemplate(device, template_id, function(err, result){
             if(err ){ return callback(err); }
             var device = result;
-            device.save(callback);
+            device.save(notifyServiceCallback);
         })
     }else{    	
-        device.save(callback);
+        device.save(notifyServiceCallback);
     }    
 };
 
@@ -74,7 +101,6 @@ exports.linkService = function(req, callback){
     linkedServices.forEach(function(link){
         if(link.service_id.equals(newLink.service_id)){
             linkExists = true;
-            break;
         }
     })  
     
