@@ -15,6 +15,7 @@ var createClient = function(){
 exports.publish = function(topic, message, callback ){
 	client = createClient();
 	client.on('connect', function () {
+		console.log("Publishing "+topic +" : "+ message);
         client.publish(topic, message, function(err){
                 if(err){
                 	console.log("Error in publishing " +err);
