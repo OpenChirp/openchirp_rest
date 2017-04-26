@@ -15,6 +15,7 @@ exports.getLocationById = function(id, callback){
         if(err) { return callback(err); } 
         if (result == null ) { 
             var error = new Error();
+            error.status = 404;
             error.message = 'Could not find a location with id :'+ id ;
             return callback(error);
         }
