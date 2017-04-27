@@ -25,6 +25,7 @@ router.post('/', function(req, res, next) {
 router.param('_id', function(req, res, next, id) {
     if(!ObjectId.isValid(id)){
         var error = new Error();
+        error.status = 404;
         error.message = "Invalid Object ID :"+id ;
         return next(error);
     }
