@@ -144,12 +144,12 @@ router.post('/:_id/command/:_commandId', function(req, res, next ){
 });
 
 /* Update a command */
-router.put('/:_id/command/:_commandId', function(req, res, next ){
+/*router.put('/:_id/command/:_commandId', function(req, res, next ){
     commandManager.updateCommand(req, function(err, result){
         if(err) { return next(err); }
         return res.json(result);
     })
-});
+});*/
 
 /* Delete command */
 router.delete('/:_id/command/:_commandId', function(req, res, next ){
