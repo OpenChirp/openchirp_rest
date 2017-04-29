@@ -65,6 +65,7 @@ var getTransducerLastValue = function(device, callback){
 				results[i].lastValue = {};
 				results[i].lastValue.timestamp = lastValues[i].timestamp;
 				results[i].lastValue.value = lastValues[i].value;
+				console.log("results[i ]" + JSON.stringify(results[i]));
 			}
 		}
 		return callback(null, results);
