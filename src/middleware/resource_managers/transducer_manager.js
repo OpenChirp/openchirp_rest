@@ -21,7 +21,7 @@ exports.getAllDeviceTransducers = function(req, callback ){
 var getTransducerLastValue = function(device, callback){
 	var transducers  = device.transducers;
 	var measurements = [];
-	var lastValues = {};
+	var lastValues = [];
 	var getFromInfluxdb = function(measurement, index, next){
 		var url = "http://"+ nconf.get('influxdb:host') + ":" + nconf.get("influxdb:port") +"/query" ;
 		console.log(" url: "+url);
@@ -65,7 +65,7 @@ var getTransducerLastValue = function(device, callback){
 				results[i].lastValue = {};
 				results[i].lastValue.timestamp = lastValues[i].timestamp;
 				results[i].lastValue.value = lastValues[i].value;
-				console.log("results[i ]" + JSON.stringify(results[i]));
+				console.log("results[i]" + JSON.stringify(results[i]));
 			}
 		}
 		return callback(null, results);
