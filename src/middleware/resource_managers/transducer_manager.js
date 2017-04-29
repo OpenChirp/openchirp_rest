@@ -36,9 +36,15 @@ var getTransducerLastValue = function(device, callback){
   			if(err) { console.log(err);  }
 			 console.log("Get response: " + response.statusCode);
 			 console.log("Body "+body);
-			 if(body.results && body.results.length >0){
-			 	value = body.results[0].series[0].values;
-			 	lastValue[index] = value[0];
+			 var data  = JSON.parse(body);
+			 if(data.results && data.results.length >0){
+			 	console.log("result length " + data.results.length);
+			 	var series = data.results[0].series;
+			 	if(series && series.length >0 ){
+			 		var values = series[0].values;
+			 		console.log("values " + values);			 	
+			 		lastValue[index] = values[0];
+				 }
 			 }
 			 return next(null, null);
 		});
@@ -48,7 +54,9 @@ var getTransducerLastValue = function(device, callback){
 	})
 
 	async.forEachOf(measurements, getFromInfluxdb, function(err, result) {
-
+		for (var i = 0; i < transducers.length ; i++){
+			transducers[i].lastValue = lastValue[i];
+		}
 		return callback(null, transducers);
 
 	})
