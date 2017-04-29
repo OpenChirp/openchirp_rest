@@ -57,11 +57,17 @@ var getTransducerLastValue = function(device, callback){
 	})
 
 	async.forEachOf(measurements, getFromInfluxdb, function(err, result) {
+		var results = [];
 		for (var i = 0; i < transducers.length ; i++){
 			console.log("lastValue in async loop " + lastValues[i]);
-			transducers[i].lastValue = lastValues[i];
+			results[i] = transducers[i];
+			if(typeof lastValues[i] != 'undefined'){
+				results[i].lastValue = {};
+				results[i].lastValue.timestamp = lastValues[i].timestamp;
+				results[i].lastValue.value = lastValues[i].value;
+			}
 		}
-		return callback(null, transducers);
+		return callback(null, results);
 
 	})
 
