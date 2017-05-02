@@ -10,7 +10,8 @@ var userSchema = new Schema({
   email: { type: String, required : true, unique :true, lowercase: true, trim : true}, 
   google_id: String,
   photo_link : String,
-  json : Schema.Types.Mixed
+  json : Schema.Types.Mixed,
+  password : {type: String}
 }, 
  schemaOptions
 );

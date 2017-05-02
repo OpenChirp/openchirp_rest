@@ -10,6 +10,7 @@ var nconf = require('nconf');
 var session = require('express-session');
 var passport = require('passport');
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
+var BasicStrategy = require('passport-http').BasicStrategy;
 var userManager = require('./middleware/resource_managers/user_manager');
 
 var app = express();
@@ -53,27 +54,7 @@ dbConnect();
 
 // Passport Session setup
 passport.serializeUser(function(user, next) {
-  
-  var userCopy = {};
-  
-  if(user.emails && user.emails.length > 0){
-    userCopy.email = user.emails[0].value;
-  }
-  if(user.photos && user.photos.length > 0){
-    userCopy.photo_link = user.photos[0].value;
-  }
-  
-  userCopy.name = user.displayName;
-  userCopy.google_id = user.id;
-  userCopy.json = user._json;
-  
-  userManager.createUser(userCopy, function(err, result){
-    if(err) { return next(err); }
-    if(result) { return next(null, result._id); }
-    var error = new Error();
-    error.message = "Error in creating user in database";
-    return next(error);
-  })
+  next(null, user._id);
   
 });
 
@@ -90,14 +71,40 @@ passport.use(new GoogleStrategy(
   nconf.get("auth_google"),
 
   function(accessToken, refreshToken, profile, next) {
-
-    // Typically you would query the database to find the user record
-    // associated with this Google profile, then pass that object to the `next`
-    // callback.
-
-    return next(null, profile);
+    var userCopy = {};
+  
+    if(profile.emails && profile.emails.length > 0){
+      userCopy.email = profile.emails[0].value;
+    }
+    if(profile.photos && profile.photos.length > 0){
+      userCopy.photo_link = profile.photos[0].value;
+    }
+  
+    userCopy.name = profile.displayName;
+    userCopy.google_id = profile.id;
+    userCopy.json = profile._json;
+    
+    userManager.createUser(userCopy, function(err, result){
+      if(err) { return next(err); }
+      if(result) { return next(null, result); }
+      var error = new Error();
+      error.message = "Error in creating user in database";
+      return next(error);
+    })
+  
+    
   }
 ));
+
+passport.use(new BasicStrategy(
+  function(username, password, next) {
+   userManager.getUserByEmail(username, function(err, user) {
+      if (err) { return next(err); }
+      if (!user) { return next(null, false); }
+      if (user.password != password) { return next(null, false); }
+      return next(null, user);
+    });
+}));
 
 //TODO: Update session store to mongo or redis
 app.use(session({secret: "randomsecret", resave: true, saveUninitialized: true}));
@@ -126,6 +133,12 @@ app.get('/auth/google/callback',
   function(req, res) {
     // Authenticated successfully
     res.redirect('/api/user');
+  });
+
+app.get('/auth/basic',
+  passport.authenticate('basic', { session: true }),
+  function(req, res) {
+    res.json({ username: req.user.username, email: req.user.emails[0].value });
   });
 
 

@@ -7,7 +7,11 @@ var locationManager = require('../middleware/resource_managers/location_manager'
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  res.send(req.user);
+   var result = {};
+   result._id = req.user._id;
+   result.name = req.user.name;
+   result.email = req.user.email;
+   res.send(result);
 });
 
 /* GET devices by owner  */
