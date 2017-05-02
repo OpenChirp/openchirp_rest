@@ -1,4 +1,5 @@
 var DeviceTemplate = require('../../models/device_template');
+var Device = require('../../models/device');
 
 exports.getAll = function(callback){
     DeviceTemplate.find().exec(callback);
@@ -7,7 +8,7 @@ exports.getAll = function(callback){
 exports.createNew = function(req,  callback){
 	var deviceId = req.body.device_id;
     var error = new Error();
-    if( !deviceId ){
+    if( deviceId == null ){
         error.message = "device_id is required in request body to create a template";
         return callback(error);
     }
