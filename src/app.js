@@ -90,9 +90,7 @@ passport.use(new GoogleStrategy(
       var error = new Error();
       error.message = "Error in creating user in database";
       return next(error);
-    })
-  
-    
+    }) 
   }
 ));
 
@@ -132,13 +130,13 @@ app.get('/auth/google/callback',
   }),
   function(req, res) {
     // Authenticated successfully
-    res.redirect('/api/user');
+    res.redirect('/');
   });
 
 app.get('/auth/basic',
   passport.authenticate('basic', { session: true }),
   function(req, res) {
-    res.json({ username: req.user.username, email: req.user.emails[0].value });
+    res.json({ username: req.user.username });
   });
 
 
