@@ -24,10 +24,33 @@ exports.getLocationById = function(id, callback){
 };
 
 exports.createNewLocation = function(req, callback){
-    //TODO: Add validation for not null name and type and geoloc
-    var location = new Location(req.body);
+    var location = new Location();
+    location.name = req.body.name;
+    location.type = req.body.type;
+    location.test = req.body.test;
+    location.geoLoc = req.body.geoLoc;
     location.owner = req.user._id;
-    location.save(callback);
+    if(!location.name || location.name.length ==0){
+        var error = new Error();
+        error.message = "Location name cannot be empty";
+        return callback(error);
+    }
+    if(location.name.toLowerCase() == "root"){
+        Location.find({"name":"root"}).exec(function (err, result){
+            if(err) { console.log(err); }
+            if(result && result.length > 0){
+                var error = new Error();
+                error.message = "Cannot create location with name root";
+                return callback(error);
+            }
+            else{
+                location.save(callback);
+            }
+        })
+    }
+    else{
+        location.save(callback);
+    }
 };
 
 exports.createNewChildLocation = function(req, callback){
@@ -47,7 +70,7 @@ exports.createNewChildLocation = function(req, callback){
             })
             return callback(err);
          }   
-         console.log("Added reference to parent "+ parentId);
+         
          return callback(null, newLocation);
         })
     })
