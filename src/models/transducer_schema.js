@@ -6,7 +6,9 @@ exports = new Schema({
   name: { type: String , required: true },
   unit: { type: String},
   is_actuable: { type : Boolean, default: false },
-  properties : { type: Schema.Types.Mixed } 
+  properties : { type: Schema.Types.Mixed },
+  value: {type: String},
+  timestamp: {type: String}
 });
 
 module.exports = exports;
