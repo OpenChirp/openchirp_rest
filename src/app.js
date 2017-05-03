@@ -131,7 +131,7 @@ app.get('/auth/google/callback',
   }),
   function(req, res) {
     // Authenticated successfully
-    res.redirect('/home');
+    res.redirect(nconf.get("website_url")+'/home');
   });
 
 app.get('/auth/basic',
