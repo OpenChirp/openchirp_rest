@@ -14,14 +14,13 @@ var BasicStrategy = require('passport-http').BasicStrategy;
 var userManager = require('./middleware/resource_managers/user_manager');
 
 var app = express();
-
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, '../public/')));
 
 
 //Setup Config
@@ -104,6 +103,8 @@ passport.use(new BasicStrategy(
     });
 }));
 
+
+
 //TODO: Update session store to mongo or redis
 app.use(session({secret: "randomsecret", resave: true, saveUninitialized: true}));
 //Init Passport Authentication
@@ -130,7 +131,7 @@ app.get('/auth/google/callback',
   }),
   function(req, res) {
     // Authenticated successfully
-    res.redirect('/');
+    res.redirect('/home');
   });
 
 app.get('/auth/basic',
@@ -160,7 +161,7 @@ if(nconf.get("enable_auth")){
 app.use('/api', require('./routes/api_router'));
 
 
-app.get('/logout', function(req, res) {
+app.get('/auth/logout', function(req, res) {
   req.logout();
   res.redirect('/');
 });
@@ -183,6 +184,11 @@ app.use(function(req, res, next) {
   err.status = 404;
   err.message = 'Not Found '+ req.url;
   next(err);
+});
+
+//For angular2 routing
+app.get('*', function(req, res, next) {
+  res.sendfile("dist/index.html");
 });
 
 // error handler
