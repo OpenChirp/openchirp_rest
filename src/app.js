@@ -183,9 +183,15 @@ function ensureAuthenticated(req, res, next) {
     req.body.owner = req.user._id;
     return next();
   }
-  var err = new Error();
+  else{
+     passport.authenticate('basic', { session: false }),
+      function(req, res) {
+        return next();
+  
+  }
+  /*var err = new Error();
   err.status = 401;
-  next(err);
+  next(err);*/
 }
 
 // catch 404 and forward to error handler
