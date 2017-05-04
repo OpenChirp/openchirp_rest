@@ -28,9 +28,8 @@ exports.getAllCommands = function(req, callback ){
 
 exports.executeCommand = function(req, callback){
 	var command = req.device.commands.id(req.params._commandId);
-    var jsonMessage = {};
-    jsonMessage.value = command.value;
-    transducerManager.publish(req.device, command.transducer_id, jsonMessage, callback);
+    var message = command.value;
+    transducerManager.publish(req.device, command.transducer_id, message, callback);
 };
 
 
