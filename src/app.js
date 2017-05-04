@@ -177,6 +177,11 @@ app.get('/auth/logout', function(req, res) {
 });
 
 //TODO: Add logger for all errors 
+app.get('/loginerror', function(req, res) {
+ var err = new Error();
+ err.status = 401;
+ next(err);
+});
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
@@ -184,8 +189,7 @@ function ensureAuthenticated(req, res, next) {
     return next();
   }
   else{
-     passport.authenticate('local', {session : false} ) ;
-     return next();
+     passport.authenticate('local', {failureRedirect : '/loginerror'} , function(req,res) { return next(); }) ;
   
   }
   /*var err = new Error();
