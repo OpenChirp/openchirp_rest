@@ -10,7 +10,7 @@ var nconf = require('nconf');
 var session = require('express-session');
 var passport = require('passport');
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
-var BasicStrategy = require('passport-http').BasicStrategy;
+var LocalStrategy = require('passport-local').LocalStrategy;
 var userManager = require('./middleware/resource_managers/user_manager');
 
 var app = express();
@@ -102,7 +102,7 @@ passport.use(new GoogleStrategy(
   }
 ));
 
-passport.use(new BasicStrategy(
+passport.use("local", new LocalStrategy(
   function(username, password, next) {
    userManager.getUserByEmail(username, function(err, user) {
       if (err) { return next(err); }
@@ -145,7 +145,7 @@ app.get('/auth/google/callback',
   });
 
 app.get('/auth/basic',
-  passport.authenticate('basic', { session: true }),
+  passport.authenticate('false', { session: true }),
   function(req, res) {
     res.json({ username: req.user.username });
   });
@@ -184,10 +184,8 @@ function ensureAuthenticated(req, res, next) {
     return next();
   }
   else{
-     passport.authenticate('basic', { session: false }),
-      function(req, res) {
-        return next();
-      }
+     passport.authenticate('local', {session : false} ) ;
+     return next();
   
   }
   /*var err = new Error();
