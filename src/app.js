@@ -178,9 +178,8 @@ app.get('/auth/logout', function(req, res) {
 
 //TODO: Add logger for all errors 
 app.get('/loginerror', function(req, res) {
- var err = new Error();
- err.status = 401;
- next(err);
+ res.status = 401;
+ res.send("Login Error");
 });
 
 function ensureAuthenticated(req, res, next) {
@@ -205,10 +204,6 @@ app.use(function(req, res, next) {
   next(err);
 });
 
-//For angular2 routing
-app.get('*', function(req, res, next) {
-  res.sendfile("dist/index.html");
-});
 
 // error handler
 app.use(function(err, req, res, next) {  
