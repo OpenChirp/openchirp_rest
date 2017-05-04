@@ -10,7 +10,7 @@ var nconf = require('nconf');
 var session = require('express-session');
 var passport = require('passport');
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
-var LocalStrategy = require('passport-local').LocalStrategy;
+var LocalStrategy = require('passport-local').Strategy;
 var userManager = require('./middleware/resource_managers/user_manager');
 
 var app = express();
