@@ -136,7 +136,7 @@ app.get('/auth/google',
 //   which, in this example, will redirect the user to the home page.
 app.get('/auth/google/callback',
   passport.authenticate('google', {
-    failureRedirect: '/'
+    failureRedirect: nconf.get("website_url")
   }),
   function(req, res) {
     console.log(req.get('origin'));
@@ -173,7 +173,7 @@ app.use('/api', require('./routes/api_router'));
 
 app.get('/auth/logout', function(req, res) {
   req.logout();
-  res.redirect('/');
+  res.redirect(nconf.get("website_url"));
 });
 
 //TODO: Add logger for all errors 
