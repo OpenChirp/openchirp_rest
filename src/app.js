@@ -187,6 +187,7 @@ function ensureAuthenticated(req, res, next) {
      passport.authenticate('basic', { session: false }),
       function(req, res) {
         return next();
+      }
   
   }
   /*var err = new Error();
