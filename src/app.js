@@ -59,6 +59,7 @@ var dbConnect = function(){
    };
    mongoose.connect(nconf.get('db'),options);
 };
+
 dbConnect();
 
 // Passport Session setup
@@ -103,7 +104,7 @@ passport.use(new GoogleStrategy(
   }
 ));
 
-/*
+
 passport.use(new BasicStrategy(
   function(username, password, done) {
    userManager.getUserByEmail(username, function(err, user) {
@@ -114,7 +115,7 @@ passport.use(new BasicStrategy(
       return done(null, user);
     });
 }));
-*/
+
 
 //TODO: Update session store to mongo or redis
 app.use(session({secret: "randomsecret", resave: true, saveUninitialized: true}));
@@ -145,13 +146,6 @@ app.get('/auth/google/callback',
     res.redirect(nconf.get("website_url")+'/home');
   });
 
-/*
-app.get('/auth/basic',
-  passport.authenticate('basic', { session : false}),
-  function(req, res) {
-    res.json({ username: req.user.username });
-  });
-*/
 
 if(nconf.get("enable_auth")){
   app.use('/api/*', ensureAuthenticated);
@@ -185,55 +179,20 @@ app.get('/loginerror', function(req, res) {
  res.json({error: "Login Error"});
 });
 
-var verifyBasicAuth = function(username, password, done) {
-   userManager.getUserByEmail(username, function(err, user) {
-      if (err) { console.log("error"); return done(err); }
-      if (!user) { console.log("no user"); return done(null, false); }
-      if (user.password != password) { console.log("wrong password"); return done(null, false); }
-      console.log("success");
-      return done(null, user);
-    });
-};
 
-var doAuthenticate = function(req, res, next){
-  var error_401 = new Error();
-  error_401.status = 401;
-
-  var error_400 = new Error();
-  error_400.status = 400;
-
-  var authorization = req.headers['authorization'];
-  if (!authorization) { return next(error_401); }
-  
-  var parts = authorization.split(' ')
-  if (parts.length < 2) { return next(error_401); }
-  
-  var scheme = parts[0]
-    , credentials = new Buffer(parts[1], 'base64').toString().split(':');
-
-  
-  if (credentials.length < 2) { return next(error_401); }
-  
-  var userid = credentials[0];
-  var password = credentials[1];
-  if (!userid || !password) {
-    return next(error_401);
-  }
-  verifyBasicAuth(userid, password, function(err, result){
-    if(err) {return next(error_401); }
-    return next();
-  })
-}
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     req.body.owner = req.user._id;
     return next();
   }else{
+    return passport.authenticate('basic')(req, res, function(err, result){
+      if(err) { return next(err);}
+      req.body.owner = req.user._id;
+      return next();
+    });
 
-    doAuthenticate(req, res,next);
   }
-
 }
 
 // catch 404 and forward to error handler
