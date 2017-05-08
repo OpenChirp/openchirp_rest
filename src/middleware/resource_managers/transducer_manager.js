@@ -81,13 +81,20 @@ exports.publish = function(device, transducerId, message, callback){
 
 exports.deleteDeviceTransducer = function(req, callback){	
 	var tdcId = req.params._transducerId;
-	var commands = req.device.commands;
-	if(commands){
-		for (var i = 0; i < commands.length; i++) {
-			if(commands[i].transducer_id == tdcId)
-				req.device.commands.id(commands[i]._id).remove();
-		}
+	var commands = req.device.commands;	
+	var cmdsToDelete = [];
+	
+	if(commands){		
+		commands.forEach(function(cmd) {
+			if ( String(cmd.transducer_id) === String(tdcId)){
+				cmdsToDelete.push(cmd._id);
+			}
+		});
 	}
+	cmdsToDelete.forEach(function(cid){		
+		req.device.commands.id(cid).remove();
+	});
+	
 	req.device.transducers.id(tdcId).remove();
 	req.device.save( function(err) {
 		if(err) { return callback(err); }
