@@ -68,7 +68,7 @@ exports.publishToDeviceTransducer = function(req, callback ){
     exports.publish(req.device, req.params._transducerId, req.body, callback);
 };
 
-exports.publish = function(device, transducerId, jsonMessage, callback){    
+exports.publish = function(device, transducerId, message, callback){    
     var transducer = device.transducers.id(transducerId);
     if (! transducer.is_actuable) {
         var error = new Error();
@@ -76,7 +76,6 @@ exports.publish = function(device, transducerId, jsonMessage, callback){
         return callback(error);
     }
     var topic = device.pubsub.endpoint+'/transducer/'+ transducer.name ;
-    var message = JSON.stringify(jsonMessage);
     mqttClient.publish(topic, message, callback);
 };
 
