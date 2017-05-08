@@ -1,5 +1,5 @@
 {
-"db": "mongodb://database/openchirp_test",
+"db": "mongodb://mongodb/openchirp_test",
 "mqtt": {
    	"broker": "tls://iot.andrew.cmu.edu",
    	"port":"1883",
