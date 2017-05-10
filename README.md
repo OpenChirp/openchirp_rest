@@ -1,7 +1,7 @@
 # OpenChirp REST API
 
 ## Documentation
-https://openchirp.github.io/openchirp_rest/
+https://openchirp.github.io/api_doc/
 
 The source files for the documentation are under documentation/docs
 
