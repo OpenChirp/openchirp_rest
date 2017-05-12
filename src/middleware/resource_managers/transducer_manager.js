@@ -83,7 +83,7 @@ exports.getDeviceTransducer = function(req, callback ){
     
     measurement = req.device+req.params._transducerId.toLowerCase();
 	var result = new Object();
-    result.message = "Done";
+    result.message = measurement;
     return callback(null, result);	
 };
 
