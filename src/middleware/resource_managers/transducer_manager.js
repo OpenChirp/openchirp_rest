@@ -81,7 +81,7 @@ exports.publish = function(device, transducerId, message, callback){
 
 exports.getDeviceTransducer = function(req, callback ){
     
-    measurement = req.device._id+'_'req.params.name.toLowerCase();
+    measurement = req.device._id+'_'+req.params.name.toLowerCase();
 
 	var url = "http://"+ nconf.get('influxdb:host') + ":" + nconf.get("influxdb:port") +"/query" ;
 
@@ -90,7 +90,7 @@ exports.getDeviceTransducer = function(req, callback ){
 			"db" : "openchirp",
 			"q" : query
 	};
-	
+
     request({url : url, qs : props}, function(err, response, body) {
   			if(err) { console.log(err);  }
 			var data  = JSON.parse(body);
