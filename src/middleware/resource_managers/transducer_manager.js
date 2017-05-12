@@ -91,16 +91,15 @@ exports.getDeviceTransducer = function(req, callback ){
 			"q" : query
 	};
 
-    request({url : url, qs : props}, function(err, response, body) {
+    var result = request({url : url, qs : props}, function(err, response, body) {
   			if(err) { console.log(err);  }
 			var data  = JSON.parse(body);
 			
-			return callback(null, body);	
-		});
-	};    
+			return body;	
+		}); 
 
-	var result = new Object();
-    result.message = measurement;
+	//var result = new Object();
+    //result.message = measurement;
     return callback(null, result);	
 };
 
