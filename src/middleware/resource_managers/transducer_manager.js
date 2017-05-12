@@ -91,7 +91,7 @@ exports.getDeviceTransducer = function(req, callback ){
 			"db" : "openchirp",
 			"q" : query
 	};
-
+/*
     request({url : url, qs : props}, function(err, response, body) {
   			//if(err) { console.log(err);  }
 			//var data  = JSON.parse(body);
@@ -101,9 +101,9 @@ exports.getDeviceTransducer = function(req, callback ){
 
 			//callback(null, result);	
 		}); 
-
-	//var result = new Object();
-    //result.message = measurement;
+*/
+	var result = new Object();
+    result.message = measurement;
     return callback(null, result);	
 };
 
