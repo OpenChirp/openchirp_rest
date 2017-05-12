@@ -81,7 +81,7 @@ exports.publish = function(device, transducerId, message, callback){
 
 exports.getDeviceTransducer = function(req, callback ){
     
-    measurement = req.device+req.params._transducerId name.toLowerCase();
+    measurement = req.device+req.params._transducerId.toLowerCase();
     
     result.message = "measurement";
     return callback(null, result);	
