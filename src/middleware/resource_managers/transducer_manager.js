@@ -99,7 +99,7 @@ exports.getDeviceTransducer = function(req, callback ){
 			var result = new Object();
     		result.message = measurement;
 
-			callback(null, result);	
+			//callback(null, result);	
 		}); 
 
 	//var result = new Object();
