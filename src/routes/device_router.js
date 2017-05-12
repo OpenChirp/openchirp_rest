@@ -109,6 +109,14 @@ router.post('/:_id/transducer/:_transducerId', function(req, res, next ){
     })
 });
 
+/* Get device transducer values */
+router.post('/:_id/transducer/:_transducerId', function(req, res, next ){
+    transducerManager.getDeviceTransducer(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
 /* Delete transducer */
 router.delete('/:_id/transducer/:_transducerId', function(req, res, next ){
     transducerManager.deleteDeviceTransducer(req, function(err, result){
