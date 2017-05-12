@@ -81,7 +81,24 @@ exports.publish = function(device, transducerId, message, callback){
 
 exports.getDeviceTransducer = function(req, callback ){
     
-    measurement = req.device+req.params._transducerId.toLowerCase();
+    measurement = req.device._id+'_'req.params.name.toLowerCase();
+
+	var url = "http://"+ nconf.get('influxdb:host') + ":" + nconf.get("influxdb:port") +"/query" ;
+
+	var query = "select \"value\" from \"59160549f8e6b6058dd1d4e0_Temperature\"";
+	var props = {
+			"db" : "openchirp",
+			"q" : query
+	};
+	
+    request({url : url, qs : props}, function(err, response, body) {
+  			if(err) { console.log(err);  }
+			var data  = JSON.parse(body);
+			
+			return callback(null, body);	
+		});
+	};    
+
 	var result = new Object();
     result.message = measurement;
     return callback(null, result);	
