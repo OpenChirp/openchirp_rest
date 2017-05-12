@@ -30,6 +30,7 @@ var getTransducerLastValue = function(device, callback){
 			"db" : "openchirp",
 			"q" : query
 		};
+
         request({url : url, qs : props}, function(err, response, body) {
   			if(err) { console.log(err);  }
 			 var data  = JSON.parse(body);
@@ -91,14 +92,14 @@ exports.getDeviceTransducer = function(req, callback ){
 			"q" : query
 	};
 
-    var result = request({url : url, qs : props}, function(err, response, body) {
+    request({url : url, qs : props}, function(err, response, body) {
   			//if(err) { console.log(err);  }
 			//var data  = JSON.parse(body);
 
 			var result = new Object();
     		result.message = measurement;
-			
-			return result;	
+
+			callback(null, result);	
 		}); 
 
 	//var result = new Object();
