@@ -3,6 +3,7 @@ var mqttClient = require('../pubsub/mqtt_client');
 var request = require('request');
 var async = require('async');
 var nconf = require('nconf');
+var util = require('util');
 
 exports.createDeviceTransducer = function(req, callback ){
 	req.device.transducers.push(req.body);
@@ -80,31 +81,97 @@ exports.publish = function(device, transducerId, message, callback){
     mqttClient.publish(topic, message, callback);
 };
 
-exports.getDeviceTransducer = function(req, callback ){
-    
-    measurement = req.device._id+'_'+req.params.name.toLowerCase();
+String.prototype.formatUnicorn = String.prototype.formatUnicorn ||
+function () {
+    "use strict";
+    var str = this.toString();
+    if (arguments.length) {
+        var t = typeof arguments[0];
+        var key;
+        var args = ("string" === t || "number" === t) ?
+            Array.prototype.slice.call(arguments)
+            : arguments[0];
 
-	var url = "http://"+ nconf.get('influxdb:host') + ":" + nconf.get("influxdb:port") +"/query" ;
+        for (key in args) {
+            str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
+        }
+    }
 
-	var query = "select \"value\" from \"59160549f8e6b6058dd1d4e0_Temperature\"";
-	var props = {
+    return str;
+};
+
+exports.getDeviceTransducer = function(req, res){
+  	/* influxdb url */
+    var influxdb_url = "http://"+ nconf.get('influxdb:host') + ":" + nconf.get("influxdb:port") + "/query";
+
+	/* use device id to get transducer info and construct measurement name */
+	var deviceId = req.device._id;
+	var transducer = req.device.transducers.id(req.params._transducerId);
+    measurement = req.device._id+'_'+transducer.name;
+
+	// parameters added to the http get query string
+  	var query_string = { 
 			"db" : "openchirp",
-			"q" : query
+			"pretty": req.query.pretty,
 	};
-/*
-    request({url : url, qs : props}, function(err, response, body) {
-  			//if(err) { console.log(err);  }
-			//var data  = JSON.parse(body);
+		
+	/* construct limit, offset and chunked query parameters */
+	var limit=""
+	var offset="";
+	query_string.chunked=true; // default is chunked response
+	if (typeof req.query.limit != 'undefined') {
+		var ilimit = parseInt(req.query.limit);
+		if (ilimit > 10000 || ilimit <= 0) ilimit = 10000;
+		limit=" LIMIT " + ilimit;
+		query_string.chunked=false;
+	}
+	if (typeof req.query.page != 'undefined') {
+		var ilimit=10000;
+		if (limit == "") {
+			limit=" LIMIT 10000";
+		} else {
+			ilimit=parseInt(req.query.limit);
+		}
+		offset=" OFFSET " + Math.max(parseInt(req.query.page)-1, 0)*ilimit;
+		query_string.chunked=false;
+	}
+	if (query_string.chunked == true) 
+		query_string.chunk_size = "10000"; //by default, if no limit is given, the response is divided in chunks of 10000 values 
 
-			var result = new Object();
-    		result.message = measurement;
-
-			//callback(null, result);	
-		}); 
-*/
-	var result = new Object();
-    result.message = measurement;
-    return callback(null, result);	
+	/* construct start time and end time query parameters */
+	var time_query="";
+  	if (typeof req.query.stime != 'undefined') {
+  		console.log("start time:"+req.query.stime);
+  		time_query=util.format(' where time > %s', req.query.stime);
+  	}  	
+	if (typeof req.query.etime != 'undefined') {
+		console.log("end time:"+req.query.etime);
+  		time_query+=util.format(' and time < %s', req.query.etime);
+	}
+	   
+  	/* the influxdb query */
+    query_string.q = "select value from \"" + measurement + "\"" + time_query + limit + offset;
+	
+	/* if request type is csv, tell influxdb to return csv (by adding Accept header); otherwise, default is json */
+	var http_headers = {};
+	if (typeof req.headers['content-type'] != 'undefined') {
+		if (req.headers['content-type'].includes("text/csv") 
+			|| req.headers['content-type'].includes("application/csv")) {
+				http_headers = { "Accept": "application/csv" };
+		}
+	}
+	
+	/* construct final influxdb request options */
+	var options = {
+  		url: influxdb_url,
+  		headers: http_headers,
+  		qs: query_string	
+	};
+	
+	console.log("Query:" + JSON.stringify(options, null, 3));
+ 
+ 	// pipe the incoming response from influxdb to the response sent to the browser
+    req.pipe(request(options)).pipe(res);
 };
 
 exports.deleteDeviceTransducer = function(req, callback){	

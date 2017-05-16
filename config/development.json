@@ -1,10 +1,14 @@
 {
-"db": "mongodb://mongodb/openchirp_test",
+"db": "mongodb://localhost/openchirp_test",
 "mqtt": {
    	"broker": "tls://iot.andrew.cmu.edu",
    	"port":"1883",
    	"user":"openchirp_rest",
    	"pass":""
+ },
+ "influxdb": {
+ 	"host": "128.237.216.67",
+ 	"port": "8086"
  },
  "enable_auth" : false, 
  "auth_google":{
