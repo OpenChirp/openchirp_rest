@@ -6,10 +6,14 @@
    	"user":"openchirp_rest",
    	"pass":""
  },
+ "influxdb": {
+ 	"host": "128.237.216.67",
+ 	"port": "8086"
+ },
  "enable_auth" : false, 
  "auth_google":{
-    "clientID": "",
-    "clientSecret": "",
+    "clientID": "clientID",
+    "clientSecret": "clientSecret",
     "callbackURL": "http://iot.andrew.cmu.edu:10010/auth/google/callback"
  }
 }

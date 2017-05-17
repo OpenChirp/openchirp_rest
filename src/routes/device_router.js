@@ -109,6 +109,12 @@ router.post('/:_id/transducer/:_transducerId', function(req, res, next ){
     })
 });
 
+/* Get device transducer values */
+router.get('/:_id/transducer/:_transducerId', function(req, res, next ){
+	/* getDeviceTransducer will directly pipe the incoming response from influxdb to the browser (so no callback) */
+    transducerManager.getDeviceTransducer(req, res); 
+});
+
 /* Delete transducer */
 router.delete('/:_id/transducer/:_transducerId', function(req, res, next ){
     transducerManager.deleteDeviceTransducer(req, function(err, result){
