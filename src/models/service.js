@@ -27,7 +27,7 @@ var serviceSchema = new Schema({
 );
 
 serviceSchema.virtual('pubsub.endpoint').get(function () {
-  return '/services/' + this._id;
+  return 'openchirp/services/' + this._id;
 });
 
 serviceSchema.virtual('pubsub.new_thing_endpoint').get(function(){

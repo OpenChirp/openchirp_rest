@@ -10,7 +10,7 @@ var schemaOptions = require('./schema_options');
 //Schema
 var locationSchema = new Schema({
   name:  {type: String, required: true},
-  type: {type: String, enum: ['BUILDING', 'INDOOR'], required: false},
+  type: {type: String, enum: ['BUILDING', 'INDOOR','OUTDOOR'], required: false},
   geo_loc:{
   	type: { type: String, default: 'Point'}, 
     coordinates: [Number]
