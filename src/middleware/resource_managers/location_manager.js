@@ -151,7 +151,7 @@ exports.getGateways = function(req, callback){
 exports.getDevices = function(req, callback){
    //TODO: Change it to return all gateways in child locations too only 
     // if it is a building or with a deep flag
-    Device.find({ location_id : req.params._id }).exec(callback);    
+    Device.find({ location_id : req.params._id }).populate('owner', 'name email').exec(callback);    
 };
 
 exports.getLocationsByOwner = function(req, callback) {

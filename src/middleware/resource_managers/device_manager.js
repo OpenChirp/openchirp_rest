@@ -49,7 +49,7 @@ exports.createNewDevice = function(req, callback){
 };
 
 exports.getDeviceById = function(id, callback){
-	Device.findById(id).exec(function (err, result) {
+	Device.findById(id).populate('owner', 'name email').exec(function (err, result) {
         if(err) { return callback(err) ; }
         if (result == null ) { 
             var error = new Error();
