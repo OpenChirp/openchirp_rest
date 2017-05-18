@@ -2,7 +2,7 @@ var DeviceTemplate = require('../../models/device_template');
 var Device = require('../../models/device');
 
 exports.getAll = function(callback){
-    DeviceTemplate.find().exec(callback);
+    DeviceTemplate.find().populate('owner', 'name email').exec(callback);
 };
 
 exports.createNew = function(req,  callback){
