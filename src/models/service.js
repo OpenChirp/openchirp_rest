@@ -2,9 +2,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-// Other schemas
-var Device = require('./device');
-var User = require('./user');
+
 var schemaOptions = require('./schema_options');
 
 //Schema
@@ -21,7 +19,7 @@ var serviceSchema = new Schema({
   	key_example : { type : String },
   	key_required : { type : Boolean , default : false }
   }],
-	owner: { type: Schema.Types.ObjectId, ref: User , required : true },  
+	owner: { type: Schema.Types.ObjectId, ref: 'User' , required : true },  
 }, 
  schemaOptions 
 );

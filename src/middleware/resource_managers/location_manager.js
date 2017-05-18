@@ -11,7 +11,7 @@ exports.getRootLocation = function(callback){
 };
 
 exports.getLocationById = function(id, callback){
-	Location.findById(id, function (err, result) {
+	Location.findById(id).populate('owner', 'name email').exec(function (err, result) {
         if(err) { return callback(err); } 
         if (result == null ) { 
             var error = new Error();
@@ -144,7 +144,7 @@ exports.deleteLocation = function(req, callback){
 exports.getGateways = function(req, callback){
     //TODO: Change it to return all gateways in child locations too only 
     // if it is a building or with a deep flag
-    Gateway.find({ location_id : req.params._id }).exec(callback);
+    Gateway.find({ location_id : req.params._id }).populate('owner', 'name email').exec(callback);
     
 };
 

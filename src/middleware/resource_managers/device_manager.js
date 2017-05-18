@@ -77,7 +77,7 @@ exports.deleteDevice = function(req, callback){
 
     deviceToDelete = req.device;  
     //Only owner can delete device for now
-    if(String(req.user._id) === String(deviceToDelete.owner)){
+    if(String(req.user._id) === String(deviceToDelete.owner._id)){
         deviceToDelete.remove(callback);          
     }else{
         var error = new Error();

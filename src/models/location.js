@@ -3,7 +3,6 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 // Other schemas
-var User = require('./user');
 var Location = require('./location');
 var schemaOptions = require('./schema_options');
 
@@ -16,7 +15,7 @@ var locationSchema = new Schema({
     coordinates: [Number]
   },
   children: [{ type: Schema.Types.ObjectId, ref: Location }],
-  owner: { type: Schema.Types.ObjectId, ref: User , required: true }, 
+  owner: { type: Schema.Types.ObjectId, ref: 'User' , required: true }, 
   test: { type: Boolean, default: false }
 },
  schemaOptions

@@ -3,7 +3,7 @@ var Gateway = require('../../models/gateway');
 var Device = require('../../models/device');
 
 exports.getAllGateways = function(callback){
-	Gateway.find().exec(callback);
+	Gateway.find().populate('owner', 'name email').exec(callback);
 };
 
 exports.createNewGateway = function(req, callback){
@@ -13,7 +13,7 @@ exports.createNewGateway = function(req, callback){
 };
 
 exports.getGatewayById = function(id, callback){
-	Gateway.findById(id, function (err, result) {
+	Gateway.findById(id).populate('owner', 'name email').exec(function (err, result) {
         if(err) { return callback(err); }
         if (result == null ) { 
             var error = new Error();

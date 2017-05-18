@@ -3,8 +3,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 // Other schemas
-//var User = require('./user');
-var Service = require('./service');
+
 var schemaOptions = require('./schema_options');
 var commandSchema = require('./command_schema');
 var transducerSchema = require('./transducer_schema');
@@ -22,7 +21,7 @@ var deviceSchema = new Schema({
   commands: [commandSchema],
   linked_services : [{
     _id : false,
-    service_id : { type: Schema.Types.ObjectId, ref: Service, required: true },
+    service_id : { type: Schema.Types.ObjectId, ref: 'Service', required: true },
     config: { type: Schema.Types.Mixed }
   }],
   owner: { type: Schema.Types.ObjectId, ref: 'User' , required : true },  

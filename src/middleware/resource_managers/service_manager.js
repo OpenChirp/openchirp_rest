@@ -4,7 +4,7 @@ var Device = require('../../models/device');
 var Service = require('../../models/service');
 
 exports.getAllServices = function(callback){
-	Service.find().exec(callback);
+	Service.find().populate('owner', 'name email').exec(callback);
 };
 
 exports.createNewService = function(req, callback){
@@ -14,7 +14,7 @@ exports.createNewService = function(req, callback){
 };
 
 exports.getById = function(id, callback){
-	Service.findById(id, function (err, result) {
+	Service.findById(id).populate('owner', 'name email').exec(function (err, result) {
         if(err) { return callback(err) ; }
         if (result == null ) { 
             var error = new Error();

@@ -54,7 +54,7 @@ var copyTransducerToTemplate = function(tdc, commands){
 };
 
 exports.getById = function(id, callback){
-	DeviceTemplate.findById(id, function (err, result) {
+	DeviceTemplate.findById(id).populate('owner', 'name email').exec(function (err, result) {
         if(err) { return callback(err); }
         if (result == null ) { 
             var error = new Error();

@@ -213,7 +213,7 @@ var doAuthenticate = function(req, res, next){
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
-    req.body.owner = req.user._id;
+    //req.body.owner = req.user._id;
     return next();
   }else{
 
