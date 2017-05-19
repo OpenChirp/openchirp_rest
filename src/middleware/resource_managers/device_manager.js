@@ -69,6 +69,7 @@ exports.updateDevice = function(req, callback){
     if(typeof req.body.gateway_id != 'undefined') deviceToUpdate.gateway_id = req.body.gateway_id;
     if(typeof req.body.type != 'undefined') deviceToUpdate.type = req.body.type;
     if(typeof req.body.enabled != 'undefined') deviceToUpdate.enabled = req.body.enabled;
+    if(typeof req.body.properties != 'undefined') deviceToUpdate.properties = req.body.properties;
 
  	deviceToUpdate.save(callback);
 };

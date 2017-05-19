@@ -30,7 +30,8 @@ exports.updateService = function(req, callback){
     var serviceToUpdate = req.service;
     if(typeof req.body.name != 'undefined') serviceToUpdate.name = req.body.name;
     if(typeof req.body.description != 'undefined') serviceToUpdate.location_id = req.body.location_id;
-   
+    if(typeof req.body.properties != 'undefined') serviceToUpdate.properties = req.body.properties;
+
  	serviceToUpdate.save(callback);
 };
 
