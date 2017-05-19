@@ -206,7 +206,8 @@ var doAuthenticate = function(req, res, next){
     return next(error_401);
   }
   verifyBasicAuth(userid, password, function(err, result){
-    if(err) {return next(error_401); }
+  if(err) {return next(error_401); } 
+    req.user=result;
     return next();
   })
 }
