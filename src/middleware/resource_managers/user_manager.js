@@ -38,7 +38,12 @@ exports.getUserByEmail = function(email, callback){
 
 exports.createCommandShortcut = function(req, callback){
     req.user.shortcuts.push(req.body);
-    req.user.save(callback);
+    req.user.save( function(err) {
+        if(err) { return callback(err); }
+        var result = new Object();
+        result.message = "Shortcut created";
+        return callback(null, result);
+    })
     
 };
 
