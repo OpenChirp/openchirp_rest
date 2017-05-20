@@ -19,6 +19,8 @@ var gatewaySchema = new Schema({
 },
 schemaOptions);
 
-gatewaySchema.index({ location_id : 1 }, { type : 1 });
+gatewaySchema.index({ location_id : 1 } );
+gatewaySchema.index({ type : 1 });
+
 // Return model
 module.exports = mongoose.model('Gateway', gatewaySchema);

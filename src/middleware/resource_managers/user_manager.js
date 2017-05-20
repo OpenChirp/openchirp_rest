@@ -36,5 +36,19 @@ exports.getUserByEmail = function(email, callback){
     })
 };
 
+exports.createCommandShortcut = function(req, callback){
+    req.user.shortcuts.push(req.body);
+    req.user.save(callback);
+    
+};
 
+exports.deleteCommandShortcut = function(req, callback){
+    var shortcutId = req.params._shortcutId;
+    req.user.shortcuts.id(shortcutId).remove();
+    req.user.save( function(err) {
+        if(err) { return callback(err); }
+        var result = new Object();
+            return callback(null, result);
+    })
+};
 module.exports = exports;

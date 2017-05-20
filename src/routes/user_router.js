@@ -4,6 +4,7 @@ var router = express.Router();
 var deviceManager = require('../middleware/resource_managers/device_manager');
 var serviceManager = require('../middleware/resource_managers/service_manager');
 var locationManager = require('../middleware/resource_managers/location_manager');
+var userManager = require('../middleware/resource_managers/user_manager');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -11,7 +12,7 @@ router.get('/', function(req, res, next) {
    result._id = req.user._id;
    result.name = req.user.name;
    result.email = req.user.email;
-   res.send(result);
+   return res.json(result);
 });
 
 /* GET devices by owner  */
@@ -38,4 +39,24 @@ router.get('/myservices', function(req, res, next) {
     })  
 });
 
+/* Create Shortcut */
+router.get('/shortcuts', function(req, res, next) {
+  var result = req.user.shortcuts;
+  return res.json(result);
+});
+
+/* Create Shortcut */
+router.post('/shortcut', function(req, res, next) {
+  userManager.createCommandShortcut(req, function (err, result) {
+        if(err) { return next(err); }
+        return res.json(result);
+    })  
+});
+/* Delete shortcut */
+router.delete('/shortcut/:_shortcutId', function(req, res, next ){
+    userManager.deleteCommandShortcut(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
 module.exports = router;
