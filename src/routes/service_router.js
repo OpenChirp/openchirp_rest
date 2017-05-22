@@ -59,8 +59,9 @@ router.put('/:_id', function(req, res, next) {
 router.delete('/:_id', function(req, res, next) {   
 	serviceManager.deleteService(req, function(err){
         if(err) { return next(err); }
+        return res.json({ message: 'Delete successful'});   
     })
-    return res.json({ message: 'Delete successful'});	
+    
 });
 
 module.exports = router;

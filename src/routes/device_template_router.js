@@ -45,8 +45,9 @@ router.get('/:_id', function(req, res, next) {
 router.delete('/:_id', function(req, res, next) {
    deviceTemplateManager.delete(req, function(err){
         if(err) { return next(err); }
+        return res.json({message: 'Done'});
     })
-    res.json({message: 'Done'});
+  
 	
 });
 
