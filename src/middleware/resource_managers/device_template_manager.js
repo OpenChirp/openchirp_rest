@@ -67,8 +67,15 @@ exports.getById = function(id, callback){
 
 /* Delete a device template */
 exports.delete = function(req, callback){
-	templateToDelete = req.deviceTemplate;
-    templateToDelete.remove(callback);
+    templateToDelete = req.deviceTemplate;
+    if(String(req.user._id) === String(templateToDelete.owner._id)){
+	   templateToDelete.remove(callback);
+    }else{
+        var error = new Error();
+        error.status = 403;
+        error.message = "Forbidden ! Only owner can delete this resource.";
+        return callback(error);
+    }
 };
 
 exports.createDeviceFromTemplate = function(device, template_id, callback){

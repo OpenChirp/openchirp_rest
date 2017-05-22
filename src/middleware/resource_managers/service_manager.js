@@ -36,9 +36,17 @@ exports.updateService = function(req, callback){
 };
 
 exports.deleteService = function(req, callback){
+
     serviceToDelete = req.service;
-    //TODO: Update things that are linked to this service    
-    serviceToDelete.remove(callback);  
+    if(String(req.user._id) === String(serviceToDelete.owner._id)){
+        //TODO: Update things that are linked to this service    
+         serviceToDelete.remove(callback);  
+     }else{
+        var error = new Error();
+        error.status = 403;
+        error.message = "Forbidden ! Only owner can delete this resource.";
+        return callback(error);
+    }
 };
 
 exports.getServicesByOwner = function(req, callback) {
