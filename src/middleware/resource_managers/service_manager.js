@@ -29,9 +29,9 @@ exports.updateService = function(req, callback){
 	//TODO: Add logic for properties and config
     var serviceToUpdate = req.service;
     if(typeof req.body.name != 'undefined') serviceToUpdate.name = req.body.name;
-    if(typeof req.body.description != 'undefined') serviceToUpdate.location_id = req.body.location_id;
+    if(typeof req.body.description != 'undefined') serviceToUpdate.description = req.body.description;
     if(typeof req.body.properties != 'undefined') serviceToUpdate.properties = req.body.properties;
-
+    if(typeof req.body.config_required != 'undefined') serviceToUpdate.config_required = req.body.config_required;
  	serviceToUpdate.save(callback);
 };
 
