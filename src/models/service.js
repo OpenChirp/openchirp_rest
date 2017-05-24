@@ -13,7 +13,8 @@ var serviceSchema = new Schema({
   		protocol : { type: String, enum: ['XMPP', 'MQTT', 'AMQP'] , default: 'MQTT'}
   	},
   properties : { type: Schema.Types.Mixed },
-  config_required: [{ 
+  config_required: [{
+    _id : false,
   	key_name : { type : String },
   	key_description : { type : String },
   	key_example : { type : String },

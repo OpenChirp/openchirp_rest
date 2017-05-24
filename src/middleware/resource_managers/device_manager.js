@@ -116,13 +116,13 @@ exports.linkService = function(req, callback){
     })  
     
     if(linkExists){
-        var result = new Object();
-        result.message = "Service " + newLink.service_id + " already linked to device";
-        return callback(null, result);  
+        var error = new Error();
+        error.message = "Service " + newLink.service_id + " already linked to device";
+        return callback(error);  
     }else{
         Device.findByIdAndUpdate(deviceId, { $addToSet: { linked_services: newLink }}, function(err, result){
             if(err) { return callback(err); }
-            service_pubsub.publishNewDevice(req.service,req.device, newLink , callback);
+            service_pubsub.publishNewDevice(req.service,req.device, newLink.config , callback);
            
         })  
     }      
