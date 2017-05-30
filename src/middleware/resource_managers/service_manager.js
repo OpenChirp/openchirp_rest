@@ -1,7 +1,9 @@
 
 var Gateway = require('../../models/gateway');
 var Device = require('../../models/device');
+var DeviceTemplate = require('../../models/device_template');
 var Service = require('../../models/service');
+var async = require('async');
 
 exports.getAllServices = function(callback){
 	Service.find().populate('owner', 'name email').exec(callback);
@@ -35,18 +37,34 @@ exports.updateService = function(req, callback){
     serviceToUpdate.save(callback);
 };
 
+exports.deleteDeviceAndTemplateLinks = function(serviceId, callback){
+    async.parallel([
+            function(next){
+                Device.update({"linked_services.service_id" : serviceId }, { $pull: { linked_services: { service_id : serviceId }}}, { multi: true}, next);
+              
+            },
+            function(next){
+                DeviceTemplate.update({"linked_services.service_id" : serviceId }, { $pull: { linked_services: { service_id : serviceId }}}, { multi: true}, next);
+            }
+
+    ],
+    function(err, results){
+        if(err) {
+         // Best Effort cleanup. Ignore errors
+          console.log(err);
+        }
+        return callback(null, null);
+    })       
+    
+}
+
 exports.deleteService = function(req, callback){
 
     var serviceToDelete = req.service;
-    if(String(req.user._id) === String(serviceToDelete.owner._id)){
-        //TODO: Update things that are linked to this service    
+    if(String(req.user._id) === String(serviceToDelete.owner._id)){     
         serviceToDelete.remove(function(err, result){
             if(err) { return callback(err); }
-            var serviceId = serviceToDelete._id;
-            Device.update({"linked_services.service_id" : serviceId }, { $pull: { linked_services: { service_id : serviceId}}}, { multi: true}, function(err, result){
-                return callback(null, null);
-            })
-
+            exports.deleteDeviceAndTemplateLinks(serviceToDelete._id, callback);
         });  
     }else{
         var error = new Error();
@@ -77,12 +95,8 @@ exports.getThings = function(req, callback){
            var thing = {};
            thing.id = result[i]._id;
            thing.type = 'device';
-            // thing.name = result[i].name;
-             //thing.pubsub = {};
-             //thing.pubsub.protocol = result[i].pubsub.protocol;
-             //thing.pubsub.endpoint = result[i].pubsub.endpoint;
-             thing.service_config = result[i].linked_services[0].config; // The search query ensures that only 1 object is returned in linked_services.
-             things.push(thing);
+           thing.service_config = result[i].linked_services[0].config; // The search query ensures that only 1 object is returned in linked_services.
+           things.push(thing);
          }
 
          return callback(null, things);
