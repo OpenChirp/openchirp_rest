@@ -1,8 +1,9 @@
 var mqttClient = require('./mqtt_client');
 
 exports.publishNewDevice = function(service, device, linkConfig, callback){
-	 var topic = service.pubsub.new_thing_endpoint;
+	 var topic = service.pubsub.news_endpoint;
      var message = {};
+     message.action = "new";
      message.thing = {};
      message.thing.type ="device";
      message.thing.id = device._id;
@@ -11,8 +12,9 @@ exports.publishNewDevice = function(service, device, linkConfig, callback){
 };
 
 exports.publishUpdateDevice = function(service, device, linkConfig, callback){
-	 var topic = service.pubsub.update_thing_endpoint;
+	 var topic = service.pubsub.news_endpoint;
      var message = {};
+     message.action = "update";
      message.thing = {};
      message.thing.type ="device";
      message.thing.id = device._id;
@@ -21,8 +23,9 @@ exports.publishUpdateDevice = function(service, device, linkConfig, callback){
 };
 
 exports.publishDeleteDevice = function(service, device, callback){
-    var topic = service.pubsub.remove_thing_endpoint;
+    var topic = service.pubsub.news_endpoint;
     var message = {};
+    message.action = "detele";
     message.thing = {};
     message.thing.type = "device";
     message.thing.id = device._id;

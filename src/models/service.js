@@ -29,17 +29,10 @@ serviceSchema.virtual('pubsub.endpoint').get(function () {
   return 'openchirp/services/' + this._id;
 });
 
-serviceSchema.virtual('pubsub.new_thing_endpoint').get(function(){
-  return this.pubsub.endpoint + '/thing/new';
+serviceSchema.virtual('pubsub.news_endpoint').get(function(){
+  return this.pubsub.endpoint + '/thing/news';
 });
 
-serviceSchema.virtual('pubsub.update_thing_endpoint').get(function(){
-  return this.pubsub.endpoint + '/thing/update';
-});
-
-serviceSchema.virtual('pubsub.remove_thing_endpoint').get(function(){
-  return this.pubsub.endpoint + '/thing/remove';
-});
 
 serviceSchema.index({ name :"text" , description : "text" });
 // Return model
