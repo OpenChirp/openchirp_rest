@@ -2,7 +2,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-exports = new Schema({
+var tdcSchema = new Schema({
   name: { type: String , required: true },
   unit: { type: String},
   is_actuable: { type : Boolean, default: false },
@@ -11,4 +11,11 @@ exports = new Schema({
   timestamp: {type: String}
 });
 
-module.exports = exports;
+tdcSchema.pre('save', function(next) {
+  var tdcName = this.name;
+  tdcName = tdcName.toLowerCase().replace(/ /g, "_");
+  this.name = tdcName;
+  next();
+});
+
+module.exports = tdcSchema;
