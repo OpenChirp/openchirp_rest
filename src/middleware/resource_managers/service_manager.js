@@ -10,7 +10,7 @@ exports.getAllServices = function(callback){
 exports.createNewService = function(req, callback){
 	var service = new Service(req.body);
     service.owner = req.user._id;
-	service.save(callback);
+    service.save(callback);
 };
 
 exports.getById = function(id, callback){
@@ -32,16 +32,23 @@ exports.updateService = function(req, callback){
     if(typeof req.body.description != 'undefined') serviceToUpdate.description = req.body.description;
     if(typeof req.body.properties != 'undefined') serviceToUpdate.properties = req.body.properties;
     if(typeof req.body.config_required != 'undefined') serviceToUpdate.config_required = req.body.config_required;
- 	serviceToUpdate.save(callback);
+    serviceToUpdate.save(callback);
 };
 
 exports.deleteService = function(req, callback){
 
-    serviceToDelete = req.service;
+    var serviceToDelete = req.service;
     if(String(req.user._id) === String(serviceToDelete.owner._id)){
         //TODO: Update things that are linked to this service    
-         serviceToDelete.remove(callback);  
-     }else{
+        serviceToDelete.remove(function(err, result){
+            if(err) { return callback(err); }
+            var serviceId = serviceToDelete._id;
+            Device.update({"linked_services.service_id" : serviceId }, { $pull: { linked_services: { service_id : serviceId}}}, { multi: true}, function(err, result){
+                return callback(null, null);
+            })
+
+        });  
+    }else{
         var error = new Error();
         error.status = 403;
         error.message = "Forbidden ! Only owner can delete this resource.";
@@ -67,19 +74,19 @@ exports.getThings = function(req, callback){
     Device.find({"linked_services.service_id" : serviceId }, {"linked_services.$" :1 }).select("pubsub name linked_services.config").exec(function(err, result){
         if(err) { return callback(err); }
         for (var i = 0; i < result.length; i++) {
-             var thing = {};
-             thing.id = result[i]._id;
-             thing.type = 'device';
+           var thing = {};
+           thing.id = result[i]._id;
+           thing.type = 'device';
             // thing.name = result[i].name;
              //thing.pubsub = {};
              //thing.pubsub.protocol = result[i].pubsub.protocol;
              //thing.pubsub.endpoint = result[i].pubsub.endpoint;
              thing.service_config = result[i].linked_services[0].config; // The search query ensures that only 1 object is returned in linked_services.
              things.push(thing);
-        }
-       
-        return callback(null, things);
-    })
+         }
+
+         return callback(null, things);
+     })
 };
 
 
