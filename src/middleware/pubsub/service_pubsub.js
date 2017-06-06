@@ -1,5 +1,10 @@
 var mqttClient = require('./mqtt_client');
 
+exports.publishUpdateProperties = function(service, properties, callback){
+     var topic = service.pubsub.endpoint+"/properties";    
+     mqttClient.publish(topic, JSON.stringify(properties), callback);        
+};
+
 exports.publishNewDevice = function(service, device, linkConfig, callback){
 	 var topic = service.pubsub.news_endpoint;
      var message = {};

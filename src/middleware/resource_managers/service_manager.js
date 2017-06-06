@@ -4,6 +4,7 @@ var Device = require('../../models/device');
 var DeviceTemplate = require('../../models/device_template');
 var Service = require('../../models/service');
 var async = require('async');
+var service_pubsub = require('../pubsub/service_pubsub');
 
 exports.getAllServices = function(callback){
 	Service.find().populate('owner', 'name email').exec(callback);
@@ -29,12 +30,21 @@ exports.getById = function(id, callback){
 
 exports.updateService = function(req, callback){
 	//TODO: Add logic for properties and config
+    var updateProps = false;
     var serviceToUpdate = req.service;
     if(typeof req.body.name != 'undefined') serviceToUpdate.name = req.body.name;
     if(typeof req.body.description != 'undefined') serviceToUpdate.description = req.body.description;
-    if(typeof req.body.properties != 'undefined') serviceToUpdate.properties = req.body.properties;
     if(typeof req.body.config_required != 'undefined') serviceToUpdate.config_required = req.body.config_required;
-    serviceToUpdate.save(callback);
+    if(typeof req.body.properties != 'undefined') {
+        updateProps = true;
+        serviceToUpdate.properties = req.body.properties;
+    }   
+    serviceToUpdate.save(function(err, result){
+         if(err) { return callback(err); }
+         if(updateProps){
+            service_pubsub.publishUpdateProperties(req.service, serviceToUpdate.properties , callback);
+         }  
+    });
 };
 
 exports.deleteDeviceAndTemplateLinks = function(serviceId, callback){
@@ -95,7 +105,7 @@ exports.getThings = function(req, callback){
            var thing = {};
            thing.id = result[i]._id;
            thing.type = 'device';
-           thing.service_config = result[i].linked_services[0].config; // The search query ensures that only 1 object is returned in linked_services.
+           thing.config = result[i].linked_services[0].config; // The search query ensures that only 1 object is returned in linked_services.
            things.push(thing);
          }
 

@@ -6,6 +6,7 @@ var nconf = require('nconf');
 var util = require('util');
 
 exports.createDeviceTransducer = function(req, callback ){
+	
 	req.device.transducers.push(req.body);
 	req.device.save(callback);
 };
