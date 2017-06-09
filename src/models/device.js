@@ -11,7 +11,7 @@ var transducerSchema = require('./transducer_schema');
 //Schema
 var deviceSchema = new Schema({
   name: { type: String, required: true },
-  type: { type: String, enum: ['LORA','FIREFLY','TWIST','BOSCH_XDK'] },
+  type: { type: String },
   location_id: { type: Schema.Types.ObjectId, ref: "Location"},
   gateway_id: { type: Schema.Types.ObjectId, ref: "Gateway" },
   pubsub : {

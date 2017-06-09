@@ -12,11 +12,12 @@ var userSchema = new Schema({
   google_id: String,
   photo_link : String,
   json : Schema.Types.Mixed,
-  password : { type: String },
-  shortcuts : [ shortcutSchema ]
+  shortcuts : [ shortcutSchema ],
+  groups: [{ type: Schema.Types.ObjectId, ref: 'Group' }]
 }, 
  schemaOptions
 );
 
+userSchema.index({ email : 1});
 // Return model
 module.exports = mongoose.model('User', userSchema);

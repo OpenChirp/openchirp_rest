@@ -56,4 +56,29 @@ exports.deleteCommandShortcut = function(req, callback){
             return callback(null, result);
     })
 };
+
+exports.addUserToGroup = function(userId, groupdId, callback){
+    User.findByIdAndUpdate(userId, { $addToSet: { groups: groupId }}, function (err, result) {
+        if(err) {           
+            return callback(err);
+         }
+        var result = new Object();
+        result.message = "Done";            
+        return callback(null, result);
+    })
+};
+
+exports.removeUserFromGroup = function(userId, groupdId, callback){
+   User.findByIdAndUpdate(userId, { $pull: { groups: groupId}}, function (err, result) {
+        if(err) { return callback(err); }
+        var result = new Object();
+        result.message = "Done";
+        return callback(null, result);
+    })
+};
+
+exports.deleteGroup = function(groupId, callback){
+    User.update({"groups" : groupId }, { $pull: { groups:  groupId }}, { multi: true}, callback);
+}
+
 module.exports = exports;

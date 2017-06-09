@@ -29,7 +29,7 @@ exports.getById = function(id, callback){
 };
 
 exports.updateService = function(req, callback){
-	//TODO: Add logic for properties and config
+
     var updateProps = false;
     var serviceToUpdate = req.service;
     if(typeof req.body.name != 'undefined') serviceToUpdate.name = req.body.name;
