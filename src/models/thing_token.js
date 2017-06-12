@@ -4,13 +4,12 @@ var Schema = mongoose.Schema;
 
 var schemaOptions = require('./schema_options');
 
-var Group = require('./group');
-
 //Schema
 var thingTokenSchema = new Schema({
   id: { type: String, required: true },
   token : { type: String, required: true },
   thing_type: { type: String, required: true},
+  owner: { type: Schema.Types.ObjectId, ref:'User' },
   groups: [{ type: Schema.Types.ObjectId, ref: 'Group' }]
   }, 
   schemaOptions
