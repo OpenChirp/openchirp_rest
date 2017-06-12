@@ -29,7 +29,7 @@ exports.publish = function(topic, message, callback ){
 	});
 
 	client.on('error', function () {
-		console.log("Error in connecting to mqtt client ");
+		console.log("Error in connecting to mqtt broker ");
 		client.end();
 		var error = new Error();
         error.message = 'Could not connect to mqtt broker';
