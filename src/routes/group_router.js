@@ -11,6 +11,14 @@ router.post('/', function(req, res, next) {
     })  
 });
 
+/* Get All groups */
+router.get('/', function(req, res, next){
+    groupManager.getAllGroups( function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
 /* Validate _id in all request URLs */
 router.param('_id', function(req, res, next, id) {
     if(!ObjectId.isValid(id)){
@@ -26,5 +34,36 @@ router.param('_id', function(req, res, next, id) {
     })  
 });
 
+/* Get members of a group */
+router.get('/:_id/members', function(req, res, next){
+    groupManager.getMembersOfGroup(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
+/* Add a member to group */
+router.post('/:_id/member', function(req, res, next){
+    groupManager.addMember(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
+/* Remove a member from group */
+router.put('/:_id/member', function(req, res, next){
+    groupManager.removeMember(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
+/* Delete a group */
+router.delete('/:_id', function(req, res, next){
+    groupManager.deleteGroup(req,  function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
 
 module.exports = router;

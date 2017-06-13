@@ -77,6 +77,10 @@ exports.removeUserFromGroup = function(userId, groupdId, callback){
     })
 };
 
+exports.getMembersOfGroup = function(groupId, callback){
+    User.find({"groups" : groupId}).select("name email").exec(callback);
+};
+
 exports.deleteGroup = function(groupId, callback){
     User.update({"groups" : groupId }, { $pull: { groups:  groupId }}, { multi: true}, callback);
 }

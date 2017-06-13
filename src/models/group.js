@@ -11,6 +11,7 @@ var groupSchema = new Schema({
 }, 
  schemaOptions
 );
+groupSchema.index({name : "text" });
 
 // Return model
 module.exports = mongoose.model('Group', groupSchema);

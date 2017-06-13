@@ -32,6 +32,44 @@ exports.getById = function(id, callback){
     })
 };
 
+exports.getMembersOfGroup = function(req, callback){
+    userManager.getMembersOfGroup(req.group._id, callback);
+    //TODO: get thing tokens also 
+
+};
+
+exports.authorizeUpdateGroup = function(req, next){
+    var groupId = req.group._id;
+    //Logged-in User's groups:
+    var userGroups = req.user.groups;
+    console.log("group memberships:" + userGroups);
+    if (groupId in userGroups ){
+        return next(null, null);
+    }else{
+        var error = new Error();
+        error.status = 403;
+        error.message = "Access Denied";
+        return next(error);
+    }
+}
+
+exports.addMember = function(req, callback){
+    exports.authorizeUpdateGroup(req, function(err, result){
+        if(err){ return callback(err); }
+        userManager.addUserToGroup(req.body.user, req.group._id, callback);
+        //TODO: add support for tokens
+    })
+   
+};
+
+exports.removeMember = function(req, callback){
+    exports.authorizeUpdateGroup(req, function(err, result){
+        if(err){ return callback(err); }
+        userManager.removeUserFromGroup(req.body.user, req.group._id, callback);
+        //TODO: add support for tokens
+     })
+};
+
 exports.removeGroupFromUsersAndTokens = function(groupId, callback){
 	 async.parallel([
             function(next){
