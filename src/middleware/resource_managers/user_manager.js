@@ -57,7 +57,7 @@ exports.deleteCommandShortcut = function(req, callback){
     })
 };
 
-exports.addUserToGroup = function(userId, groupdId, callback){
+exports.addUserToGroup = function(userId, groupId, callback){
     User.findByIdAndUpdate(userId, { $addToSet: { groups: groupId }}, function (err, result) {
         if(err) {           
             return callback(err);

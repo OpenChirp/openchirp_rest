@@ -3,20 +3,33 @@ var Group = require('../../models/group');
 var userManager = require('./user_manager');
 var thingTokenManager = require('./thing_token_manager');
 
-exports.getAllGroups = function(callback){
-	var query = Group.find();
-	query.select("name");
-	query.exec(callback);
+exports.getAllGroups = function(req, callback){
+    if(req.query && req.query.name ){
+        var name = req.query.name;
+    }
+    if(name){
+        console.log("name ");
+       var query = Group.find({ $text: { $search: name }});
+    }else{
+        console.log("no name");
+       var query = Group.find();
+    }
+    //query.select("name");
+    query.exec(callback);
 };
 
 exports.createGroup = function(req, callback){
 	var group = new Group();
 	group.name = req.body.name;
-	group.owner = req.user._id;
-	group.save(function(err, result){
-		if(err) { return callback(err); }
-		userManager.addUserToGroup(group.owner, result._id, callback);
-	});
+    if(req.ownerid){
+        group.owner = req.ownerid;
+    }else{
+        group.owner = req.user._id;
+    }
+    group.save(function(err, result){
+      if(err) { return callback(err); }
+      userManager.addUserToGroup(group.owner, result._id, callback);
+  });
 };
 
 exports.getById = function(id, callback){
@@ -29,7 +42,7 @@ exports.getById = function(id, callback){
             return callback(error);
         }
         return callback(null, result);
-    })
+    });
 };
 
 exports.getMembersOfGroup = function(req, callback){
@@ -59,7 +72,7 @@ exports.addMember = function(req, callback){
         userManager.addUserToGroup(req.body.user, req.group._id, callback);
         //TODO: add support for tokens
     })
-   
+
 };
 
 exports.removeMember = function(req, callback){
@@ -67,40 +80,40 @@ exports.removeMember = function(req, callback){
         if(err){ return callback(err); }
         userManager.removeUserFromGroup(req.body.user, req.group._id, callback);
         //TODO: add support for tokens
-     })
+    })
 };
 
 exports.removeGroupFromUsersAndTokens = function(groupId, callback){
-	 async.parallel([
-            function(next){
-               userManager.deleteGroup(groupId, next);             
-            },
-            function(next){
-               thingTokenManager.deleteGroup(groupId, next);
-            }
-    ],
-    function(err, results){
-        if(err) {
+  async.parallel([
+    function(next){
+     userManager.deleteGroup(groupId, next);             
+ },
+ function(next){
+     thingTokenManager.deleteGroup(groupId, next);
+ }
+ ],
+ function(err, results){
+    if(err) {
          // Best Effort cleanup. Ignore errors
-          console.log(err);
-        }
-        return callback(null, null);
-    })       
+         console.log(err);
+     }
+     return callback(null, null);
+ })       
 };
 
 exports.deleteGroup = function(req, callback){
 	var groupToDelete = req.group;
-	 if(String(req.user._id) === String(groupToDelete.owner._id)){     
-        groupToDelete.remove(function(err, result){
-            if(err) { return callback(err); }
-            exports.removeGroupFromUsersAndTokens(groupToDelete._id, callback);
-        });  
-    }else{
-        var error = new Error();
-        error.status = 403;
-        error.message = "Forbidden ! Only owner can delete this resource.";
-        return callback(error);
-    }
+  if(String(req.user._id) === String(groupToDelete.owner._id)){     
+    groupToDelete.remove(function(err, result){
+        if(err) { return callback(err); }
+        exports.removeGroupFromUsersAndTokens(groupToDelete._id, callback);
+    });  
+}else{
+    var error = new Error();
+    error.status = 403;
+    error.message = "Forbidden ! Only owner can delete this resource.";
+    return callback(error);
+}
 };
 
 module.exports = exports;

@@ -12,6 +12,7 @@ var passport = require('passport');
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
 var BasicStrategy = require('passport-http').BasicStrategy;
 var userManager = require('./middleware/resource_managers/user_manager');
+var thingTokenManager = require('./middleware/resource_managers/thing_token_manager');
 
 var app = express();
 // uncomment after placing your favicon in /public
@@ -21,7 +22,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../public/')));
-
 
 //Setup Config
 nconf.env();
@@ -61,6 +61,10 @@ var dbConnect = function(){
 };
 
 dbConnect();
+
+
+// TODO: All the auth code below requires cleanup
+
 
 // Passport Session setup
 passport.serializeUser(function(user, next) {
@@ -172,11 +176,11 @@ app.get('/auth/logout', function(req, res) {
   res.redirect(nconf.get("website_url"));
 });
 
-var verifyBasicAuth = function(username, password, done) {
-   userManager.getUserByEmail(username, function(err, user) {
+var verifyBasicAuth = function(id, password, done) {
+   thingTokenManager.getTokenById(id, function(err, user) {
       if (err) { console.log("error"); return done(err); }
       if (!user) { console.log("no user"); return done(null, false); }
-      if (user.password != password) { console.log("wrong password"); return done(null, false); }
+      if (user.token != password) { console.log("wrong password for "+id); return done(null, false); }
       console.log("success");
       return done(null, user);
     });
@@ -207,8 +211,10 @@ var doAuthenticate = function(req, res, next){
     return next(error_401);
   }
   verifyBasicAuth(userid, password, function(err, result){
-  if(err) {return next(error_401); } 
+    if(err) {return next(error_401); } 
+    if(!result) { return next(error_401); }
     req.user=result;
+    req.ownerid = result.owner;
     return next();
   })
 }

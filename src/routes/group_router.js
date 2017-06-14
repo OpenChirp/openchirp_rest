@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var ObjectId = require('mongoose').Types.ObjectId;
 
 var groupManager = require('../middleware/resource_managers/group_manager');
 
@@ -13,18 +14,18 @@ router.post('/', function(req, res, next) {
 
 /* Get All groups */
 router.get('/', function(req, res, next){
-    groupManager.getAllGroups( function(err, result){
+    groupManager.getAllGroups(req, function(err, result){
         if(err) { return next(err); }
         return res.json(result);
     })
 });
 
 /* Validate _id in all request URLs */
-router.param('_id', function(req, res, next, id) {
-    if(!ObjectId.isValid(id)){
+router.param('_id', function(req, res, next, id) {    
+    if ( !ObjectId.isValid(id)) {
         var error = new Error();
         error.status = 404;
-        error.message = "Invalid Object ID :"+id ;
+        error.message = "Invalid Object ID: " + id ;
         return next(error);
     }
     groupManager.getById(id, function(err, result) {
