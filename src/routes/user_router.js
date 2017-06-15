@@ -12,6 +12,7 @@ router.get('/', function(req, res, next) {
    result._id = req.user._id;
    result.name = req.user.name;
    result.email = req.user.email;
+   result.groups = req.user.groups;
    return res.json(result);
 });
 

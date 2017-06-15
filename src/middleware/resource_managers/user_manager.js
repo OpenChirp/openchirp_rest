@@ -12,7 +12,7 @@ exports.createUser = function(user, callback){
 };
 
 exports.getUserById = function(id, callback){
-	User.findById(id, function (err, result) {
+	User.findById(id).populate("groups").exec(function (err, result) {
         if(err) { return callback(err); } 
         if (result == null ) { 
             var error = new Error();
