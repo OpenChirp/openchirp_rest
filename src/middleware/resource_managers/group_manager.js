@@ -12,7 +12,7 @@ exports.getAllGroups = function(req, callback){
     }else{
        var query = Group.find();
     }
-    //query.select("name");
+    query.select("name");
     query.exec(callback);
 };
 

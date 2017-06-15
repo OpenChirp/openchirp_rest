@@ -60,4 +60,12 @@ router.delete('/shortcut/:_shortcutId', function(req, res, next ){
     })
 });
 
+/* GET  all user name email */
+router.get('/all', function(req, res, next) {
+  userManager.getAll(function (err, result) {
+        if(err) { return next(err); }
+        return res.json(result);
+    })  
+});
+
 module.exports = router;

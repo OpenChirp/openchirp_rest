@@ -23,6 +23,10 @@ exports.getUserById = function(id, callback){
     })
 };
 
+exports.getAll = function(callback){
+    User.find({}).select("name email"). exec(callback);
+};
+
 exports.getUserByEmail = function(email, callback){
 	User.find({"email": email}).exec( function(err, result){
         if(err) { return callback(err); } 
