@@ -59,4 +59,5 @@ router.delete('/shortcut/:_shortcutId', function(req, res, next ){
         return res.json(result);
     })
 });
+
 module.exports = router;

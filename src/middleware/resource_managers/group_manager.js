@@ -8,10 +8,8 @@ exports.getAllGroups = function(req, callback){
         var name = req.query.name;
     }
     if(name){
-        console.log("name ");
-       var query = Group.find({ $text: { $search: name }});
+        var query = Group.find({ $text: { $search: name }});
     }else{
-        console.log("no name");
        var query = Group.find();
     }
     //query.select("name");
@@ -69,7 +67,7 @@ exports.authorizeUpdateGroup = function(req, next){
 exports.addMember = function(req, callback){
     exports.authorizeUpdateGroup(req, function(err, result){
         if(err){ return callback(err); }
-        userManager.addUserToGroup(req.body.user, req.group._id, callback);
+        userManager.addUserToGroup(req.body.user_id, req.group._id, callback);
         //TODO: add support for tokens
     })
 
