@@ -4,6 +4,7 @@ var request = require('request');
 var async = require('async');
 var nconf = require('nconf');
 var util = require('util');
+var SqlString = require('sqlstring');
 
 exports.createDeviceTransducer = function(req, callback ){
 	
@@ -79,7 +80,8 @@ exports.publish = function(device, transducerId, message, callback){
         return callback(error);
     }
     var topic = device.pubsub.endpoint+'/transducer/'+ transducer.name ;
-    mqttClient.publish(topic, message, callback);
+    console.log("Publishing to:" + topic);
+    mqttClient.publish(topic, JSON.stringify(message), callback);
 };
 
 exports.getDeviceTransducer = function(req, res){
@@ -132,8 +134,9 @@ exports.getDeviceTransducer = function(req, res){
 	}
 	   
   	/* the influxdb query */
-    query_string.q = "select value from \"" + measurement + "\"" + time_query + limit + offset;
-	
+	query_string.q = SqlString.format('select value from ? ? ? ?', [measurement, time_query, limit, offset]).replace(new RegExp('\'', 'g'), '"');
+	query_string.q = query_string.q.replace(new RegExp('\ \\\"\\\"', 'g'), ''); // remove empty strings
+
 	/* if request type is csv, tell influxdb to return csv (by adding Accept header); otherwise, default is json */
 	var http_headers = {};
 	if (typeof req.headers['content-type'] != 'undefined') {
