@@ -13,7 +13,11 @@ var userSchema = new Schema({
   photo_link : String,
   json : Schema.Types.Mixed,
   shortcuts : [ shortcutSchema ],
-  groups: [{ type: Schema.Types.ObjectId, ref: 'Group' }]
+  groups: [{ 
+  	_id : false,
+  	group_id: { type: Schema.Types.ObjectId, ref: 'Group', required: true },
+  	write_access: { type: Boolean, default: false }
+  }]
 }, 
  schemaOptions
 );

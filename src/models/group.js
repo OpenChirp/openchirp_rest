@@ -13,5 +13,12 @@ var groupSchema = new Schema({
 );
 groupSchema.index({name : "text" });
 
+groupSchema.pre('save', function(next) {
+  var groupName = this.name;
+  groupName = groupName.toLowerCase().replace(/ /g, "_");
+  this.name = groupName;
+  next();
+});
+
 // Return model
 module.exports = mongoose.model('Group', groupSchema);

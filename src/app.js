@@ -10,6 +10,7 @@ var nconf = require('nconf');
 var session = require('express-session');
 var passport = require('passport');
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
+var GoogleTokenStrategy = require('passport-google-id-token');
 var BasicStrategy = require('passport-http').BasicStrategy;
 var userManager = require('./middleware/resource_managers/user_manager');
 var thingTokenManager = require('./middleware/resource_managers/thing_token_manager');
@@ -63,7 +64,7 @@ var dbConnect = function(){
 dbConnect();
 
 
-// TODO: All the auth code below requires cleanup
+// TODO: Cleanup all the auth related code.
 
 
 // Passport Session setup
@@ -76,15 +77,8 @@ passport.deserializeUser(function(id, next) {
   userManager.getUserById(id, next );
 });
 
-//   Strategies in Passport require a `verify` function, which accept
-//   credentials (in this case, an accessToken, refreshToken, and Google
-//   profile), and invoke a callback with a user object.
-//   See http://passportjs.org/docs/configure#verify-callback
-passport.use(new GoogleStrategy(
 
-  nconf.get("auth_google"),
-
-  function(accessToken, refreshToken, profile, next) {
+var fetchProfile =  function(accessToken, refreshToken, profile, next) {
     var userCopy = {};
   
     if(profile.emails && profile.emails.length > 0){
@@ -105,9 +99,28 @@ passport.use(new GoogleStrategy(
       error.message = "Error in creating user in database";
       return next(error);
     }) 
-  }
-));
+};
 
+var fetchProfileFromToken =  function(parsedToken, googleId, next) {
+    var payload = parsedToken.payload;
+    var userCopy = {};
+    userCopy.email = payload.email;
+    userCopy.name = payload.name;
+    userCopy.google_id = googleId;
+
+
+    userManager.createUser(userCopy, function(err, result){
+      if(err) { return next(err); }
+      if(result) { return next(null, result); }
+      var error = new Error();
+      error.message = "Error in creating user in database";
+      return next(error);
+    }) 
+};
+
+passport.use(new GoogleStrategy(nconf.get("auth_google"), fetchProfile ));
+
+passport.use(new GoogleTokenStrategy({ clientID: nconf.get("auth_google.clientID") }, fetchProfileFromToken ));
 
 /*passport.use(new BasicStrategy(
   function(username, password, done) {
@@ -149,6 +162,19 @@ app.get('/auth/google/callback',
     // Authenticated successfully
     res.redirect(nconf.get("website_url")+'/home');
   });
+
+//For Android app login
+app.post('/auth/google/token',  passport.authenticate('google-id-token'),
+ function(req, res) {
+  console.log("success in google/token " + req.user);
+  res.send(req.user);
+});
+
+app.get('/auth/google/token', passport.authenticate('google-id-token'),
+ function(req, res) {
+  console.log("success in google/token " + req.user);
+  res.send(req.user);
+});
 
 
 if(nconf.get("enable_auth")){

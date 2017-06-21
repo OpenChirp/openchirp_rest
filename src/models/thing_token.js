@@ -6,11 +6,10 @@ var schemaOptions = require('./schema_options');
 
 //Schema
 var thingTokenSchema = new Schema({
-  thing_id: { type: String, required: true, unique: true },
+  thing_id: { type: Schema.Types.ObjectId, required: true, unique: true },
   token : { type: String, required: true },
-  thing_type: { type: String, required: true},
-  owner: { type: Schema.Types.ObjectId, ref:'User', required:true },
-  groups: [{ type: Schema.Types.ObjectId, ref: 'Group' }]
+  thing_type: { type: String, required: true}, //device, service, user
+  owner: { type: Schema.Types.ObjectId, ref:'User', required:true }
   }, 
   schemaOptions
 );

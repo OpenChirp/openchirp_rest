@@ -34,6 +34,10 @@ router.param('_id', function(req, res, next, id) {
         next();
     })  
 });
+/* Get a group */
+router.get('/:_id', function(req, res, next){  
+    return res.json(req.group);    
+});
 
 /* Get members of a group */
 router.get('/:_id/members', function(req, res, next){
