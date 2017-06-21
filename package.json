@@ -23,6 +23,7 @@
     "q": "^1.5.0",
     "request": "^2.81.0",
     "serve-favicon": "^2.3.0",
+    "sqlstring": "^2.2.0",
     "supervisor": "^0.12.0"
   },
   "devDependencies": {
