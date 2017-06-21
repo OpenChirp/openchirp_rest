@@ -1,7 +1,7 @@
 //During the test the env variable is set to test
 process.env.NODE_ENV = 'test';
 
-let mongoose = require("mongoose");
+let mongoose = require('mongoose');
 let Device = require('../src/models/device');
 let User = require('../src/models/user');
 
@@ -19,19 +19,21 @@ var ownerUserId;
 
 //Our parent block
 describe('Devices', function() {
-    before('Creating User for tests...', function() { // Before all tests we add a user to be owner of our new test devices
-        return User.findOne({
-            email: "test@test.com"
+    before('Creating User for tests...', (done) => { // Before all tests we add a user to be owner of our new test devices
+        User.findOne({
+            email: 'test@test.com'
         }, function(err, user) {
-            if (err) {
-                let nuser = new User({
-                    name: "test",
-                    email: "test@test.com"
+            if (user == undefined) {
+                let user = new User({
+                    name: 'test',
+                    email: 'test@test.com'
                 });
-                nuser.save();
-                ownerUserId = nuser.id;
+                user.save();
+                ownerUserId = user.id              
+                done();
             } else ownerUserId = user.id;
-        });
+            done();
+         });
     });
 
     beforeEach((done) => { //Before each test we remove all devices
@@ -62,35 +64,35 @@ describe('Devices', function() {
     describe('/POST device', function() {
         it('it should *not* POST a device without name field', (done) => {
             let dev = {
-                "type": "LORA",
-                "enabled": "true"
+                'type': 'LORA',
+                'enabled': 'true'
             }
             chai.request(server)
                 .post('/api/device/')
                 .send(dev)
                 .end((err, res) => {
-                    /**maybe should be ?:
+                    /**expected : 
                     res.should.have.status(400); */
                     res.should.have.status(500);
                     res.body.should.be.a('object');
                     res.body.should.have.property('error');
                     res.body.error.should.have.property('message');
-                    res.body.error.message.should.equal("Device validation failed: name: Path `name` is required.");
+                    res.body.error.message.should.equal('Device validation failed: name: Path `name` is required.');
                     done();
                 });
         });
 
         it('it should POST a new device', (done) => {
             let dev = {
-                "name": "Test Device",
-                "type": "LORA",
-                "enabled": "true",
-                "owner": ownerUserId,
-                "transducers": [{
-					  "name":"Temperature",
-					  "unit":"Celsius",
-					  "properties":{
-					    "protobuf":"uint:32"
+                'name': 'Test Device',
+                'type': 'LORA',
+                'enabled': 'true',
+                'owner': ownerUserId,
+                'transducers': [{
+					  'name':'Temperature',
+					  'unit':'Celsius',
+					  'properties':{
+					    'protobuf':'uint:32'
 					    }  
 					}]
             }
@@ -101,9 +103,9 @@ describe('Devices', function() {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('name');
-                    res.body.name.should.equal("Test Device");
+                    res.body.name.should.equal('Test Device');
                     res.body.should.have.property('type');
-                    res.body.type.should.equal("LORA");
+                    res.body.type.should.equal('LORA');
                     res.body.should.have.property('enabled');
                     res.body.enabled.should.equal(true);
                     res.body.should.have.property('transducers');
@@ -120,10 +122,10 @@ describe('Devices', function() {
     describe('/GET/:id device', function() {
         it('it should GET a device by id', (done) => {
             let device = new Device({
-                "name": "Test Device",
-                "type": "LORA",
-                "enabled": "true",
-                "owner": ownerUserId
+                'name': 'Test Device',
+                'type': 'LORA',
+                'enabled': 'true',
+                'owner': ownerUserId
             });
             device.save((err, device) => {
                 chai.request(server)
@@ -133,9 +135,10 @@ describe('Devices', function() {
                         res.should.have.status(200);
                         res.body.should.be.a('object');
                         res.body.id.should.equal(device.id);
-                        res.body.name.should.equal("Test Device");
+                        res.body.should.have.property('name');                           
+                        res.body.name.should.equal('Test Device');
                         res.body.should.have.property('type');
-                        res.body.type.should.equal("LORA");
+                        res.body.type.should.equal('LORA');
                         res.body.should.have.property('enabled');
                         res.body.enabled.should.equal(true);                     
                         done();
@@ -150,23 +153,23 @@ describe('Devices', function() {
     describe('/PUT/:id device', function() {
         it('it should UPDATE a device by id', (done) => {
             let device = new Device({
-                "name": "Test Device",
-                "type": "LORA",
-                "enabled": "true",
-                "owner": ownerUserId,
-                "transducers": [{
-					  "name":"Temperature",
-					  "unit":"Celsius",
-					  "properties":{
-					    "protobuf":"uint:32"
+                'name': 'Test Device',
+                'type': 'LORA',
+                'enabled': 'true',
+                'owner': ownerUserId,
+                'transducers': [{
+					  'name':'Temperature',
+					  'unit':'Celsius',
+					  'properties':{
+					    'protobuf':'uint:32'
 					    }  
 					}]
             });
             device.save((err, device) => {
                 let ndevice = {
-                    "name": "Updated Test Device",
-                    "type": "LORA",
-                    "enabled": "false"
+                    'name': 'Updated Test Device',
+                    'type': 'LORA',
+                    'enabled': 'false'
                 };
                 chai.request(server)
                     .put('/api/device/' + device.id)
@@ -175,9 +178,10 @@ describe('Devices', function() {
                         res.should.have.status(200);
                         res.body.should.be.a('object');
                         res.body.id.should.equal(device.id);
-                        res.body.name.should.equal("Updated Test Device");
+                        res.body.should.have.property('name');                        
+                        res.body.name.should.equal('Updated Test Device');
                         res.body.should.have.property('type');
-                        res.body.type.should.equal("LORA");
+                        res.body.type.should.equal('LORA');
                         res.body.should.have.property('enabled');
                         res.body.enabled.should.equal(false);
                     	res.body.should.have.property('transducers'); /* transducers array stays the same ...*/
@@ -195,10 +199,10 @@ describe('Devices', function() {
     describe('/DELETE/:id device', function() {
         it('it should DELETE a device by id', (done) => {
             let device = new Device({
-                "name": "Test Device",
-                "type": "LORA",
-                "enabled": "true",
-                "owner": ownerUserId
+                'name': 'Test Device',
+                'type': 'LORA',
+                'enabled': 'true',
+                'owner': ownerUserId
             });
             device.save((err, device) => {
                 chai.request(server)
@@ -208,7 +212,7 @@ describe('Devices', function() {
                         res.should.have.status(200);
                         res.body.should.be.a('object');
                         res.body.should.have.property('message');
-                        res.body.message.should.equal("Delete successful");                        
+                        res.body.message.should.equal('Delete successful');                        
                         done();
                     });
             });
