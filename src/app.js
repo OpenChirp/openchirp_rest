@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var nconf = require('nconf');
 var session = require('express-session');
+var RedisStore = require('connect-redis')(session);
 var passport = require('passport');
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
 var GoogleTokenStrategy = require('passport-google-id-token');
@@ -134,8 +135,13 @@ passport.use(new GoogleTokenStrategy({ clientID: nconf.get("auth_google.clientID
 }));*/
 
 
-//TODO: Update session store to mongo or redis
-app.use(session({secret: "randomsecret", resave: true, saveUninitialized: true}));
+app.use(session({
+    store: new RedisStore( nconf.get("redis") ),
+    secret: 'Opench!rp!ng'
+});
+
+//app.use(session({secret: "randomsecret", resave: true, saveUninitialized: true})););
+
 //Init Passport Authentication
 app.use(passport.initialize());
 //Persistent login sessions

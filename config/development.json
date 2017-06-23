@@ -10,6 +10,10 @@
  	"host": "128.237.216.67",
  	"port": "8086"
  },
+ "redis":{
+ 	"host" :"localhost",
+ 	"port" : "6379"
+ },
  "enable_auth" : false, 
  "auth_google":{
     "clientID": "clientID",
