@@ -153,7 +153,7 @@ exports.getDeviceTransducer = function(req, res){
   		qs: query_string	
 	};
 	
-	console.log("Query:" + JSON.stringify(options, null, 3));
+	//console.log("Query:" + JSON.stringify(options, null, 3));
  
  	// pipe the incoming response from influxdb to the response sent to the browser
     req.pipe(request(options)).pipe(res);
