@@ -16,6 +16,7 @@ var userSchema = new Schema({
   groups: [{ 
   	_id : false,
   	group_id: { type: Schema.Types.ObjectId, ref: 'Group', required: true },
+  	name: { type: String, required: true },
   	write_access: { type: Boolean, default: false }
   }]
 }, 

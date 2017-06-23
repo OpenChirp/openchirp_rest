@@ -26,7 +26,10 @@ exports.createGroup = function(req, callback){
     }
     group.save(function(err, result){
       if(err) { return callback(err); }
-      userManager.addUserToGroup(group.owner, result._id, callback);
+      req.group = result;
+      req.body.write_access = true;
+      req.body.user_id = req.user._id;
+      userManager.addUserToGroup(req, callback);
   });
 };
 
@@ -45,17 +48,22 @@ exports.getById = function(id, callback){
 
 exports.getMembersOfGroup = function(req, callback){
     userManager.getMembersOfGroup(req.group._id, callback);
-    //TODO: get thing tokens also 
-
 };
 
 exports.authorizeUpdateGroup = function(req, next){
     var groupId = req.group._id;
     //Logged-in User's groups:
     var userGroups = req.user.groups;
-    console.log("group memberships:" + userGroups);
-    if (groupId in userGroups ){
-        return next(null, null);
+
+    var isAllowed = false;
+    userGroups.forEach(function(userGroup){
+        if( (String(userGroup.group_id) === String(groupId)) && userGroup.write_access){
+            isAllowed = true;
+        }
+    })
+
+    if (isAllowed ){
+        return next();
     }else{
         var error = new Error();
         error.status = 403;
@@ -67,8 +75,7 @@ exports.authorizeUpdateGroup = function(req, next){
 exports.addMember = function(req, callback){
     exports.authorizeUpdateGroup(req, function(err, result){
         if(err){ return callback(err); }
-        userManager.addUserToGroup(req.body.user_id, req.group._id, callback);
-        //TODO: add support for tokens
+        userManager.addUserToGroup(req, callback);       
     })
 
 };
@@ -76,13 +83,15 @@ exports.addMember = function(req, callback){
 exports.removeMember = function(req, callback){
     exports.authorizeUpdateGroup(req, function(err, result){
         if(err){ return callback(err); }
-        userManager.removeUserFromGroup(req.body.user, req.group._id, callback);
-        //TODO: add support for tokens
+        userManager.removeUserFromGroup(req, callback);
+       
     })
 };
 
-exports.removeGroupFromUsersAndTokens = function(groupId, callback){
-  async.parallel([
+exports.removeGroupFromUsers= function(groupId, callback){
+  userManager.deleteGroup(groupId, callback);
+  
+  /*async.parallel([
     function(next){
      userManager.deleteGroup(groupId, next);             
  },
@@ -96,7 +105,7 @@ exports.removeGroupFromUsersAndTokens = function(groupId, callback){
          console.log(err);
      }
      return callback(null, null);
- })       
+ }) */      
 };
 
 exports.deleteGroup = function(req, callback){
@@ -104,7 +113,7 @@ exports.deleteGroup = function(req, callback){
   if(String(req.user._id) === String(groupToDelete.owner._id)){     
     groupToDelete.remove(function(err, result){
         if(err) { return callback(err); }
-        exports.removeGroupFromUsersAndTokens(groupToDelete._id, callback);
+        exports.removeGroupFromUsers(groupToDelete._id, callback);
     });  
 }else{
     var error = new Error();

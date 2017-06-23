@@ -12,7 +12,7 @@ exports.createUser = function(user, callback){
 };
 
 exports.getUserById = function(id, callback){
-	User.findById(id).populate("groups").exec(function (err, result) {
+	User.findById(id).exec(function (err, result) {
         if(err) { return callback(err); } 
         if (result == null ) { 
             var error = new Error();
@@ -61,8 +61,12 @@ exports.deleteCommandShortcut = function(req, callback){
     })
 };
 
-exports.addUserToGroup = function(userId, groupId, callback){
-    User.findByIdAndUpdate(userId, { $addToSet: { groups: groupId }}, function (err, result) {
+exports.addUserToGroup = function(req, callback){
+    var canEditGroup = false;
+    if (typeof req.body.write_access !="undefined"){
+        canEditGroup= req.body.write_access; 
+    }
+    User.findByIdAndUpdate(req.body.user_id, { $addToSet: { groups: { group_id: req.group._id , name: req.group.name , write_access: canEditGroup }}}, function (err, result) {
         if(err) {           
             return callback(err);
          }
@@ -72,8 +76,8 @@ exports.addUserToGroup = function(userId, groupId, callback){
     })
 };
 
-exports.removeUserFromGroup = function(userId, groupdId, callback){
-   User.findByIdAndUpdate(userId, { $pull: { groups: groupId}}, function (err, result) {
+exports.removeUserFromGroup = function(req, callback){
+   User.findByIdAndUpdate(req.body.user_id, { $pull: { groups: { groupd_id : groupId }}}, function (err, result) {
         if(err) { return callback(err); }
         var result = new Object();
         result.message = "Done";
@@ -82,11 +86,11 @@ exports.removeUserFromGroup = function(userId, groupdId, callback){
 };
 
 exports.getMembersOfGroup = function(groupId, callback){
-    User.find({"groups" : groupId}).select("name email").exec(callback);
+    User.find({"groups.group_id" : groupId}).select("name email").exec(callback);
 };
 
 exports.deleteGroup = function(groupId, callback){
-    User.update({"groups" : groupId }, { $pull: { groups:  groupId }}, { multi: true}, callback);
+    User.update({"groups.group_id" : groupId }, { $pull: { groups: { group_id:  groupId }}}, { multi: true}, callback);
 }
 
 module.exports = exports;
