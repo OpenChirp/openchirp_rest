@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/OpenChirp/openchirp_rest.svg?branch=master)](https://travis-ci.org/OpenChirp/openchirp_rest)
+
 # OpenChirp REST API
 
 ## Documentation
@@ -14,6 +16,11 @@ npm install
 ## Deploy
 ```
 npm start
+```
+
+## Run Tests
+```
+npm test
 ```
 
 ## Config
