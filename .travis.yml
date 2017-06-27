@@ -10,7 +10,12 @@ before_install:
   - rm -fr openchirp_rest
   - git clone https://github.com/OpenChirp/server_docker.git 
   - cd server_docker
-  - git clone https://github.com/OpenChirp/openchirp_rest.git ./node/code
+  - git clone https://github.com/nampereira/openchirp_rest.git ./node/code
+  ## TEMP START: Get previous working commit 
+  - cd node/code
+  - git fetch https://github.com/nampereira/openchirp_rest.git 0d6a4eec4defc61fc4302cf4a4d786c973265bc3 node/code
+  - cd ../..
+  ## TEMP END  
   - docker-compose -f docker-compose.yml -f docker-compose.test-rest.yml up -d
   - docker exec -it serverdocker_rest_1 npm install
   
