@@ -1,0 +1,20 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.7.1
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  'npm:http-signature:20150122':
+    - passport-google-id-token > request > http-signature:
+        reason: None given
+        expires: '2017-07-28T17:11:30.845Z'
+  'npm:qs:20170213':
+    - passport-google-id-token > request > qs:
+        reason: None given
+        expires: '2017-07-28T17:11:30.846Z'
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  'npm:ms:20170412':
+    - passport-google-id-token > jsonwebtoken > ms:
+        patched: '2017-06-28T17:11:30.849Z'
+  'npm:request:20160119':
+    - passport-google-id-token > request:
+        patched: '2017-06-28T17:11:30.849Z'
