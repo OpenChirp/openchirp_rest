@@ -77,7 +77,7 @@ exports.addUserToGroup = function(req, callback){
 };
 
 exports.removeUserFromGroup = function(req, callback){
-   User.findByIdAndUpdate(req.body.user_id, { $pull: { groups: { group_id : groupId }}}, function (err, result) {
+   User.findByIdAndUpdate(req.body.user_id, { $pull: { groups: { group_id : req.group._id }}}, function (err, result) {
         if(err) { return callback(err); }
         var result = new Object();
         result.message = "Done";

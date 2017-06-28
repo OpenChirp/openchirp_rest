@@ -137,8 +137,10 @@ passport.use(new GoogleTokenStrategy({ clientID: nconf.get("auth_google.clientID
 
 app.use(session({
     store: new RedisStore( nconf.get("redis") ),
-    secret: 'Opench!rp!ng'
-});
+    secret: nconf.get("session_secret"),
+    resave: true,
+    saveUninitialized: true
+}));
 
 //app.use(session({secret: "randomsecret", resave: true, saveUninitialized: true})););
 
