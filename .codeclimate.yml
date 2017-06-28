@@ -1,0 +1,26 @@
+engines:
+  duplication:
+    enabled: false
+  eslint:
+    enabled: true
+    checks:
+      max-statements:
+        enabled: false
+      complexity:
+        enabled: false  
+#      wrap-iife:
+#        enabled: false
+#      guard-for-in:
+#        enabled: false
+#      no-constant-condition:
+#        enabled: false
+#      no-extend-native:
+#        enabled: false
+#      no-func-assign:
+#        enabled: false        
+  csslint:
+    enabled: false
+
+ratings:
+  paths:
+  - src/**
