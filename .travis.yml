@@ -14,6 +14,8 @@ before_install:
   ## TEMP START: Get previous working commit 
   - cd node/code
   - git reset --hard latest-testable
+  - wget https://raw.githubusercontent.com/OpenChirp/openchirp_rest/master/config/docker.json -o config/docker.json
+  - wget https://raw.githubusercontent.com/OpenChirp/openchirp_rest/master/config/test.json -o config/test.json
   - cd ../..
   ## TEMP END  
   - docker-compose -f docker-compose.yml -f docker-compose.test-rest.yml up -d
