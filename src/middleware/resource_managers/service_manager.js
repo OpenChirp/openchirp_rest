@@ -99,7 +99,7 @@ exports.getServicesByOwner = function(req, callback) {
 exports.getThings = function(req, callback){
     var serviceId = req.service._id;
     var things = [];
-    Device.find({"linked_services.service_id" : serviceId }, {"linked_services.$" :1 }).select("pubsub name linked_services.config").exec(function(err, result){
+    Device.find({"linked_services.service_id" : serviceId }, {"linked_services.$" : 1 }).select("pubsub name linked_services.config").exec(function(err, result){
         if(err) { return callback(err); }
         for (var i = 0; i < result.length; i++) {
            var thing = {};

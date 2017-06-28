@@ -63,7 +63,13 @@ exports.deleteCommandShortcut = function(req, callback){
 
 exports.addUserToGroup = function(req, callback){
     var canEditGroup = false;
-    if (typeof req.body.write_access !="undefined"){
+    if( typeof req.body.user_id == "undefined"){
+        var err = new Error();
+        err.message = "user_id cannot be null";
+        return callback(err);
+    }
+
+    if (typeof req.body.write_access != "undefined"){
         canEditGroup= req.body.write_access; 
     }
     User.findByIdAndUpdate(req.body.user_id, { $addToSet: { groups: { group_id: req.group._id , name: req.group.name , write_access: canEditGroup }}}, function (err, result) {
@@ -86,7 +92,21 @@ exports.removeUserFromGroup = function(req, callback){
 };
 
 exports.getMembersOfGroup = function(groupId, callback){
-    User.find({"groups.group_id" : groupId}).select("name email").exec(callback);
+    var members = [];
+    User.find({"groups.group_id" : groupId}, {"groups.$" : 1 }).select("name email groups").exec( function(err, result){
+         if(err) { return callback(err); }
+        for (var i = 0; i < result.length; i++){
+            var member = {};
+            member._id = result[i]._id;
+            member.id = result[i].id;
+            member.name= result[i].name;
+            member.email=result[i].email;
+            member.write_access = result[i].groups[0].write_access;
+            members.push(member);
+
+        }
+        return callback(null, members);
+    })
 };
 
 exports.deleteGroup = function(groupId, callback){
