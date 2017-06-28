@@ -4,13 +4,13 @@ version: v1.7.1
 ignore:
   'npm:http-signature:20150122':
     - passport-google-id-token > request > http-signature:
-        reason: None given
+        reason: No easy fix at the time; Waiting for next version of passport-google-id-token
   'npm:qs:20170213':
     - passport-google-id-token > request > qs:
-        reason: None given
+        reason: No easy fix at the time; Waiting for next version of passport-google-id-token
   'npm:ms:20170412':
     - passport-google-id-token > jsonwebtoken > ms:
-        reason: None given
+        reason: No easy fix at the time; Waiting for next version of passport-google-id-token
   'npm:request:20160119':
     - passport-google-id-token > request:
-        reason: None given
+        reason: No easy fix at the time; Waiting for next version of passport-google-id-token
