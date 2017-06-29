@@ -14,6 +14,7 @@
  	"host" :"redis",
  	"port" : "6379"
  },
+ "session_secret": "sessionSecret",
  "enable_auth" : false, 
  "auth_google":{
     "clientID": "clientID",
