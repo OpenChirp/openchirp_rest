@@ -15,13 +15,12 @@ before_install:
   - cd node/code
   - git reset --hard latest-testable
   - wget https://raw.githubusercontent.com/OpenChirp/openchirp_rest/master/config/test.json -O config/test.json
-  - docker cp config/test.json serverdocker_rest_1:/usr/src/app/config/
   - cd ../..
   ## TEMP END  
   - docker-compose -f docker-compose.yml -f docker-compose.test-rest.yml up -d
-  - docker exec -it serverdocker_rest_1 npm install
+  - docker exec -it serverdocker_rest_1 bash -c "cd /usr/src/app/ && npm install"
   
 install: true
 
 script: 
-  - docker exec -it serverdocker_rest_1 npm test
+  - docker exec -it serverdocker_rest_1 bash -c "cd /usr/src/app/ && npm test"
