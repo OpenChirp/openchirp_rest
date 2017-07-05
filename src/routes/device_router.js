@@ -6,7 +6,7 @@ var deviceManager = require('../middleware/resource_managers/device_manager');
 var transducerManager = require('../middleware/resource_managers/transducer_manager');
 var serviceManager = require('../middleware/resource_managers/service_manager');
 var commandManager = require('../middleware/resource_managers/command_manager');
-
+var thingTokenManager = require('../middleware/resource_managers/thing_token_manager');
 /* GET all devices */
 router.get('/', function(req, res, next) {
     deviceManager.getAllDevices( function(err, result) {
@@ -188,6 +188,17 @@ router.put('/:_id/service/:_serviceId', function(req, res, next ){
 /* Remove device from a serivce */
 router.delete('/:_id/service/:_serviceId', function(req, res, next){
     deviceManager.delinkService(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
+
+/*************** Tokens ***************************/
+
+/* Generate a token*/
+router.post('/:_id/token', function(req, res, next ){
+    thingTokenManager.createToken(req.device._id,"device", req.user._id,  function(err, result){
         if(err) { return next(err); }
         return res.json(result);
     })

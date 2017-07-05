@@ -13,7 +13,8 @@ var RedisStore = require('connect-redis')(session);
 var passport = require('passport');
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
 var GoogleTokenStrategy = require('passport-google-id-token');
-var BasicStrategy = require('passport-http').BasicStrategy;
+//var BasicStrategy = require('passport-http').BasicStrategy;
+
 var userManager = require('./middleware/resource_managers/user_manager');
 var thingTokenManager = require('./middleware/resource_managers/thing_token_manager');
 
@@ -144,7 +145,6 @@ app.use(session({
     saveUninitialized: true
 }));
 
-//app.use(session({secret: "randomsecret", resave: true, saveUninitialized: true})););
 
 //Init Passport Authentication
 app.use(passport.initialize());
@@ -212,13 +212,11 @@ app.get('/auth/logout', function(req, res) {
   res.redirect(nconf.get("website_url"));
 });
 
-var verifyBasicAuth = function(id, password, done) {
-   thingTokenManager.getTokenById(id, function(err, user) {
-      if (err) { console.log("error"); return done(err); }
-      if (!user) { console.log("no user"); return done(null, false); }
-      if (user.token != password) { console.log("wrong password for "+id); return done(null, false); }
+var verifyDigestAuth = function(id, password, done) {
+   thingTokenManager.validateToken(id, password, function(err, thingCredential) {
+      if (err) { console.log("error"); return done(err); }  
       console.log("success");
-      return done(null, user);
+      return done(null, thingCredential);
     });
 };
 
@@ -246,7 +244,7 @@ var doAuthenticate = function(req, res, next){
   if (!userid || !password) {
     return next(error_401);
   }
-  verifyBasicAuth(userid, password, function(err, result){
+  verifyDigestAuth(userid, password, function(err, result){
     if(err) {return next(error_401); } 
     if(!result) { return next(error_401); }
     req.user=result;
@@ -257,7 +255,7 @@ var doAuthenticate = function(req, res, next){
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
-    //req.body.owner = req.user._id;
+   
     return next();
   }else{
 
