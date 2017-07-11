@@ -7,6 +7,7 @@ var transducerManager = require('../middleware/resource_managers/transducer_mana
 var serviceManager = require('../middleware/resource_managers/service_manager');
 var commandManager = require('../middleware/resource_managers/command_manager');
 var thingTokenManager = require('../middleware/resource_managers/thing_token_manager');
+
 /* GET all devices */
 router.get('/', function(req, res, next) {
     deviceManager.getAllDevices( function(err, result) {
@@ -31,10 +32,14 @@ router.param('_id', function(req, res, next, id) {
         error.message = "Invalid Object ID " + id ;
         return next(error);
     }
-    deviceManager.getDeviceById(id, function (err, result) {
+    deviceManager.getDeviceById(id, function (err, device) {
         if (err) { return next(err); }    
-        req.device = result;
-        next();
+        req.device = device;
+        thingTokenManager.getTokenByThingId(id, function(err, thingToken){
+            if(err) { return next(err); }
+            req.token = thingToken;                   
+            next();
+        })        
     })
 });
 
@@ -64,7 +69,12 @@ router.param('_serviceId', function(req, res, next, serviceId) {
 
 /* GET a device */
 router.get('/:_id', function(req, res, next) {
- 	return res.json(req.device);
+    var result = JSON.parse(JSON.stringify(req.device));
+    if(req.token){
+        result.token = {};
+        result.token._id = req.token._id;
+    }  
+ 	return res.json(result);
 });
 
 /* Update a device */
@@ -198,10 +208,40 @@ router.delete('/:_id/service/:_serviceId', function(req, res, next){
 
 /* Generate a token*/
 router.post('/:_id/token', function(req, res, next ){
+    if(req.token){
+        var error = new Error();
+        error.message = "Token already exists for thing id : " + req.token.username;
+        return next(error);
+    }
     thingTokenManager.createToken(req.device._id,"device", req.user._id,  function(err, result){
         if(err) { return next(err); }
         return res.json(result);
     })
 });
 
+/* Re-Generate a token*/
+router.put('/:_id/token', function(req, res, next ){
+    if(!req.token){
+        var error = new Error();
+        error.message = "No Token found for " + req.device._id + ". Use POST to generate a new token";
+        return next(error);
+    }
+    thingTokenManager.recreateToken(req,  function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
+/* Delete a token*/
+router.delete('/:_id/token', function(req, res, next ){
+    if(!req.token){
+        var error = new Error();
+        error.message = "No Token found for " + req.device._id + ". Nothing to delete.";
+        return next(error);
+    }
+    thingTokenManager.deleteToken(req,  function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
 module.exports = router;

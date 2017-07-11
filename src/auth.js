@@ -31,15 +31,14 @@ function hashPassword(password, callback) {
 
     }
     var salt = result.toString('base64');
-    console.log("salt "+salt);
+   
     crypto.pbkdf2(password, salt, config.iterations, config.hashLen, config.digest,
       function(err, hash) {
 
       if (err) {
         return callback(err);
       }
-      console.log("Hashed password " + hash.toString('base64'));
-
+    
       var result = "PBKDF2$"+config.digest+"$"+config.iterations+"$" +salt+"$"+hash.toString('base64');
     
       return callback(null, result);

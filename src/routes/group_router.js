@@ -46,6 +46,13 @@ router.get('/:_id/members', function(req, res, next){
         return res.json(result);
     })
 });
+/* Get members of a group */
+router.get('/:_id/notmembers', function(req, res, next){
+    groupManager.getMembersNotInGroup(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
 
 /* Add a member to group */
 router.post('/:_id/member', function(req, res, next){

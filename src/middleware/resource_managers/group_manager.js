@@ -50,6 +50,10 @@ exports.getMembersOfGroup = function(req, callback){
     userManager.getMembersOfGroup(req.group._id, callback);
 };
 
+exports.getMembersNotInGroup = function(req, callback){
+    userManager.getUsersNotInGroup(req.group._id, callback);
+};
+
 exports.authorizeUpdateGroup = function(req, next){
     var groupId = req.group._id;
     //Logged-in User's groups:
