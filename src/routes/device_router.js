@@ -69,6 +69,7 @@ router.param('_serviceId', function(req, res, next, serviceId) {
 
 /* GET a device */
 router.get('/:_id', function(req, res, next) {
+    //TODO: inefficient way to do shallow copy.
     var result = JSON.parse(JSON.stringify(req.device));
     if(req.token){
         result.token = {};
@@ -226,7 +227,7 @@ router.put('/:_id/token', function(req, res, next ){
         error.message = "No Token found for " + req.device._id + ". Use POST to generate a new token";
         return next(error);
     }
-    thingTokenManager.recreateToken(req,  function(err, result){
+    thingTokenManager.recreateToken(req.token,  function(err, result){
         if(err) { return next(err); }
         return res.json(result);
     })
@@ -239,9 +240,10 @@ router.delete('/:_id/token', function(req, res, next ){
         error.message = "No Token found for " + req.device._id + ". Nothing to delete.";
         return next(error);
     }
-    thingTokenManager.deleteToken(req,  function(err, result){
+    thingTokenManager.deleteToken(req.token,  function(err, result){
         if(err) { return next(err); }
         return res.json(result);
     })
 });
+
 module.exports = router;

@@ -3,6 +3,7 @@ var router = express.Router();
 var ObjectId = require('mongoose').Types.ObjectId;
 
 var serviceManager = require('../middleware/resource_managers/service_manager');
+var thingTokenManager = require('../middleware/resource_managers/thing_token_manager');
 
 
 /* GET all services */
@@ -31,13 +32,23 @@ router.param('_id', function(req, res, next, id) {
     serviceManager.getById(id, function (err, result) {
         if (err) { return next(err)};    
         req.service = result;
-        next();
+        thingTokenManager.getTokenByThingId(id, function(err, thingToken){
+            if(err) { return next(err); }
+            req.token = thingToken;                   
+            next();
+        })     
     })
 });
 
 /* GET a service */
 router.get('/:_id', function(req, res, next) {
- 	return res.json(req.service);
+    //TODO: inefficient way to do shallow copy.
+    var result = JSON.parse(JSON.stringify(req.service));
+    if(req.token){
+        result.token = {};
+        result.token._id = req.token._id;
+    }  
+    return res.json(result); 	
 });
 
 router.get('/:_id/things', function(req, res, next){
@@ -63,5 +74,48 @@ router.delete('/:_id', function(req, res, next) {
     })
     
 });
+
+/*************** Tokens ***************************/
+
+/* Generate a token*/
+router.post('/:_id/token', function(req, res, next ){
+    if(req.token){
+        var error = new Error();
+        error.message = "Token already exists for thing id : " + req.token.username;
+        return next(error);
+    }
+    thingTokenManager.createToken(req.service._id,"service", req.user._id,  function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
+/* Re-Generate a token*/
+router.put('/:_id/token', function(req, res, next ){
+    if(!req.token){
+        var error = new Error();
+        error.message = "No Token found for " + req.service._id + ". Use POST to generate a new token";
+        return next(error);
+    }
+    thingTokenManager.recreateToken(req.token,  function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
+/* Delete a token*/
+router.delete('/:_id/token', function(req, res, next ){
+    if(!req.token){
+        var error = new Error();
+        error.message = "No Token found for " + req.service._id + ". Nothing to delete.";
+        return next(error);
+    }
+    thingTokenManager.deleteToken(req.token,  function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
+
 
 module.exports = router;

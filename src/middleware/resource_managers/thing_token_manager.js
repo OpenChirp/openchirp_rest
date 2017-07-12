@@ -57,11 +57,11 @@ exports.validateToken = function(id, password, callback){
 	});
 }
 
-exports.recreateToken = function(req, callback){
-	var token = exports.generateToken();
-	auth.hashPassword(token, function(err, hashedPassword){
+exports.recreateToken = function(token, callback){
+	var newPassword = exports.generateToken();
+	auth.hashPassword( newPassword, function(err, hashedPassword){
 		if(err) { return callback(err); }	
-			var thingCred = req.token;
+			var thingCred = token;
 			thingCred.password = hashedPassword;
 			thingCred.save(function(error, result){ 
 				if(error ) { return callback(error); }
@@ -70,8 +70,8 @@ exports.recreateToken = function(req, callback){
 	})						
 };
 
-exports.deleteToken = function(req, callback){
-	req.token.remove( function(err, result){
+exports.deleteToken = function(token, callback){
+	token.remove( function(err, result){
 		if(err){ return callback(err); }
 		var result = {};
 		result.message = "Done";
