@@ -5,6 +5,7 @@ var ObjectId = require('mongoose').Types.ObjectId;
 var serviceManager = require('../middleware/resource_managers/service_manager');
 var thingTokenManager = require('../middleware/resource_managers/thing_token_manager');
 
+var serviceAuthorizer = require('../middleware/accesscontrol/service_authorizer');
 
 /* GET all services */
 router.get('/', function(req, res, next) {
@@ -67,7 +68,7 @@ router.put('/:_id', function(req, res, next) {
 });
 
 /* Delete a service */
-router.delete('/:_id', function(req, res, next) {   
+router.delete('/:_id', serviceAuthorizer.checkWriteAccess, function(req, res, next) {   
 	serviceManager.deleteService(req, function(err){
         if(err) { return next(err); }
         return res.json({ message: 'Delete successful'});   
@@ -78,7 +79,7 @@ router.delete('/:_id', function(req, res, next) {
 /*************** Tokens ***************************/
 
 /* Generate a token*/
-router.post('/:_id/token', function(req, res, next ){
+router.post('/:_id/token', serviceAuthorizer.checkWriteAccess, function(req, res, next ){
     if(req.token){
         var error = new Error();
         error.message = "Token already exists for thing id : " + req.token.username;
@@ -91,7 +92,7 @@ router.post('/:_id/token', function(req, res, next ){
 });
 
 /* Re-Generate a token*/
-router.put('/:_id/token', function(req, res, next ){
+router.put('/:_id/token', serviceAuthorizer.checkWriteAccess, function(req, res, next ){
     if(!req.token){
         var error = new Error();
         error.message = "No Token found for " + req.service._id + ". Use POST to generate a new token";
@@ -104,7 +105,7 @@ router.put('/:_id/token', function(req, res, next ){
 });
 
 /* Delete a token*/
-router.delete('/:_id/token', function(req, res, next ){
+router.delete('/:_id/token',serviceAuthorizer.checkWriteAccess, function(req, res, next ){
     if(!req.token){
         var error = new Error();
         error.message = "No Token found for " + req.service._id + ". Nothing to delete.";

@@ -69,19 +69,12 @@ exports.deleteDeviceAndTemplateLinks = function(serviceId, callback){
 }
 
 exports.deleteService = function(req, callback){
-
-    var serviceToDelete = req.service;
-    if(String(req.user._id) === String(serviceToDelete.owner._id)){     
-        serviceToDelete.remove(function(err, result){
-            if(err) { return callback(err); }
-            exports.deleteDeviceAndTemplateLinks(serviceToDelete._id, callback);
-        });  
-    }else{
-        var error = new Error();
-        error.status = 403;
-        error.message = "Forbidden ! Only owner can delete this resource.";
-        return callback(error);
-    }
+    var serviceToDelete = req.service;  
+    serviceToDelete.remove(function(err, result){
+        if(err) { return callback(err); }
+             exports.deleteDeviceAndTemplateLinks(serviceToDelete._id, callback);
+    });  
+  
 };
 
 exports.getServicesByOwner = function(req, callback) {
