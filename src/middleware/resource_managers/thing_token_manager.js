@@ -65,7 +65,7 @@ exports.recreateToken = function(token, callback){
 			thingCred.password = hashedPassword;
 			thingCred.save(function(error, result){ 
 				if(error ) { return callback(error); }
-				return callback(null, token);
+				return callback(null, newPassword);
 		  })
 	})						
 };

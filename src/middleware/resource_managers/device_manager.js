@@ -77,17 +77,8 @@ exports.updateDevice = function(req, callback){
 };
 
 exports.deleteDevice = function(req, callback){
-
     deviceToDelete = req.device;  
-    //Only owner can delete device for now
-    if(String(req.user._id) === String(deviceToDelete.owner._id)){
-        deviceToDelete.remove(callback);          
-    }else{
-        var error = new Error();
-        error.status = 403;
-        error.message = "Forbidden ! Only owner can delete this resource.";
-        return callback(error);
-    }
+    deviceToDelete.remove(callback);          
 };
 
 exports.getDevicesByOwner = function(req, callback) {

@@ -8,6 +8,8 @@ var serviceManager = require('../middleware/resource_managers/service_manager');
 var commandManager = require('../middleware/resource_managers/command_manager');
 var thingTokenManager = require('../middleware/resource_managers/thing_token_manager');
 
+var deviceAuthorizer = require('../middleware/accesscontrol/device_authorizer');
+
 /* GET all devices */
 router.get('/', function(req, res, next) {
     deviceManager.getAllDevices( function(err, result) {
@@ -87,7 +89,7 @@ router.put('/:_id', function(req, res, next) {
 });
 
 /* Delete a device */
-router.delete('/:_id', function(req, res, next) {   
+router.delete('/:_id', deviceAuthorizer.checkWriteAccess, function(req, res, next) {   
 	deviceManager.deleteDevice(req, function(err){
         if(err) { return next(err); }
          return res.json({ message: 'Delete successful'});  
@@ -207,8 +209,8 @@ router.delete('/:_id/service/:_serviceId', function(req, res, next){
 
 /*************** Tokens ***************************/
 
-/* Generate a token*/
-router.post('/:_id/token', function(req, res, next ){
+/* Generate a token */
+router.post('/:_id/token', deviceAuthorizer.checkWriteAccess,  function(req, res, next ){
     if(req.token){
         var error = new Error();
         error.message = "Token already exists for thing id : " + req.token.username;
@@ -220,8 +222,8 @@ router.post('/:_id/token', function(req, res, next ){
     })
 });
 
-/* Re-Generate a token*/
-router.put('/:_id/token', function(req, res, next ){
+/* Re-Generate a token */
+router.put('/:_id/token', deviceAuthorizer.checkWriteAccess, function(req, res, next ){
     if(!req.token){
         var error = new Error();
         error.message = "No Token found for " + req.device._id + ". Use POST to generate a new token";
@@ -233,8 +235,8 @@ router.put('/:_id/token', function(req, res, next ){
     })
 });
 
-/* Delete a token*/
-router.delete('/:_id/token', function(req, res, next ){
+/* Delete a token */
+router.delete('/:_id/token', deviceAuthorizer.checkWriteAccess, function(req, res, next ){
     if(!req.token){
         var error = new Error();
         error.message = "No Token found for " + req.device._id + ". Nothing to delete.";
