@@ -105,7 +105,7 @@ router.put('/:_id/token', serviceAuthorizer.checkWriteAccess, function(req, res,
 });
 
 /* Delete a token*/
-router.delete('/:_id/token',serviceAuthorizer.checkWriteAccess, function(req, res, next ){
+router.delete('/:_id/token', serviceAuthorizer.checkWriteAccess, function(req, res, next ){
     if(!req.token){
         var error = new Error();
         error.message = "No Token found for " + req.service._id + ". Nothing to delete.";

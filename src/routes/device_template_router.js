@@ -3,6 +3,7 @@ var router = express.Router();
 var ObjectId = require('mongoose').Types.ObjectId;
 
 var deviceTemplateManager = require('../middleware/resource_managers/device_template_manager');
+var deviceTemplateAuthorizer = require('../middleware/accesscontrol/device_template_authorizer');
 
 /* GET all device templates */
 router.get('/', function(req, res, next) {
@@ -42,7 +43,7 @@ router.get('/:_id', function(req, res, next) {
 
 
 /* Delete a device template */
-router.delete('/:_id', function(req, res, next) {
+router.delete('/:_id', deviceTemplateAuthorizer.checkWriteAccess, function(req, res, next) {
    deviceTemplateManager.delete(req, function(err){
         if(err) { return next(err); }
         return res.json({message: 'Done'});

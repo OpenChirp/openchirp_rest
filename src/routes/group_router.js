@@ -3,6 +3,7 @@ var router = express.Router();
 var ObjectId = require('mongoose').Types.ObjectId;
 
 var groupManager = require('../middleware/resource_managers/group_manager');
+var groupAuthorizer = require('../middleware/accesscontrol/group_authorizer');
 
 /* Create Group */
 router.post('/', function(req, res, next) {
@@ -71,7 +72,7 @@ router.put('/:_id/member', function(req, res, next){
 });
 
 /* Delete a group */
-router.delete('/:_id', function(req, res, next){
+router.delete('/:_id', groupAuthorizer.checkWriteAccess, function(req, res, next){
     groupManager.deleteGroup(req,  function(err, result){
         if(err) { return next(err); }
         return res.json(result);

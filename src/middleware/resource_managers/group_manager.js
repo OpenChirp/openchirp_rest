@@ -113,18 +113,11 @@ exports.removeGroupFromUsers= function(groupId, callback){
 };
 
 exports.deleteGroup = function(req, callback){
-	var groupToDelete = req.group;
-  if(String(req.user._id) === String(groupToDelete.owner._id)){     
-    groupToDelete.remove(function(err, result){
+	var groupToDelete = req.group;  
+  groupToDelete.remove(function(err, result){
         if(err) { return callback(err); }
         exports.removeGroupFromUsers(groupToDelete._id, callback);
-    });  
-}else{
-    var error = new Error();
-    error.status = 403;
-    error.message = "Forbidden ! Only owner can delete this resource.";
-    return callback(error);
-}
+  });  
 };
 
 module.exports = exports;
