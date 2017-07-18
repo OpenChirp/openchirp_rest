@@ -27,9 +27,9 @@ exports.createNewDevice = function(req, callback){
             Service.findById(link.service_id, function (err, service) {
                if(err) { return next(err) ; }
                if(service){
-                    service_pubsub.publishNewDevice(service, newDevice, link.config, next);
+                        service_pubsub.publishNewDevice(service, newDevice, link.config, next);
                     }else{
-                    return next();
+                        return next();
                     }
             });
         };
