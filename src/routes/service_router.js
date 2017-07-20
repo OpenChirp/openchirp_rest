@@ -16,7 +16,7 @@ router.get('/', function(req, res, next) {
 });
 
 /* Create new Service */
-router.post('/', function(req, res, next) {
+router.post('/', serviceAuthorizer.checkPostAccess, function(req, res, next) {
 	serviceManager.createNewService(req, function (err, result) {
 		if(err) { return next(err); }
   		return res.json(result);
@@ -60,7 +60,7 @@ router.get('/:_id/things', function(req, res, next){
 });
 
 /* Update a service */
-router.put('/:_id', function(req, res, next) {    
+router.put('/:_id', serviceAuthorizer.checkPostAccess, function(req, res, next) {    
   serviceManager.updateService(req, function(err, result){
  		if(err) { return next(err); }
  		return res.json(result);

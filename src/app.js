@@ -176,14 +176,12 @@ app.get('/auth/google/callback',
 //For Android app login
 app.post('/auth/google/token',  passport.authenticate('google-id-token'),
  function(req, res) {
-  console.log("success in google/token " + req.user);
-  res.send(req.user);
+    res.send(req.user);
 });
 
 app.get('/auth/google/token', passport.authenticate('google-id-token'),
  function(req, res) {
-  console.log("success in google/token " + req.user);
-  res.send(req.user);
+    res.send(req.user);
 });
 
 

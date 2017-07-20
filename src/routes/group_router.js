@@ -56,7 +56,7 @@ router.get('/:_id/notmembers', function(req, res, next){
 });
 
 /* Add a member to group */
-router.post('/:_id/member', function(req, res, next){
+router.post('/:_id/member', groupAuthorizer.checkWriteAccess, function(req, res, next){
     groupManager.addMember(req, function(err, result){
         if(err) { return next(err); }
         return res.json(result);
@@ -64,7 +64,7 @@ router.post('/:_id/member', function(req, res, next){
 });
 
 /* Remove a member from group */
-router.put('/:_id/member', function(req, res, next){
+router.put('/:_id/member',  groupAuthorizer.checkWriteAccess,function(req, res, next){
     groupManager.removeMember(req, function(err, result){
         if(err) { return next(err); }
         return res.json(result);

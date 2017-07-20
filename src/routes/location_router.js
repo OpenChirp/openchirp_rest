@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var ObjectId = require('mongoose').Types.ObjectId;
-//Models
 
 var locationManager = require('../middleware/resource_managers/location_manager');
+var locationAuthorizer = require('../middleware/accesscontrol/location_authorizer');
 
 /* GET all locations. */
 router.get('/', function(req, res, next) {
@@ -14,7 +14,7 @@ router.get('/', function(req, res, next) {
 });
 
 /* Create new location */
-router.post('/', function(req, res, next) {
+router.post('/', locationAuthorizer.checkPostAccess, function(req, res, next) {
 	locationManager.createNewLocation(req, function(err, result){
         if(err) { return next(err); }
         return res.json(result);
@@ -60,7 +60,7 @@ router.get('/:_id/devices', function(req, res, next) {
 });
 
 /* Create new child location */
-router.post('/:_id', function(req, res, next) {
+router.post('/:_id',locationAuthorizer.checkPostAccess, function(req, res, next) {
 	locationManager.createNewChildLocation(req, function(err, result){
         if(err) { return next(err); }
         return res.json(result);
@@ -68,7 +68,7 @@ router.post('/:_id', function(req, res, next) {
 });
 
 /* Update a location */
-router.put('/:_id', function(req, res, next) {
+router.put('/:_id',locationAuthorizer.checkPutAccess,function(req, res, next) {
     locationManager.updateLocation(req, function(err, result) {
         if(err) {  return next(err); }      
         return res.json(result);

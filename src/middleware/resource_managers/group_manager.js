@@ -47,49 +47,21 @@ exports.getById = function(id, callback){
 };
 
 exports.getMembersOfGroup = function(req, callback){
-    userManager.getMembersOfGroup(req.group._id, callback);
+  userManager.getMembersOfGroup(req.group._id, callback);
 };
 
 exports.getMembersNotInGroup = function(req, callback){
-    userManager.getUsersNotInGroup(req.group._id, callback);
+  userManager.getUsersNotInGroup(req.group._id, callback);
 };
 
-exports.authorizeUpdateGroup = function(req, next){
-    var groupId = req.group._id;
-    //Logged-in User's groups:
-    var userGroups = req.user.groups;
 
-    var isAllowed = false;
-    userGroups.forEach(function(userGroup){
-        if( (String(userGroup.group_id) === String(groupId)) && userGroup.write_access){
-            isAllowed = true;
-        }
-    })
-
-    if (isAllowed ){
-        return next();
-    }else{
-        var error = new Error();
-        error.status = 403;
-        error.message = "Access Denied";
-        return next(error);
-    }
-}
-
-exports.addMember = function(req, callback){
-    exports.authorizeUpdateGroup(req, function(err, result){
-        if(err){ return callback(err); }
-        userManager.addUserToGroup(req, callback);       
-    })
-
+exports.addMember = function(req, callback){ 
+ userManager.addUserToGroup(req, callback);       
+ 
 };
 
-exports.removeMember = function(req, callback){
-    exports.authorizeUpdateGroup(req, function(err, result){
-        if(err){ return callback(err); }
-        userManager.removeUserFromGroup(req, callback);
-       
-    })
+exports.removeMember = function(req, callback){ 
+  userManager.removeUserFromGroup(req, callback);
 };
 
 exports.removeGroupFromUsers= function(groupId, callback){

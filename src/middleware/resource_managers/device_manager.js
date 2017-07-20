@@ -25,20 +25,20 @@ exports.createNewDevice = function(req, callback){
 
         var iteration = function(link, next){
             Service.findById(link.service_id, function (err, service) {
-               if(err) { return next(err) ; }
-               if(service){
-                        service_pubsub.publishNewDevice(service, newDevice, link.config, next);
-                    }else{
-                        return next();
-                    }
-            });
+             if(err) { return next(err) ; }
+             if(service){
+                service_pubsub.publishNewDevice(service, newDevice, link.config, next);
+            }else{
+                return next();
+            }
+        });
         };
         async.each(linkedServices, iteration, function(err){
             if(err) { return callback(err); }
             return callback(null, newDevice);
         });                
-     };
-   
+    };
+
     if(template_id){
         deviceTemplateManager.createDeviceFromTemplate(device, template_id, function(err, result){
             if(err ){ return callback(err); }
@@ -73,7 +73,7 @@ exports.updateDevice = function(req, callback){
     if(typeof req.body.enabled != 'undefined') deviceToUpdate.enabled = req.body.enabled;
     if(typeof req.body.properties != 'undefined') deviceToUpdate.properties = req.body.properties;
 
- 	deviceToUpdate.save(callback);
+    deviceToUpdate.save(callback);
 };
 
 exports.deleteDevice = function(req, callback){
@@ -97,7 +97,7 @@ exports.linkService = function(req, callback){
     var newLink = {};
     newLink.service_id = req.params._serviceId;
     newLink.config = req.body;
-   
+
     var deviceId = req.device._id;
     var linkedServices = req.device.linked_services;
     var linkExists = false;
@@ -116,7 +116,7 @@ exports.linkService = function(req, callback){
         Device.findByIdAndUpdate(deviceId, { $addToSet: { linked_services: newLink }}, function(err, result){
             if(err) { return callback(err); }
             service_pubsub.publishNewDevice(req.service,req.device, newLink.config , callback);
-           
+
         })  
     }      
 };
@@ -125,21 +125,24 @@ exports.updateServiceConfig = function(req, callback){
     var serviceId = req.params._serviceId;
     var deviceId = req.device._id;
     var linkedServices = req.device.linked_services;
+    var linkToUpdate;
     for (var i = 0; i < linkedServices.length; i++) {
         if( linkedServices[i].service_id == serviceId){
-            var linkToUpdate = linkedServices[i];
+            linkToUpdate = linkedServices[i];
             break;            
         }
     }
 
-    for (var key in req.body) {
-        linkToUpdate.config[key] = req.body[key];
-    }
-    req.device.save(function(err, result ){
-        if(err) {return callback(err); }
-        service_pubsub.publishUpdateDevice(req.service, req.device, req.body, callback);
-    })
- 
+    if(!linkToUpdate){
+        var error = new Error();
+        error.message = "Service " + serviceId + " not linked to device";
+        return callback(error); 
+    }else {
+        Device.findOneAndUpdate({"_id":deviceId, "linked_services.service_id" : serviceId }, { $set: { "linked_services.$.config": req.body }}, function(err, result){
+            if(err) { return callback(err); }
+            service_pubsub.publishUpdateDevice(req.service, req.device, req.body, callback);           
+        }) 
+    }  
 };
 
 exports.delinkService = function(req, callback){
@@ -155,14 +158,14 @@ exports.delinkService = function(req, callback){
         Device.findByIdAndUpdate(req.device._id, { $pull: { linked_services: { "service_id" : serviceId }}}, function(err, result){
             if(err) { return callback(err); }   
             service_pubsub.publishDeleteDevice(req.service, req.device, callback); 
-        
+
         })
     }else{
         var result = new Object();
         result.message = "Service " + serviceId + " not linked to device";
         return callback(null, result);  
     }
- 
+
 };
 
 module.exports = exports;

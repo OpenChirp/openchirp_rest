@@ -1,4 +1,5 @@
 var forbidden_error = require('../errors/forbidden_error');
+var utils = require('./utils');
 
 exports.checkPostAccess = function(req, res, next){
 	var isDeveloper = utils.isDeveloper(req.user);
@@ -9,11 +10,11 @@ exports.checkPostAccess = function(req, res, next){
 	}
 }
 
-exports.checkWriteAccess = function(req, res, next){
-	if(String(req.user._id) === String(req.service.owner._id)){
+exports.checkPutAccess = function(req, res, next){
+	var isDeveloper = utils.isDeveloper(req.user);
+	if(isDeveloper){
 		return next();
-	}
-	else{
+	}else{
 		return next(forbidden_error);
 	}
 }
