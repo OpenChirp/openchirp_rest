@@ -262,6 +262,11 @@ function ensureAuthenticated(req, res, next) {
 
 }
 
+// Public Link Routes
+app.use('/pc', require('./routes/public_link_router'));
+
+
+
 /*function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     req.body.owner = req.user._id;

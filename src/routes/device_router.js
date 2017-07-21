@@ -162,6 +162,21 @@ router.post('/:_id/command/:_commandId', function(req, res, next ){
     })
 });
 
+/* Create a public link for a command */
+router.post('/:_id/command/:_commandId/publiclink', function(req, res, next ){
+    commandManager.createPublicLink(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
+/* Get public link for a command */
+router.get('/:_id/command/:_commandId/publiclink', function(req, res, next ){
+    commandManager.getPublicLink(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
 /* Update a command */
 /*router.put('/:_id/command/:_commandId', function(req, res, next ){
     commandManager.updateCommand(req, function(err, result){

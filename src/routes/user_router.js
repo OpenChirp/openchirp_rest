@@ -40,7 +40,7 @@ router.get('/myservices', function(req, res, next) {
     })  
 });
 
-/* Create Shortcut */
+/* Get all Shortcut */
 router.get('/shortcuts', function(req, res, next) {
   var result = req.user.shortcuts;
   return res.json(result);

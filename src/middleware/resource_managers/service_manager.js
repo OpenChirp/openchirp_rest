@@ -50,13 +50,11 @@ exports.updateService = function(req, callback){
 exports.deleteDeviceAndTemplateLinks = function(serviceId, callback){
     async.parallel([
             function(next){
-                Device.update({"linked_services.service_id" : serviceId }, { $pull: { linked_services: { service_id : serviceId }}}, { multi: true}, next);
-              
+                Device.update({"linked_services.service_id" : serviceId }, { $pull: { linked_services: { service_id : serviceId }}}, { multi: true}, next);    
             },
             function(next){
                 DeviceTemplate.update({"linked_services.service_id" : serviceId }, { $pull: { linked_services: { service_id : serviceId }}}, { multi: true}, next);
             }
-
     ],
     function(err, results){
         if(err) {
