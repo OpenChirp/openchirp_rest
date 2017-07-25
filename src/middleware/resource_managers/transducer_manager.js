@@ -80,7 +80,7 @@ exports.publish = function(device, transducerId, message, callback){
         return callback(error);
     }
     var topic = device.pubsub.endpoint+'/transducer/'+ transducer.name ;
-    mqttClient.publish(topic, JSON.stringify(message), callback);
+    mqttClient.publish(topic, message, callback);
 };
 
 exports.getDeviceTransducer = function(req, res){
