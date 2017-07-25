@@ -79,6 +79,13 @@ exports.deleteToken = function(token, callback){
 	});
 };
 
-
+exports.deleteTokenByThingId = function(thing_id, callback){
+	ThingCredential.remove( {"username" : thing_id }, function(err, result){
+		if(err){ return callback(err); }
+		var result = {};
+		result.message = "Done";
+		return callback(null, result);
+	});
+};
 
 module.exports = exports;

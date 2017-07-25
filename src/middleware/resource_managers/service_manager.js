@@ -5,6 +5,7 @@ var DeviceTemplate = require('../../models/device_template');
 var Service = require('../../models/service');
 var async = require('async');
 var service_pubsub = require('../pubsub/service_pubsub');
+var thingTokenManager = require('./thing_token_manager');
 
 exports.getAllServices = function(callback){
 	Service.find().populate('owner', 'name email').exec(callback);
@@ -47,13 +48,16 @@ exports.updateService = function(req, callback){
     });
 };
 
-exports.deleteDeviceAndTemplateLinks = function(serviceId, callback){
+exports.postDeleteCleanup = function(serviceId, callback){
     async.parallel([
             function(next){
                 Device.update({"linked_services.service_id" : serviceId }, { $pull: { linked_services: { service_id : serviceId }}}, { multi: true}, next);    
             },
             function(next){
                 DeviceTemplate.update({"linked_services.service_id" : serviceId }, { $pull: { linked_services: { service_id : serviceId }}}, { multi: true}, next);
+            },
+            function(next){
+                thingTokenManager.deleteTokenByThingId(serviceId, next);
             }
     ],
     function(err, results){
@@ -70,7 +74,7 @@ exports.deleteService = function(req, callback){
     var serviceToDelete = req.service;  
     serviceToDelete.remove(function(err, result){
         if(err) { return callback(err); }
-             exports.deleteDeviceAndTemplateLinks(serviceToDelete._id, callback);
+        exports.postDeleteCleanup(serviceToDelete._id, callback);
     });  
   
 };

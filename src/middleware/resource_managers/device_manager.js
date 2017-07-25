@@ -1,6 +1,7 @@
 var Device = require('../../models/device');
 var Service = require('../../models/service');
 var deviceTemplateManager = require('./device_template_manager');
+var thingTokenManager = require('./thing_token_manager');
 var service_pubsub = require('../pubsub/service_pubsub');
 var async = require('async');
 
@@ -24,14 +25,14 @@ exports.createNewDevice = function(req, callback){
 
 
         var iteration = function(link, next){
-            Service.findById(link.service_id, function (err, service) {
-             if(err) { return next(err) ; }
-             if(service){
-                service_pubsub.publishNewDevice(service, newDevice, link.config, next);
-            }else{
-                return next();
-            }
-        });
+            Service.findById( link.service_id, function (err, service) {
+                 if(err) { return next(err) ; }
+                 if(service){
+                    service_pubsub.publishNewDevice(service, newDevice, link.config, next);
+                }else{
+                    return next();
+                }
+            });
         };
         async.each(linkedServices, iteration, function(err){
             if(err) { return callback(err); }
@@ -77,8 +78,32 @@ exports.updateDevice = function(req, callback){
 };
 
 exports.deleteDevice = function(req, callback){
+    var deviceId = req.device._id;
     deviceToDelete = req.device;  
-    deviceToDelete.remove(callback);          
+    exports.preDeleteCleanup(deviceToDelete, function(err, result){
+        if(err) { return callback(err); }
+         deviceToDelete.remove(callback);
+    })           
+};
+
+exports.preDeleteCleanup = function(device, callback){
+     thingTokenManager.deleteTokenByThingId(device._id, function(err, result){
+        var linkedServices = device.linked_services;
+        var iteration = function(link, next){
+            Service.findById( link.service_id, function (err, service) {
+                 if(err) { return next(err) ; }
+                 if(service){
+                    service_pubsub.publishDeleteDevice(service, device, next);
+                }else{
+                    return next();
+                }
+            });
+        };
+        async.each(linkedServices, iteration, function(err){
+            if(err) { return callback(err); }
+            return callback(null, newDevice);
+        })  
+     })
 };
 
 exports.getDevicesByOwner = function(req, callback) {
