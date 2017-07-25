@@ -36,7 +36,7 @@ deviceSchema.virtual('pubsub.endpoint').get(function () {
 });
 
 deviceSchema.index({ location_id : 1});
-deviceSchema.index({ owner : 1, name : "text"});
+deviceSchema.index({ name : "text" });
 deviceSchema.index({ "linked_services.service_id" :1 });
 
 // Return model

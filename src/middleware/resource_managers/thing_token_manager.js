@@ -6,7 +6,7 @@ exports.generateToken = function(){
 	return crypto.randomBytes(24).toString('base64').replace(/\+/g, '').replace(/\//g, '').replace(/\=+$/, '');
 }
 
-exports.createToken = function(thing_id, thing_type, owner, callback){
+exports.createToken = function(thing_id, thing_type, thing_endpoint, owner, callback){
 	var token = exports.generateToken();
 	auth.hashPassword(token, function(err, hashedPassword){
 		if(err) { return callback(err); }
@@ -15,6 +15,8 @@ exports.createToken = function(thing_id, thing_type, owner, callback){
 		thingCred.password = hashedPassword;
 		thingCred.thing_type = thing_type;
 		thingCred.owner = owner;
+		thingCred.topics = { thing_endpoint +"/#" : "rw", "openchirp/#": "r" } ;
+
 		thingCred.save(function(error, result){ 
 			if(error ) { return callback(error); }
 			return callback(null, token);

@@ -6,7 +6,7 @@ var schemaOptions = require('./schema_options');
 
 //Schema
 var thingCredentialSchema = new Schema({
-	  username: { type: String, required: true, unique: true },
+	  username: { type: String, required: true, unique: true }, //Thing ID
 	  password : { type: String, required: true },
 	  thing_type: { type: String, required: true}, //device, service, user
 	  owner: { type: Schema.Types.ObjectId, ref:'User', required:true },

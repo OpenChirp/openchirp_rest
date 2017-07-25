@@ -85,7 +85,7 @@ router.post('/:_id/token', serviceAuthorizer.checkWriteAccess, function(req, res
         error.message = "Token already exists for thing id : " + req.token.username;
         return next(error);
     }
-    thingTokenManager.createToken(req.service._id,"service", req.user._id,  function(err, result){
+    thingTokenManager.createToken(req.service._id, "service", req.service.pubsub.endpoint, req.user._id, function(err, result){
         if(err) { return next(err); }
         return res.json(result);
     })

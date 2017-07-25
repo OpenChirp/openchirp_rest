@@ -20,7 +20,7 @@ var locationSchema = new Schema({
 );
 
 locationSchema.index({ children : 1 });
-locationSchema.index({ owner : 1 , name : "text" });
+locationSchema.index({ name : "text" });
 
 // Return model
 module.exports = mongoose.model('Location', locationSchema);
