@@ -1,33 +1,39 @@
 exports.isDeveloper = function(user){
-    var isDeveloper = false;
-    user.groups.forEach(function(userGroup){
-        if(String(userGroup.name) === "developer") {
+    let isDeveloper = false;
+    let grps = user.groups;
+
+    for(let i = 0; i < grps.length; i++ ){
+         if(String(grps[i].name) === "developer") {
             isDeveloper = true;
             break;
         }
-    })
+    }
     return isDeveloper;
 }
 
 exports.isAdmin = function(user){
-    var isAdmin = false;
-    user.groups.forEach(function(userGroup){
-        if(String(userGroup.name) === "admin") {
+    let isAdmin = false;
+    let grps = user.groups;
+
+    for(let i = 0; i < grps.length; i++ ){
+        if(String(grps[i].name) === "admin") {
             isAdmin = true;
             break;
         }
-    })
+    }
     return isAdmin;
 }
 
 exports.isAdminOrDeveloper = function(user){
-    var isAD = false;
-    user.groups.forEach(function(userGroup){
-        if(String(userGroup.name) === "developer"  || String(userGroup.name) === "admin") {
+    let isAD = false;
+    let grps = user.groups;
+
+    for(let i = 0; i <grps.length; i++ ){
+        if(String(grps[i].name) === "developer"  || String(grps[i].name) === "admin") {
             isAD = true;
             break;
         }
-    })
+    }
     return isAD;
 }
 

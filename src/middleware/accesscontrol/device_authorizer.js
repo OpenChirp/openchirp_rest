@@ -1,5 +1,5 @@
 var forbidden_error = require('../errors/forbidden_error');
-
+var utils = require('./utils');
 
 exports.checkWriteAccess = function(req, res, next){
 	var isAdmin = utils.isAdmin(req.user);

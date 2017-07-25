@@ -101,7 +101,7 @@ exports.preDeleteCleanup = function(device, callback){
         };
         async.each(linkedServices, iteration, function(err){
             if(err) { return callback(err); }
-            return callback(null, newDevice);
+            return callback(null, null);
         })  
      })
 };

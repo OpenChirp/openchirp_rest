@@ -15,7 +15,11 @@ exports.createToken = function(thing_id, thing_type, thing_endpoint, owner, call
 		thingCred.password = hashedPassword;
 		thingCred.thing_type = thing_type;
 		thingCred.owner = owner;
-		thingCred.topics = { thing_endpoint +"/#" : "rw", "openchirp/#": "r" } ;
+		let rwTopic = thing_endpoint +"/#";
+		let topics  = {};
+		topics[rwTopic]="rw";
+		topics["openchirp/#"] = "r";		
+		thingCred.topics = topics;
 
 		thingCred.save(function(error, result){ 
 			if(error ) { return callback(error); }
