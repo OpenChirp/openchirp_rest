@@ -15,12 +15,15 @@ exports.createToken = function(thing_id, thing_type, thing_endpoint, owner, call
 		thingCred.password = hashedPassword;
 		thingCred.thing_type = thing_type;
 		thingCred.owner = owner;
-		let rwTopic = thing_endpoint +"/#";
-		let topics  = {};
-		topics[rwTopic]="rw";
-		topics["openchirp/#"] = "r";		
-		thingCred.topics = topics;
-
+		if(thing_type == "device"){
+			let rwTopic = thing_endpoint +"/#";
+			let topics  = {};
+			topics[rwTopic]="rw";
+			topics["openchirp/#"] = "r";		
+			thingCred.topics = topics;
+		}else if(thing_type == "service"){
+			thingCred.superuser = true;
+		}
 		thingCred.save(function(error, result){ 
 			if(error ) { return callback(error); }
 			return callback(null, token);
