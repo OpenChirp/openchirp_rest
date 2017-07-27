@@ -15,6 +15,7 @@
  	"port" : "6379"
  },
   "session_secret": "sessionSecret",
+  "log_dir":"/tmp/",
  "enable_auth" : false, 
  "auth_google":{
     "clientID": "clientID",

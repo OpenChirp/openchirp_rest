@@ -3,7 +3,8 @@ var express = require('express');
 var helmet = require('helmet');
 var path = require('path');
 var favicon = require('serve-favicon');
-var logger = require('morgan');
+var morgan = require('morgan');
+var rfs = require('rotating-file-stream')
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
@@ -22,10 +23,10 @@ var app = express();
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(helmet());
-app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+
 app.use(express.static(path.join(__dirname, '../public/')));
 
 //Setup Config
@@ -201,6 +202,23 @@ if(nconf.get("enable_auth")){
       
   });
 }
+
+//Logging
+var accessLogStream = rfs('access.log', {
+  interval: '1d', // rotate daily
+  path: nconf.get("log_dir")
+});
+
+morgan.token('remote-user', function (req, res) { return req.user.email || req.user._id });
+
+if(environment == "development"){
+  app.use(morgan('common'));
+}
+else{
+  app.use(morgan('common', {stream: accessLogStream}));
+}
+
+
 // REST API Routes
 app.use('/api', require('./routes/api_router'));
 
@@ -288,6 +306,7 @@ app.use('/pc', require('./routes/public_link_router'));
     }
   }
 }*/
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -26,6 +26,7 @@
     "passport-local": "^1.0.0",
     "q": "^1.5.0",
     "request": "^2.81.0",
+    "rotating-file-stream": "^1.2.2",
     "serve-favicon": "^2.3.0",
     "sqlstring": "^2.2.0",
     "supervisor": "^0.12.0"
