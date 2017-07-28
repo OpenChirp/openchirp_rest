@@ -22,7 +22,12 @@ var deviceSchema = new Schema({
   linked_services : [{
     _id : false,
     service_id : { type: Schema.Types.ObjectId, ref: 'Service', required: true },
-    config: { type: Schema.Types.Mixed }
+    config: { type: Schema.Types.Mixed },
+    status: {
+      _id: false,
+      timestamp:{ type: Date, default: Date.now },
+      message : { type: String }
+    },
   }],
   owner: { type: Schema.Types.ObjectId, ref: 'User' , required : true },  
   enabled: { type: Boolean, default: true },

@@ -2,7 +2,6 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-
 var schemaOptions = require('./schema_options');
 
 //Schema
@@ -13,6 +12,11 @@ var serviceSchema = new Schema({
   		protocol : { type: String, enum: ['XMPP', 'MQTT', 'AMQP'] , default: 'MQTT'}
   	},
   properties : { type: Schema.Types.Mixed },
+  status:{
+    _id: false,
+    timestamp:{ type: Date, default: Date.now },
+    message : { type: String }
+  },
   config_required: [{
     _id : false,
   	key_name : { type : String },

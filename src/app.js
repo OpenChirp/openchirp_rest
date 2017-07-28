@@ -18,6 +18,7 @@ var GoogleTokenStrategy = require('passport-google-id-token');
 
 var userManager = require('./middleware/resource_managers/user_manager');
 var thingTokenManager = require('./middleware/resource_managers/thing_token_manager');
+var serviceStatusHandler = require('./middleware/pubsub/service_status_handler');
 
 var app = express();
 // uncomment after placing your favicon in /public
