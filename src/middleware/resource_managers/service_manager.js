@@ -47,7 +47,9 @@ exports.updateService = function(req, callback){
          }  
     });
 };
-
+exports.updateStatus = function(serviceId, newStatus, callback){
+    Service.findByIdAndUpdate(serviceId, {$set: {status: newStatus}}, callback);
+}
 exports.postDeleteCleanup = function(serviceId, callback){
     async.parallel([
             function(next){

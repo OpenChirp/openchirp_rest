@@ -14,7 +14,7 @@ var serviceSchema = new Schema({
   properties : { type: Schema.Types.Mixed },
   status:{
     _id: false,
-    timestamp:{ type: Date, default: Date.now },
+    timestamp:{ type: Date },
     message : { type: String }
   },
   config_required: [{

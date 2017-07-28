@@ -163,11 +163,15 @@ exports.updateServiceConfig = function(req, callback){
         error.message = "Service " + serviceId + " not linked to device";
         return callback(error); 
     }else {
-        Device.findOneAndUpdate({"_id":deviceId, "linked_services.service_id" : serviceId }, { $set: { "linked_services.$.config": req.body }}, function(err, result){
+        Device.findOneAndUpdate({"_id" : deviceId, "linked_services.service_id" : serviceId }, { $set: { "linked_services.$.config": req.body }}, function(err, result){
             if(err) { return callback(err); }
             service_pubsub.publishUpdateDevice(req.service, req.device, req.body, callback);           
         }) 
     }  
+};
+
+exports.updateServiceStatus = function(deviceId, serviceId, newStatus, callback){
+    Device.findOneAndUpdate({ "_id" : deviceId, "linked_services.service_id" : serviceId }, { $set: { "linked_services.$.status": newStatus }}, callback);
 };
 
 exports.delinkService = function(req, callback){

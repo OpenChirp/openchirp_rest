@@ -2,7 +2,6 @@
 var express = require('express');
 var helmet = require('helmet');
 var path = require('path');
-var favicon = require('serve-favicon');
 var morgan = require('morgan');
 var rfs = require('rotating-file-stream')
 var cookieParser = require('cookie-parser');
@@ -18,17 +17,16 @@ var GoogleTokenStrategy = require('passport-google-id-token');
 
 var userManager = require('./middleware/resource_managers/user_manager');
 var thingTokenManager = require('./middleware/resource_managers/thing_token_manager');
-var serviceStatusHandler = require('./middleware/pubsub/service_status_handler');
+var serviceStatusManager = require('./middleware/resource_managers/service_status_manager');
 
 var app = express();
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use(express.static(path.join(__dirname, '../public/')));
+//app.use(express.static(path.join(__dirname, '../public/')));
 
 //Setup Config
 nconf.env();
@@ -68,7 +66,7 @@ var dbConnect = function(){
 };
 
 dbConnect();
-serviceStatusHandler.start();
+serviceStatusManager.start();
 
 // TODO: Cleanup all the auth related code.
 

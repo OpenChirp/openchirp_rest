@@ -3,7 +3,6 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 // Other schemas
-
 var schemaOptions = require('./schema_options');
 var commandSchema = require('./command_schema');
 var transducerSchema = require('./transducer_schema');
@@ -25,7 +24,7 @@ var deviceSchema = new Schema({
     config: { type: Schema.Types.Mixed },
     status: {
       _id: false,
-      timestamp:{ type: Date, default: Date.now },
+      timestamp:{ type: Date },
       message : { type: String }
     },
   }],
