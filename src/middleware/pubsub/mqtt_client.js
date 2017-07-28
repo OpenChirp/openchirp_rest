@@ -15,7 +15,6 @@ var createClient = function(){
 exports.publish = function(topic, message, callback ){
 	let client = createClient();
 	client.on('connect', function () {
-		console.log("Publishing "+topic +" : "+ message);
         client.publish(topic, message, function(err){
                 if(err){
                 	console.log("Error in publishing " +err);
@@ -47,17 +46,16 @@ exports.publish = function(topic, message, callback ){
     client.on('error', handleError);
 
     async function doPublish(){
-        console.log("Publishing "+topic +" : "+ message);
-        
+    
         try{
             await client.publish(topic, message);
             await client.end();
-            console.log("Done publishing "+topic+":"+message);
+     
             var result = new Object();
             result.message = "Done";
             return callback(null, result);
         }catch(e){
-            console.log("Error in publishing.");       
+           
             var error = new Error();
             error.message = 'Could not connect to mqtt broker';
             return callback(error);
@@ -65,7 +63,7 @@ exports.publish = function(topic, message, callback ){
     }
 
     async function handleError(){
-        console.log("Error in connecting to mqtt broker ");
+       
         await client.end();
         var error = new Error();
         error.message = 'Could not connect to mqtt broker';

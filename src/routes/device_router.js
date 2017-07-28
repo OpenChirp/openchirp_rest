@@ -231,7 +231,6 @@ router.post('/:_id/token', deviceAuthorizer.checkWriteAccess,  function(req, res
         error.message = "Token already exists for thing id : " + req.token.username;
         return next(error);
     }
-    console.log(req.device.pubsub.endpoint);
     thingTokenManager.createToken(req.device._id, "device" , req.device.pubsub.endpoint, req.user._id,  function(err, result){
         if(err) { return next(err); }
         return res.json(result);

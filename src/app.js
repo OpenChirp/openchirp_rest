@@ -133,7 +133,6 @@ passport.use(new GoogleTokenStrategy({ clientID: nconf.get("auth_google.clientID
       if (err) { console.log("error"); return done(err); }
       if (!user) { console.log("no user"); return done(null, false); }
       if (user.password != password) { console.log("wrong password"); return done(null, false); }
-      console.log("success");
       return done(null, user);
     });
 }));*/
@@ -231,7 +230,6 @@ app.get('/auth/logout', function(req, res) {
 var verifyDigestAuth = function(id, password, done) {
    thingTokenManager.validateToken(id, password, function(err, thingCredential) {
       if (err) { console.log("error"); return done(err); }  
-      console.log("success");
       return done(null, thingCredential);
     });
 };

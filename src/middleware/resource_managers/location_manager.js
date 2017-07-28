@@ -88,6 +88,11 @@ exports.createNewChildLocation = function(req, callback){
 
 exports.updateLocation = function(req, callback){
 	var locationToUpdate = req.location;
+    if(locationToUpdate.name.toLowerCase() == "root"){
+        var error = new Error();
+        error.message = "Cannot update root location";
+        return callback(error);
+    }
     
  	if(typeof req.body.name != 'undefined') locationToUpdate.name = req.body.name;
  	if(typeof req.body.test != 'undefined') locationToUpdate.test = req.body.test;
@@ -142,16 +147,14 @@ exports.deleteLocation = function(req, callback){
 };
 
 exports.getGateways = function(req, callback){
-    //TODO: Change it to return all gateways in child locations too only 
-    // if it is a building or with a deep flag
-    Gateway.find({ location_id : req.params._id }).populate('owner', 'name email').exec(callback);
+    
+    Gateway.find({ location_id : req.params._id }).exec(callback);
     
 };
 
 exports.getDevices = function(req, callback){
-   //TODO: Change it to return all gateways in child locations too only 
-    // if it is a building or with a deep flag
-    Device.find({ location_id : req.params._id }).populate('owner', 'name email').exec(callback);    
+
+    Device.find({ location_id : req.params._id }).select('name pubsub properties').exec(callback);    
 };
 
 exports.getLocationsByOwner = function(req, callback) {
