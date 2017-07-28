@@ -68,7 +68,7 @@ var dbConnect = function(){
 };
 
 dbConnect();
-
+serviceStatusHandler.start();
 
 // TODO: Cleanup all the auth related code.
 
