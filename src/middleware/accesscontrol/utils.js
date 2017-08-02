@@ -1,6 +1,9 @@
 exports.isDeveloper = function(user){
     let isDeveloper = false;
     let grps = user.groups;
+    if(!grps){
+        return false;
+    }
 
     for(let i = 0; i < grps.length; i++ ){
          if(String(grps[i].name) === "developer") {
@@ -14,6 +17,9 @@ exports.isDeveloper = function(user){
 exports.isAdmin = function(user){
     let isAdmin = false;
     let grps = user.groups;
+    if(!grps){
+        return false;
+    }
 
     for(let i = 0; i < grps.length; i++ ){
         if(String(grps[i].name) === "admin") {
@@ -27,6 +33,10 @@ exports.isAdmin = function(user){
 exports.isAdminOrDeveloper = function(user){
     let isAD = false;
     let grps = user.groups;
+    
+    if(!grps){
+        return false;
+    }
 
     for(let i = 0; i < grps.length; i++ ){
         if(String(grps[i].name) === "developer"  || String(grps[i].name) === "admin") {

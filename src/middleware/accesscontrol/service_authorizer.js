@@ -18,6 +18,13 @@ exports.checkWriteAccess = function(req, res, next){
 	if(String(req.user._id) === String(req.service.owner._id)){
 		return next();
 	}
+	
+	// If the user is service's own token, allow access
+	if(req.user.username){
+		if(req.user.username === String(req.service._id)){
+			return next();
+		}
+	}
 	else{
 		return next(forbidden_error);
 	}

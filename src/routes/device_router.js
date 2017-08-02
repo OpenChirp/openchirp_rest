@@ -12,7 +12,7 @@ var deviceAuthorizer = require('../middleware/accesscontrol/device_authorizer');
 
 /* GET all devices */
 router.get('/', function(req, res, next) {
-    deviceManager.getAllDevices( function(err, result) {
+    deviceManager.getAllDevices(req, function(err, result) {
         if(err) { return next(err); }
         return res.json(result);
     })
@@ -266,8 +266,7 @@ router.delete('/:_id/token', deviceAuthorizer.checkWriteAccess, function(req, re
 /*************** ACL ***************************/
 
 /* Grant Access to a user or group */
-router.post('/:_id/acl', deviceAuthorizer.checkWriteAccess,  function(req, res, next ){
-   
+router.post('/:_id/acl', deviceAuthorizer.checkWriteAccess,  function(req, res, next ){   
     deviceManager.createAcl(req,  function(err, result){
         if(err) { return next(err); }
         return res.json(result);
@@ -275,7 +274,7 @@ router.post('/:_id/acl', deviceAuthorizer.checkWriteAccess,  function(req, res, 
 });
 
 /* Update access  */
-router.put('/:_id/acl', deviceAuthorizer.checkWriteAccess, function(req, res, next ){   
+router.put('/:_id/acl/:_entityId', deviceAuthorizer.checkWriteAccess, function(req, res, next ){   
     deviceManager.updateAcl(req, function(err, result){
         if(err) { return next(err); }
         return res.json(result);
@@ -283,7 +282,7 @@ router.put('/:_id/acl', deviceAuthorizer.checkWriteAccess, function(req, res, ne
 });
 
 /* Delete access to a user or group */
-router.delete('/:_id/acl', deviceAuthorizer.checkWriteAccess, function(req, res, next ){   
+router.delete('/:_id/acl/:_entityId', deviceAuthorizer.checkWriteAccess, function(req, res, next ){   
     deviceManager.deleteAcl(req, function(err, result){
         if(err) { return next(err); }
         return res.json(result);

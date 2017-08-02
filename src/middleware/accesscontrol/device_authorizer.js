@@ -15,6 +15,13 @@ var checkAccess = function(perm, req, res, next){
 		return next();
 	}
 
+	// If the user is device's own token, allow access
+	if(req.user.username){
+		if(req.user.username === String(req.device._id)){
+			return next();
+		}
+	}
+
 	//User's ACL Check
 	deviceManager.getAclByDeviceAndEntity(req.device._id, req.user._id, function(err, result){
 		if( result != null && result.perm >= perm){
@@ -22,6 +29,12 @@ var checkAccess = function(perm, req, res, next){
 		}
 		
 		var groupIDs = [];
+		var groups = req.user.groups;
+
+		if(!groups){
+			return next(forbidden_error);
+		}
+
 		req.user.groups.forEach(function(group){
 			if(group.name != "admin"){
 				groupIDs.push(group._id);

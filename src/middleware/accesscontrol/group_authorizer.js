@@ -6,19 +6,27 @@ exports.checkWriteAccess = function(req, res, next){
     if(isAdmin){
         return next();
     }
-	var groupId = req.group._id;
+	
+    //Owner Check
+    if(String(req.user._id) === String(req.group.owner._id)){
+       return next();
+    }
 
-    //Logged-in User's groups:
+    //Logged-in User's groups:    
+    var groupId = req.group._id;
     var userGroups = req.user.groups;
     var isAllowed = false;
-    userGroups.forEach(function(userGroup){
-        if( (String(userGroup.group_id) === String(groupId)) && userGroup.write_access){
-            isAllowed = true;
+    if(!userGroups){
+        return next(forbidden_error);
+    }
+
+    for(let i = 0; i < userGroups.length; i++ ){
+        if( (String(userGroups[i].group_id) === String(groupId)) && userGroups[i].write_access){
+           isAllowed = true;
+           break;
         }
-    })
-    if(String(req.user._id) === String(req.group.owner._id)){
-		isAllowed = true;
-	}
+    }
+    
 	
     if (isAllowed ){
         return next();
