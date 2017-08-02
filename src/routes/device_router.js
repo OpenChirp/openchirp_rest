@@ -266,7 +266,7 @@ router.delete('/:_id/token', deviceAuthorizer.checkWriteAccess, function(req, re
 /*************** ACL ***************************/
 
 /* Grant Access to a user or group */
-router.post('/:_id/acl', deviceAuthorizer.checkWriteAccess,  function(req, res, next ){   
+router.post('/:_id/acl/:_entityId', deviceAuthorizer.checkWriteAccess,  function(req, res, next ){   
     deviceManager.createAcl(req,  function(err, result){
         if(err) { return next(err); }
         return res.json(result);

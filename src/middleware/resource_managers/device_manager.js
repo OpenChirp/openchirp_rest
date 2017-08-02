@@ -224,7 +224,8 @@ exports.getAclByDeviceAndGroups = function(deviceId, groupIDs, callback){
 };
 
 exports.createAcl = function(req, callback){
-     if(!req.body.entity_id || !req.body.perm || !req.body.entity_type ){
+     var entityId = req.params._entityId;
+     if(!entityId|| !req.body.perm || !req.body.entity_type ){
         var error = new Error();
         error.message = "Bad request";
         return callback(error);
@@ -232,7 +233,7 @@ exports.createAcl = function(req, callback){
     //TODO: validate entity_id and type
     var deviceAcl = new DeviceAcl();
     deviceAcl.device_id = req.device._id;
-    deviceAcl.entity_id = req.body.entity_id;
+    deviceAcl.entity_id = entityId;
     deviceAcl.entity_type = req.body.entity_type;
     deviceAcl.perm = req.body.perm;
     deviceAcl.save(callback);
