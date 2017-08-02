@@ -1,4 +1,5 @@
 var Device = require('../../models/device');
+var DeviceAcl = require('../../models/DeviceAcl');
 var Service = require('../../models/service');
 var deviceTemplateManager = require('./device_template_manager');
 var thingTokenManager = require('./thing_token_manager');
@@ -6,7 +7,16 @@ var service_pubsub = require('../pubsub/service_pubsub');
 var async = require('async');
 
 exports.getAllDevices = function(callback){
-	Device.find().exec(callback);
+    if(req.query && req.query.name ){
+        var name = req.query.name;
+    }
+    if(name){
+        var query = Device.find({ $text: { $search: name }});
+    }else{
+       var query = Device.find();
+    }
+    query.select("name");
+    query.exec(callback);
 };
 
 exports.createNewDevice = function(req, callback){
@@ -195,6 +205,61 @@ exports.delinkService = function(req, callback){
         return callback(null, result);  
     }
 
+};
+
+exports.getAclByDeviceAndEntity = function(deviceId, entityId, callback){  
+    DeviceAcl.find({ device_id: deviceId, entity_id: entityId}).exec(function(err, result){
+        if(err) { return callback(err); }
+        if(!result || result.length == 0) { return callback(null, null); }
+        if(result.length == 1 ) { return callback(null, result[0]); }
+        if(result.length > 1 ){
+            var error = new Error();
+            error.message = "More than one acl found in the database for given device id and entity id. FATAL !";
+            return callback(error);
+        }
+    });
+};
+exports.getAclByDeviceAndGroups = function(deviceId, groupIDs, callback){  
+    DeviceAcl.find({ device_id: deviceId, entity_id: { $in: groupIDs } } ).exec(callback);
+};
+
+exports.createAcl = function(req, callback){
+     if(!req.body.entity_id || ! req.body.perm ){
+        var error = new Error();
+        error.message = "Bad request";
+        return callback(err);
+    }
+    var deviceAcl = new DeviceAcl();
+    deviceAcl.device_id = req.device._id;
+    deviceAcl.entity_id = req.body.entity_id;
+    deviceAcl.perm = req.body.perm;
+    deviceAcl.save(callback);
+
+};
+
+exports.updateAcl = function(req, callback){
+    if(!req.body.entity_id || ! req.body.perm ){
+        var error = new Error();
+        error.message = "Bad request";
+        return callback(err);
+    }
+    exports.getAclByDeviceAndEntity(req.device._id, req.body.entity_id, function(err, deviceAcl){
+        if(err) { return callback(err); }
+        deviceAcl.perm = req.body.perm;
+        deviceAcl.save(callback);
+    });
+};
+
+exports.deleteAcl = function(req, callback){
+     if(!req.body.entity_id ){
+        var error = new Error();
+        error.message = "Bad request";
+        return callback(err);
+    }
+     exports.getAclByDeviceAndEntity(req.device._id, req.body.entity_id, function(err, deviceAcl){
+        if(err) { return callback(err); }   
+        deviceAcl.remove(callback);
+    });
 };
 
 module.exports = exports;

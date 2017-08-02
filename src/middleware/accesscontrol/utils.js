@@ -28,7 +28,7 @@ exports.isAdminOrDeveloper = function(user){
     let isAD = false;
     let grps = user.groups;
 
-    for(let i = 0; i <grps.length; i++ ){
+    for(let i = 0; i < grps.length; i++ ){
         if(String(grps[i].name) === "developer"  || String(grps[i].name) === "admin") {
             isAD = true;
             break;
