@@ -264,6 +264,21 @@ router.delete('/:_id/token', deviceAuthorizer.checkWriteAccess, function(req, re
 });
 
 /*************** ACL ***************************/
+/* Get User ACLs for a given device */
+router.get('/:_id/acl/users', deviceAuthorizer.checkAclReadAccess,  function(req, res, next ){   
+    deviceManager.getAclForUsers(req.device._id,  function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
+/* Get Group ACLs for a given device */
+router.get('/:_id/acl/groups', deviceAuthorizer.checkAclReadAccess,  function(req, res, next ){   
+    deviceManager.getAclForGroups(req.device._id,  function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
 
 /* Grant Access to a user or group */
 router.post('/:_id/acl/:_entityId', deviceAuthorizer.checkWriteAccess,  function(req, res, next ){   

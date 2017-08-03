@@ -1,5 +1,7 @@
 var Device = require('../../models/device');
 var DeviceAcl = require('../../models/device_acl');
+var User = require('../../models/user');
+var Group = require('../../models/group');
 var Service = require('../../models/service');
 var deviceTemplateManager = require('./device_template_manager');
 var thingTokenManager = require('./thing_token_manager');
@@ -221,6 +223,25 @@ exports.getAclByDeviceAndEntity = function(deviceId, entityId, callback){
 };
 exports.getAclByDeviceAndGroups = function(deviceId, groupIDs, callback){  
     DeviceAcl.find({ device_id: deviceId, entity_id: { $in: groupIDs } } ).exec(callback);
+};
+
+exports.getAclForUsers = function(deviceId, callback){
+    DeviceAcl.find({ device_id: deviceId, entity_type: "user" }).exec( function(err, results){
+        if(err) { return callback(err); }
+        if(results && results.length > 0 ){
+            User.populate
+        }
+
+    });
+};
+
+exports.getAclForGroups = function(deviceId, callback){
+    DeviceAcl.find({ device_id: deviceId, entity_type: "group" }).exec( function(err, results){
+        if(err) { return callback(err); }
+        if(results && results.length > 0 ){
+
+        }
+    });
 };
 
 exports.createAcl = function(req, callback){

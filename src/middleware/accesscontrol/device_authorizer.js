@@ -70,6 +70,8 @@ exports.checkExecuteAccess = function(req, res, next){
 	
 }
 
-
+exports.checkAclReadAccess = function(req, res, next){
+	exports.checkWriteAccess(req, res, next);
+}
 
 module.exports = exports;
