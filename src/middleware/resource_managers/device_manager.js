@@ -229,9 +229,15 @@ exports.getAclForUsers = function(deviceId, callback){
     DeviceAcl.find({ device_id: deviceId, entity_type: "user" }).exec( function(err, results){
         if(err) { return callback(err); }
         if(results && results.length > 0 ){
-            User.populate
+            var opts = [{ path: 'entity_id', model:'User', select: 'name' }];
+            User.populate(results, opts, function(err, users){
+                if(err) { return callback(err); }
+                console.log(users);
+            });
         }
-
+        else{
+            return callback(null, null);
+        }
     });
 };
 
