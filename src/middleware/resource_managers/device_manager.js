@@ -226,13 +226,14 @@ exports.getAclByDeviceAndGroups = function(deviceId, groupIDs, callback){
 };
 
 exports.getAclForUsers = function(deviceId, callback){
-    DeviceAcl.find({ device_id: deviceId, entity_type: "user" }).exec( function(err, results){
+    DeviceAcl.find({ device_id: deviceId, entity_type: "user" }).select('entity_id perm').exec( function(err, results){
         if(err) { return callback(err); }
         if(results && results.length > 0 ){
-            var opts = [{ path: 'entity_id', model:'User', select: 'name' }];
+            var opts = [{ path: 'entity_id', model:'User', select: 'name email' }];
             User.populate(results, opts, function(err, users){
                 if(err) { return callback(err); }
-                console.log(users);
+               
+                return callback(null, users);
             });
         }
         else{
@@ -242,9 +243,17 @@ exports.getAclForUsers = function(deviceId, callback){
 };
 
 exports.getAclForGroups = function(deviceId, callback){
-    DeviceAcl.find({ device_id: deviceId, entity_type: "group" }).exec( function(err, results){
+    DeviceAcl.find({ device_id: deviceId, entity_type: "group" }).select('entity_id perm').exec( function(err, results){
         if(err) { return callback(err); }
         if(results && results.length > 0 ){
+            var opts = [{ path: 'entity_id', model:'Group', select: 'name' }];
+            Group.populate(results, opts, function(err, groups){
+                if(err) { return callback(err); }
+                return callback(null, groups);
+            });
+        }
+        else{
+            return callback(null, null);
 
         }
     });
