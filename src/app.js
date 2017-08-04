@@ -207,7 +207,13 @@ var accessLogStream = rfs('access.log', {
   path: nconf.get("log_dir")
 });
 
-morgan.token('remote-user', function (req, res) { return req.user.email || req.user._id });
+morgan.token('remote-user', function (req, res) { 
+    if(req.user) { 
+      return req.user.email || req.user._id 
+    } else{
+      return "";
+    }
+});
 
 if(environment == "development"){
   app.use(morgan('common'));

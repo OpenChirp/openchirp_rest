@@ -8,6 +8,7 @@ var schemaOptions = require('./schema_options');
 var serviceSchema = new Schema({
 	name:  { type: String, required: true },
 	description: { type: String, required: true },
+  device_permission: { type: Number, min: 0, max: 2, default: 0}, // "Read=0, Exec = 1 and Write =2"
 	pubsub : {
   		protocol : { type: String, enum: ['XMPP', 'MQTT', 'AMQP'] , default: 'MQTT'}
   	},

@@ -25,9 +25,9 @@ exports.checkWriteAccess = function(req, res, next){
 			return next();
 		}
 	}
-	else{
-		return next(forbidden_error);
-	}
+	
+	return next(forbidden_error);
+	
 }
 
 module.exports = exports;

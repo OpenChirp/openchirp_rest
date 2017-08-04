@@ -36,15 +36,18 @@ exports.updateService = function(req, callback){
     if(typeof req.body.name != 'undefined') serviceToUpdate.name = req.body.name;
     if(typeof req.body.description != 'undefined') serviceToUpdate.description = req.body.description;
     if(typeof req.body.config_required != 'undefined') serviceToUpdate.config_required = req.body.config_required;
+    if(typeof req.body.device_permission != 'undefined') serviceToUpdate.device_permission= req.body.device_permission;
     if(typeof req.body.properties != 'undefined') {
         updateProps = true;
         serviceToUpdate.properties = req.body.properties;
     }   
     serviceToUpdate.save(function(err, result){
          if(err) { return callback(err); }
-         if(updateProps){
+         if(updateProps){ 
             service_pubsub.publishUpdateProperties(req.service, serviceToUpdate.properties , callback);
-         }  
+         }else{
+            return callback(null, result);
+         }
     });
 };
 exports.updateStatus = function(serviceId, newStatus, callback){

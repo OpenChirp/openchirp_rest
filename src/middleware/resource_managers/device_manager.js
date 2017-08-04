@@ -21,6 +21,34 @@ exports.getAllDevices = function(req, callback){
     query.exec(callback);
 };
 
+var addDeviceAclAndNotifyService = function(device, service, newLink, callback){
+     //Needs more than read permission
+    if(service.device_permission > 0){
+        var deviceAcl = new DeviceAcl();
+        deviceAcl.device_id = device._id;
+        deviceAcl.entity_id = service._id;
+        deviceAcl.entity_type = "service";
+        deviceAcl.perm = service.device_permission;
+        deviceAcl.save(function(err, result){
+            if(err) { return callback(err); }
+            service_pubsub.publishNewDevice(service, device, newLink.config , callback);
+        });
+    }else{    
+        service_pubsub.publishNewDevice(service, device, newLink.config , callback);
+    }
+};
+
+var deleteDeviceAclAndNotifyService = function(device, service, callback){
+    service_pubsub.publishDeleteDevice(service, device, function(err, result){
+        if(err) { return callback(err); }
+        DeviceAcl.remove({ device_id: device._id, entity_id: service._id}).exec(function(err, result){
+            if(err) { return callback(err); }
+            return callback(null, null);
+       });
+    }); 
+     
+};
+
 exports.createNewDevice = function(req, callback){
     var template_id = req.body.template_id;
     var device = new Device(req.body);
@@ -40,7 +68,7 @@ exports.createNewDevice = function(req, callback){
             Service.findById( link.service_id, function (err, service) {
                  if(err) { return next(err) ; }
                  if(service){
-                    service_pubsub.publishNewDevice(service, newDevice, link.config, next);
+                    addDeviceAclAndNotifyService(newDevice, service, link, next);
                 }else{
                     return next();
                 }
@@ -99,23 +127,27 @@ exports.deleteDevice = function(req, callback){
 };
 
 exports.preDeleteCleanup = function(device, callback){
-     thingTokenManager.deleteTokenByThingId(device._id, function(err, result){
-        var linkedServices = device.linked_services;
-        var iteration = function(link, next){
-            Service.findById( link.service_id, function (err, service) {
-                 if(err) { return next(err) ; }
-                 if(service){
-                    service_pubsub.publishDeleteDevice(service, device, next);
-                }else{
-                    return next();
-                }
-            });
-        };
-        async.each(linkedServices, iteration, function(err){
-            if(err) { return callback(err); }
-            return callback(null, null);
-        })  
-     })
+    thingTokenManager.deleteTokenByThingId(device._id, function(err, result){
+        if(err){ return callback(err); }
+        DeviceAcl.remove({ device_id: device._id }).exec(function(err, result){
+            if(err){ return callback(err); }
+            var linkedServices = device.linked_services;
+            var iteration = function(link, next){
+                Service.findById( link.service_id, function (err, service) {
+                     if(err) { return next(err) ; }
+                     if(service){
+                        service_pubsub.publishDeleteDevice(service, device, next);
+                    }else{
+                        return next();
+                    }
+                });
+            };
+            async.each(linkedServices, iteration, function(err){
+                if(err) { return callback(err); }
+                return callback(null, null);
+            })  
+        })
+    })    
 };
 
 exports.getDevicesByOwner = function(req, callback) {
@@ -129,6 +161,8 @@ exports.getDevicesByOwner = function(req, callback) {
         Device.find({"owner" : userId}).exec(callback);
     }
 };
+
+
 
 exports.linkService = function(req, callback){
     var newLink = {};
@@ -152,8 +186,7 @@ exports.linkService = function(req, callback){
     }else{
         Device.findByIdAndUpdate(deviceId, { $addToSet: { linked_services: newLink }}, function(err, result){
             if(err) { return callback(err); }
-            service_pubsub.publishNewDevice(req.service,req.device, newLink.config , callback);
-
+            addDeviceAclAndNotifyService(req.device, req.service, newLink, callback);
         })  
     }      
 };
@@ -198,8 +231,7 @@ exports.delinkService = function(req, callback){
     if(linkToDelete){
         Device.findByIdAndUpdate(req.device._id, { $pull: { linked_services: { "service_id" : serviceId }}}, function(err, result){
             if(err) { return callback(err); }   
-            service_pubsub.publishDeleteDevice(req.service, req.device, callback); 
-
+            deleteDeviceAclAndNotifyService(req.device, req.service, callback);
         })
     }else{
         var result = new Object();
@@ -221,6 +253,7 @@ exports.getAclByDeviceAndEntity = function(deviceId, entityId, callback){
         }
     });
 };
+
 exports.getAclByDeviceAndGroups = function(deviceId, groupIDs, callback){  
     DeviceAcl.find({ device_id: deviceId, entity_id: { $in: groupIDs } } ).exec(callback);
 };
@@ -301,7 +334,7 @@ exports.deleteAcl = function(req, callback){
     var badRequestError = new Error();
     badRequestError.message = "Bad request";
 
-     if(!entityId ){        
+    if(!entityId ){        
         return callback(badRequestError);
     }
     
