@@ -35,10 +35,8 @@ var checkAccess = function(perm, req, res, next){
 			return next(forbidden_error);
 		}
 
-		req.user.groups.forEach(function(group){
-			if(group.name != "admin"){
-				groupIDs.push(group._id);
-			}
+		groups.forEach(function(group){
+			groupIDs.push(group.group_id);
 		})
 
 		if(groupIDs.length == 0){
@@ -51,7 +49,7 @@ var checkAccess = function(perm, req, res, next){
 			}
 
 			for(var i =0 ; i < results.length; i++ ){
-				if(result[i].perm >= perm){
+				if(results[i].perm >= perm){
 					return next();
 				}
 			}
