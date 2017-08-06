@@ -7,6 +7,8 @@ var deviceTemplateManager = require('./device_template_manager');
 var thingTokenManager = require('./thing_token_manager');
 var service_pubsub = require('../pubsub/service_pubsub');
 var async = require('async');
+var utils = require('../accesscontrol/utils');
+var forbidden_error = require('../errors/forbidden_error');
 
 exports.getAllDevices = function(req, callback){
     if(req.query && req.query.name ){
@@ -50,6 +52,12 @@ var deleteDeviceAclAndNotifyService = function(device, service, callback){
 };
 
 exports.createNewDevice = function(req, callback){
+    //Only user's with admin or developer role can create devices at public locations.
+    if(typeof req.body.location_id != 'undefined'){
+        if(!utils.isAdminOrDeveloper(req.user)){
+            return callback(forbidden_error);
+        }
+    }
     var template_id = req.body.template_id;
     var device = new Device(req.body);
     device.owner = req.user._id;
@@ -105,7 +113,7 @@ exports.getDeviceById = function(id, callback){
 };
 
 exports.updateDevice = function(req, callback){
-	//TODO : Add logic to update properties
+
     var deviceToUpdate = req.device;
     if(typeof req.body.name != 'undefined') deviceToUpdate.name = req.body.name;
     if(typeof req.body.location_id != 'undefined') deviceToUpdate.location_id = req.body.location_id;

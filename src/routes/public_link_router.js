@@ -9,5 +9,11 @@ router.get('/:_payload', function(req, res, next) {
         return res.json(result);
     })
 });
+router.post('/:_payload', function(req, res, next) {
+    publicLinkManager.run(req, function(err, result) {
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
 
 module.exports = router;

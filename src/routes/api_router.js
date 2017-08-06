@@ -9,5 +9,6 @@ router.use('/gateway', require('./gateway_router'));
 router.use('/device', require('./device_router'));
 router.use('/devicetemplate', require('./device_template_router'));
 router.use('/service', require('./service_router'));
+router.use('/admin', require('./admin_router'));
 
 module.exports = router;
