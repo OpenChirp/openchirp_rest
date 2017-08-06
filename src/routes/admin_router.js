@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var ObjectId = require('mongoose').Types.ObjectId;
-var utils = require('../accesscontrol/utils');
-var forbidden_error = require('../errors/forbidden_error');
+var utils = require('../middleware/accesscontrol/utils');
+var forbidden_error = require('../middleware/errors/forbidden_error');
 
 var adminManager = require('../middleware/resource_managers/admin_manager');
 

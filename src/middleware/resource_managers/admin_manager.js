@@ -19,6 +19,21 @@ exports.getAllStats = function(req, callback){
 	    },
 	    devicetemplate: function(next) {
 	        DeviceTemplate.count({}, next);
+	    },
+	    user: function(next) {
+	        User.count({}, next);
+	    },
+	    thingcredential: function(next) {
+	        ThingCredential.count({}, next);
+	    },
+	    group: function(next) {
+	        Group.count({}, next);
+	    },
+	    service: function(next) {
+	        Service.count({}, next);
+	    },
+	    publiclink: function(next){
+	    	PublicLink.count({}, next);
 	    }
 	}, function(err, results) {
 		    if(err) {return callback(err); }
