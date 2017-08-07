@@ -37,7 +37,6 @@ exports.getAllStats = function(req, callback){
 	    }
 	}, function(err, results) {
 		    if(err) {return callback(err); }
-		    console.log(results);
 		    return callback(null, results);
 	});
 };

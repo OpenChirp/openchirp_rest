@@ -24,7 +24,7 @@ exports.getUserById = function(id, callback){
 };
 
 exports.getAll = function(callback){
-    User.find({}).select("name email"). exec(callback);
+    User.find({}).select("name userid email"). exec(callback);
 };
 
 exports.getUserByEmail = function(email, callback){
@@ -38,6 +38,33 @@ exports.getUserByEmail = function(email, callback){
             return callback(error);
         }
     })
+};
+exports.getUserByUserId = function(userid, callback){
+    User.find({"userid": userid}).exec( function(err, result){
+        if(err) { return callback(err); } 
+        if(!result) { return callback(null, null); }
+        if(result.length == 1) { return callback(null, result[0]); } 
+        if(result.length > 1 ){
+            var error = new Error();
+            error.message = "More than one user found in the database with this userid. FATAL !";
+            return callback(error);
+        }
+    })
+};
+exports.createToken = function(req, callback){
+      
+};
+exports.updateUser = function(req, callback){
+    var user = req.user;
+    if(typeof req.body.name != 'undefined') user.name = req.body.name;
+    if(typeof req.body.userid != 'undefined') user.userid = req.body.userid;
+
+    user.save( function(err) {
+        if(err) { return callback(err); }
+        var result = new Object();
+        result.message = "Done";
+        return callback(null, result);
+    })    
 };
 
 exports.createCommandShortcut = function(req, callback){
@@ -116,7 +143,7 @@ exports.leaveGroup = function(req, callback){
 
 exports.getMembersOfGroup = function(groupId, callback){
     var members = [];
-    User.find({"groups.group_id" : groupId}, {"groups.$" : 1 }).select("name email groups").exec( function(err, result){
+    User.find({"groups.group_id" : groupId}, {"groups.$" : 1 }).select("name userid email groups").exec( function(err, result){
          if(err) { return callback(err); }
         for (var i = 0; i < result.length; i++){
             var member = {};
@@ -134,7 +161,7 @@ exports.getMembersOfGroup = function(groupId, callback){
 
 exports.getUsersNotInGroup = function(groupId, callback){
     var users = [];
-    User.find({"groups.group_id" :{ $nin: [groupId] }}).select("name email").exec( function(err, result){
+    User.find({"groups.group_id" :{ $nin: [groupId] }}).select("name userid email").exec( function(err, result){
          if(err) { return callback(err); }
         for (var i = 0; i < result.length; i++){
             var u = {};

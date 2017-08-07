@@ -209,7 +209,7 @@ var accessLogStream = rfs('access.log', {
 
 morgan.token('remote-user', function (req, res) { 
     if(req.user) { 
-      return req.user.email || req.user._id 
+      return req.user.email || req.user.thing_type +"_" + req.user.username 
     } else{
       return "";
     }
