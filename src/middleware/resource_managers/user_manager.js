@@ -1,4 +1,5 @@
 var User = require('../../models/user');
+var thingTokenManager = require('../middleware/resource_managers/thing_token_manager');
 
 exports.createUser = function(user, callback){
 	//Search by email and if the user already exists return that
@@ -51,9 +52,7 @@ exports.getUserByUserId = function(userid, callback){
         }
     })
 };
-exports.createToken = function(req, callback){
-      
-};
+
 exports.updateUser = function(req, callback){
     var user = req.user;
     if(typeof req.body.name != 'undefined') user.name = req.body.name;

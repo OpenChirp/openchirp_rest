@@ -5,6 +5,7 @@ var deviceManager = require('../middleware/resource_managers/device_manager');
 var serviceManager = require('../middleware/resource_managers/service_manager');
 var locationManager = require('../middleware/resource_managers/location_manager');
 var userManager = require('../middleware/resource_managers/user_manager');
+var thingTokenManager = require('../middleware/resource_managers/thing_token_manager');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -60,6 +61,40 @@ router.delete('/shortcut/:_shortcutId', function(req, res, next ){
         if(err) { return next(err); }
         return res.json(result);
     })
+});
+/* Generate a token */
+router.post('/token', function(req, res, next ){
+  thingTokenManager.getUserTokenByOwnerId(req.user._id, function(err, thingToken){
+        if(err) { return next(err); }
+        if(thingToken) {
+         var error = new Error();
+         error.message = "Token already exists for user";
+         return next(error);
+       }                 
+       thingTokenManager.createToken(req.user.userid, "user" , "", req.user._id,  function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+      })
+  })      
+});
+
+
+/* Delete a token */
+router.delete('/token',  function(req, res, next ){
+  thingTokenManager.getUserTokenByOwnerId(req.user._id, function(err, thingToken){  
+        if(err) { return next(err); }
+        if(!thingToken){
+            var error = new Error();
+            error.message = "No Token found for " + req.device._id + ". Nothing to delete.";
+            return next(error);
+        }
+        thingToken.remove(function(err, result){
+          if(err) { return callback(err); }
+          var result = {};
+          result.message = "Done";
+          return callback(null, result);
+        })
+      })
 });
 
 /* Leave Group */

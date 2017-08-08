@@ -263,12 +263,21 @@ var doAuthenticate = function(req, res, next){
   if (!userid || !password) {
     return next(error_401);
   }
-  verifyDigestAuth(userid, password, function(err, result){
-    if(err) {return next(error_401); } 
-    if(!result) { return next(error_401); }
-    req.user=result;
-    req.ownerid = result.owner;
-    return next();
+  verifyDigestAuth(userid, password, function(err, thingCred){
+    if(err) { return next(error_401); } 
+    if(!thingCred) { return next(error_401); }
+    //if it is user token, then load user's profile
+    if(thingCred.thing_type == "user"){
+        userManager.getUserById(thingCred.owner, function(err, owner){
+          if(err) { return next(err); }
+          req.user = owner;
+          return next();
+        })
+    }else{
+        req.user = thingCred;
+        req.ownerid = thingCred.owner;
+        return next();
+    }    
   })
 }
 

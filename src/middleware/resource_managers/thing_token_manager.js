@@ -23,6 +23,10 @@ exports.createToken = function(thing_id, thing_type, thing_endpoint, owner, call
 			thingCred.topics = topics;
 		}else if(thing_type == "service"){
 			thingCred.superuser = true;
+		}else if(thing_type == "user"){
+			let topics = {};
+			topics["openchirp/#"] = "r";
+			thingCred.topics = topics;
 		}
 		thingCred.save(function(error, result){ 
 			if(error ) { return callback(error); }
@@ -44,7 +48,18 @@ exports.getTokenByThingId = function(thing_id, callback){
         }
 	});
 };
-
+exports.getUserTokenByOwnerId = function(owner_id, callback){
+	ThingCredential.find({"owner": owner_id, "thing_type":"user" }).exec(function(err, result){
+		if(err) { return callback(err); }
+		if(!result || result.length == 0) { return callback(null, null); }
+		if(result.length == 1 ) { return callback(null, result[0]); }
+		if(result.length > 1 ){
+            var error = new Error();
+            error.message = "More than one token found in the database with this id. FATAL !";
+            return callback(error);
+        }
+	});
+};
 exports.validateToken = function(id, password, callback){
 	var invalid_token_error = new Error();
 	invalid_token_error.message = "Invalid token ";

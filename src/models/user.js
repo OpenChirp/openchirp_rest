@@ -23,6 +23,12 @@ var userSchema = new Schema({
 }, 
  schemaOptions
 );
+userSchema.pre('save', function(next) {
+   if(!this.userid || this.userId.length == 0){
+    this.userid = this.email;
+  }
+  next();
+});
 
 userSchema.index({ email : 1 });
 userSchema.index({ userid : 1 });
