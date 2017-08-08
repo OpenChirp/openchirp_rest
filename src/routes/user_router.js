@@ -112,10 +112,10 @@ router.delete('/token',  function(req, res, next ){
             return next(error);
         }
         thingToken.remove(function(err, result){
-          if(err) { return callback(err); }
+          if(err) { return next(err); }
           var result = {};
           result.message = "Done";
-          return callback(null, result);
+          return res.json(result);
         })
       })
 });
