@@ -22,7 +22,7 @@ router.get('/', function(req, res, next) {
 /* Update Profile */
 router.put('/', function(req, res, next) {
   userManager.updateUser(req, function(err, result){
-      if(err) { return callback(err); }
+      if(err) { return  next(err); }
       return res.json(result);
   })
 });
