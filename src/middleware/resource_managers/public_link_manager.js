@@ -3,6 +3,7 @@ var deviceManager = require('./device_manager');
 var commandManager = require('./command_manager');
 var userManager = require('./user_manager');
 var deviceAuthorizer = require('../accesscontrol/device_authorizer');
+var async = require('async');
 
 exports.run = function(req, callback ){
 	var invalid_link_error = new Error();

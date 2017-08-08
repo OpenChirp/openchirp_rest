@@ -1,7 +1,6 @@
 var forbidden_error = require('../errors/forbidden_error');
 var utils = require('./utils');
 var deviceManager = require('../resource_managers/device_manager');
-var async = require('async');
 
 var checkAccess = function(perm, user, device, next){
 	//Admin Check
