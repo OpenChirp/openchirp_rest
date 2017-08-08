@@ -24,7 +24,7 @@ var userSchema = new Schema({
  schemaOptions
 );
 userSchema.pre('save', function(next) {
-   if(!this.userid || this.userId.length == 0){
+  if(!this.userid || this.userid.length == 0){
     this.userid = this.email;
   }
   next();

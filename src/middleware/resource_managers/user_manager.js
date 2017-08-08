@@ -56,7 +56,6 @@ exports.updateUser = function(req, callback){
     var user = req.user;
     if(typeof req.body.name != 'undefined') user.name = req.body.name;
     if(typeof req.body.userid != 'undefined') user.userid = req.body.userid;
-
     user.save( function(err) {
         if(err) { return callback(err); }
         var result = new Object();
