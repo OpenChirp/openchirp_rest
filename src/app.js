@@ -234,7 +234,7 @@ app.get('/auth/logout', function(req, res) {
 
 var verifyDigestAuth = function(id, password, done) {
    thingTokenManager.validateToken(id, password, function(err, thingCredential) {
-      if (err) { console.log("error"); return done(err); }  
+      if (err) { console.log("Invalid password for "+id); return done(err); }  
       return done(null, thingCredential);
     });
 };
