@@ -65,6 +65,10 @@ var checkAccess = function(perm, user, device, next){
 
 }
 
+exports.checkPublicLinkAccess = function(user, device, next){
+	checkAccess(1, user, device, next);
+}
+
 exports.checkWriteAccess = function(req, res, next){
 	checkAccess( 2, req.user, req.device, next);
 }
