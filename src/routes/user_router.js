@@ -33,6 +33,7 @@ router.get('/token', function(req, res, next) {
         error.message = "No user token found";
         return next(error);
        }
+     })
 });
 
 /* GET devices by owner  */
