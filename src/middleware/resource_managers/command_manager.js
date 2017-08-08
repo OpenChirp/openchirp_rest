@@ -38,7 +38,7 @@ exports.createPublicLink = function(req, callback ){
         // publicLink.payload = Buffer.from(String(publicLink._id)).toString('base64');
            publicLink.save(function(err, result){
                 if(err) { return callback(err); }
-                var link = "/pc/"+result._id;
+                var link = "pc/"+result._id;
                 return callback(null, link);
              })            
         }else{
