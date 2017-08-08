@@ -4,12 +4,8 @@ var nconf = require('nconf');
 
 var publicLinkManager = require('../middleware/resource_managers/public_link_manager');
 
-router.get('/:_payload', function(req, res, next) {
-	console.log("original URL " + req.originalUrl);
-	console.log(" URL " + req.url);
-	console.log(" host " + req.hostname);
-	var link = String(nconf.get('pc_base_url')) + "/pc/"+_payload;
-	console.log(link);
+router.get('/:linkId', function(req, res, next) {
+	var link = String(nconf.get('pc_base_url')) + "/pc/"+ req.params.linkId;
 	var html = '<html><title>Run Command On Openchirp</title><form method="POST" action="' +link +'"><button type="submit" class="btn btn-success">Run</button></form></html>';
     res.send(html);
 });
