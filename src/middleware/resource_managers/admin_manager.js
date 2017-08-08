@@ -23,13 +23,13 @@ exports.getAllStats = function(req, callback){
 	    user: function(next) {
 	        User.count({}, next);
 	    },
-	    thingcredential.user: function(next) {
+	    thingcredential_user: function(next) {
 	        ThingCredential.count({"thing_type":"user"}, next);
 	    },
-	    thingcredential.service: function(next) {
+	    thingcredential_service: function(next) {
 	        ThingCredential.count({"thing_type":"service"}, next);
 	    },
-	    thingcredential.device: function(next) {
+	    thingcredential_device: function(next) {
 	        ThingCredential.count({"thing_type":"device"}, next);
 	    },
 	    group: function(next) {
