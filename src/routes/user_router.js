@@ -15,7 +15,24 @@ router.get('/', function(req, res, next) {
    result.email = req.user.email;
    result.userid = req.user.userid;
    result.groups = req.user.groups;
+
    return res.json(result);
+});
+
+/* GET user token  */
+router.get('/token', function(req, res, next) {
+   thingTokenManager.getUserTokenByOwnerId(req.user._id, function(err, thingToken){
+        if(err) { return next(err); }
+        if(thingToken) {
+          var token = {};
+          token._id = thingToken._id;
+         return next(null, token);
+       }else{
+        var error = new Error();
+        error.status = 404;
+        error.message = "No user token found";
+        return next(error);
+       }
 });
 
 /* GET devices by owner  */
