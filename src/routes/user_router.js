@@ -34,12 +34,9 @@ router.get('/token', function(req, res, next) {
         if(thingToken) {
           var token = {};
           token._id = thingToken._id;
-          return next(null, token);
+          return res.json(token);
        }else{
-        var error = new Error();
-        error.status = 404;
-        error.message = "No user token found";
-        return next(error);
+        return next(null, null);
        }
      })
 });
