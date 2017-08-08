@@ -19,6 +19,14 @@ router.get('/', function(req, res, next) {
    return res.json(result);
 });
 
+/* Update Profile */
+router.put('/', function(req, res, next) {
+  userManager.updateUser(req, function(err, result){
+      if(err) { return callback(err); }
+      return res.json(result);
+  })
+});
+
 /* GET user token  */
 router.get('/token', function(req, res, next) {
    thingTokenManager.getUserTokenByOwnerId(req.user._id, function(err, thingToken){
@@ -26,7 +34,7 @@ router.get('/token', function(req, res, next) {
         if(thingToken) {
           var token = {};
           token._id = thingToken._id;
-         return next(null, token);
+          return next(null, token);
        }else{
         var error = new Error();
         error.status = 404;
