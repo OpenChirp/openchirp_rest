@@ -25,14 +25,17 @@ exports.run = function(req, callback ){
 			},
 			function(err, result){
 				if(err) { return callback(invalid_link_error); }
-				if(!result.device || !result.user){
+				var device = result.device;
+				var user = result.user;
+
+				if(!device || !user){
 					return callback(invalid_link_error);
 				}
-				deviceAuthorizer.checkPublicLinkAccess(result.user, result.device, function(err, result){
+				deviceAuthorizer.checkPublicLinkAccess(user, device, function(err, access){
 					if(err) { return callback(err); }
-					commandManager.doExecute(result.device, link.command_id, function(err, result){
+					commandManager.doExecute(device, link.command_id, function(err, out){
 						if(err){ return callback(invalid_link_error); }
-						return callback(null, result);
+						return callback(null, out);
 					})
 				})
 			})		
