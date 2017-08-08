@@ -6,6 +6,9 @@ exports.createUser = function(user, callback){
 		if(err) { return callback(err); }
         if(result && result.length > 0 ) { return callback(null, result[0]); }       
         var newUser = new User(user);
+        if(!newUser.userid){
+             newUser.userid = newUser.email;
+        }
         newUser.save(callback);
 	})
 	
