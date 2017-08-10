@@ -137,7 +137,7 @@ describe('Transducers', function() {
     describe('/POST message to a transducer', function() {
         it('it should PUBLISH to a transducer', (done) => {
             let msg = {
-                'test': 'Hello'
+                "test": "Hello"
             }
             chai.request(server)
                 .post('/api/device/' + theDevice.id + '/transducer/' + theDevice.transducers[0].id)

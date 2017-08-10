@@ -85,9 +85,9 @@ describe('Commands', function() {
     describe('/POST command', function() {
         it('it should POST a new command', (done) => {
             let cmd = {
-                'name': 'Open Door',
-                'transducer_id': theDevice.transducers[0].id,
-                'value': '1'
+                "name": "Open Door",
+                "transducer_id": theDevice.transducers[0].id,
+                "value": "1"
             }
             chai.request(server)
                 .post('/api/device/' + theDevice.id + '/command')

@@ -6,7 +6,7 @@ var publicLinkManager = require('../middleware/resource_managers/public_link_man
 
 router.get('/:linkId', function(req, res, next) {
 	var link = String(nconf.get('pc_base_url')) + "/pc/"+ req.params.linkId;
-	var html = '<html><title>Run Command On Openchirp</title><form method="POST" action="' +link +'"><button type="submit" class="btn btn-success">Run</button></form></html>';
+	var html = '<html><title>Run Command On Openchirp</title><body align="center" style="margin:10%;"><form method="POST" action="' +link +'"><button type="submit" style="cursor:hand;background-color:#aad1e2;width:75%;height:50%;"><div style="font-size:500%;">Run Command</div></button></form></body></html>';
     res.send(html);
 });
 router.post('/:_payload', function(req, res, next) {
