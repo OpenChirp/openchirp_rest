@@ -195,9 +195,10 @@ if(nconf.get("enable_auth")){
     userManager.createUser(testUser, function(err, result){
       if(err) { return next(err); }
       req.user = result;
-      return next();
-    })
-      
+      groupManager.doCreateGroup(result._id, "developer",function(err, result){
+           return next();
+      })   
+    })     
   });
 }
 

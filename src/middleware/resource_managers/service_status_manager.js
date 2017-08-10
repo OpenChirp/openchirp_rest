@@ -9,7 +9,7 @@ exports.start = function(){
 	});
 	
 	client.on('message', function (topic, message) {
-		console.log("Received message "+topic +" : "+ message);
+		//console.log("Received message "+topic +" : "+ message);
 		var serviceId = topic.split("/")[2];
 		var mjson = null;
 		try{

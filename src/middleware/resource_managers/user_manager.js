@@ -89,6 +89,9 @@ exports.deleteCommandShortcut = function(req, callback){
 };
 
 exports.addUserToGroup = function(req, callback){
+    exports.doAddUserToGroup(req.group, req.body.user_id, req.body.write_access, callback);
+}
+exports.doAddUserToGroup = function(group, user_id, write_access, callback){
     var canEditGroup = false;
     var invalid_user_err = new Error();
     invalid_user_err.message = "user_id is either null or invalid";
@@ -96,17 +99,17 @@ exports.addUserToGroup = function(req, callback){
     var already_member_err = new Error();
     already_member_err.message = "User is already member of group";
   
-    if (typeof req.body.write_access != "undefined" && req.body.write_access){
-        canEditGroup= req.body.write_access; 
+    if (typeof write_access != "undefined" && write_access){
+        canEditGroup = write_access; 
     }
-    var newGroupMembership = { group_id: req.group._id , name: req.group.name , write_access: canEditGroup };
+    var newGroupMembership = { group_id: group._id , name: group.name , write_access: canEditGroup };
 
-    exports.getUserById(req.body.user_id, function(err, user){
+    exports.getUserById(user_id, function(err, user){
         if(err) { return callback(err); }
         if(!user) { return callback(invalid_user_err); }
         
         user.groups.forEach(function(userGroup){
-            if(String(userGroup.group_id) === String(req.group._id )) {
+            if(String(userGroup.group_id) === String(group._id )) {
                return callback(already_member_err);
             }
         }) 

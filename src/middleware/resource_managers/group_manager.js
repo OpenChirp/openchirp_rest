@@ -17,19 +17,21 @@ exports.getAllGroups = function(req, callback){
 };
 
 exports.createGroup = function(req, callback){
-	var group = new Group();
-	group.name = req.body.name;
-    if(req.ownerid){
-        group.owner = req.ownerid;
+	 if(req.ownerid){
+        ownerid = req.ownerid;
     }else{
-        group.owner = req.user._id;
+        ownerid = req.user._id;
     }
-    group.save(function(err, result){
+    exports.doCreateGroup(ownerid, req.body.name, callback);
+};
+
+exports.doCreateGroup = function(ownerid, groupname, callback){
+  var group = new Group();
+  group.name = groupname;   
+  group.owner = ownerid;
+  group.save(function(err, result){
       if(err) { return callback(err); }
-      req.group = result;
-      req.body.write_access = true;
-      req.body.user_id = req.user._id;
-      userManager.addUserToGroup(req, callback);
+      userManager.doAddUserToGroup(result, ownerid, true, callback);
   });
 };
 
