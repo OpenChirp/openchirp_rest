@@ -32,6 +32,9 @@ var checkAccess = function(perm, user, device, next){
 		if( result != null && result.perm >= perm){
 			return next();
 		}
+		if( result != null && result.perm < perm ){
+			return next(forbidden_error);
+		}
 		
 		var groupIDs = [];
 		var groups = user.groups;
