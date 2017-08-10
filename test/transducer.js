@@ -141,7 +141,7 @@ describe('Transducers', function() {
             }
             chai.request(server)
                 .post('/api/device/' + theDevice.id + '/transducer/' + theDevice.transducers[0].id)
-                .send(String(msg)
+                .send(String(msg))
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
