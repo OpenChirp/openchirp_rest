@@ -16,6 +16,7 @@ var GoogleTokenStrategy = require('passport-google-id-token');
 //var BasicStrategy = require('passport-http').BasicStrategy;
 
 var userManager = require('./middleware/resource_managers/user_manager');
+var groupManager = require('./middleware/resource_managers/group_manager');
 var thingTokenManager = require('./middleware/resource_managers/thing_token_manager');
 var serviceStatusManager = require('./middleware/resource_managers/service_status_manager');
 
