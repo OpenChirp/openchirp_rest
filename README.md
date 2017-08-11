@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/OpenChirp/openchirp_rest.svg?branch=master)](https://travis-ci.org/OpenChirp/openchirp_rest)
+<!--[![Build Status](https://travis-ci.org/OpenChirp/openchirp_rest.svg?branch=master)](https://travis-ci.org/OpenChirp/openchirp_rest)-->
 [![Code Climate](https://codeclimate.com/github/OpenChirp/openchirp_rest/badges/gpa.svg)](https://codeclimate.com/github/OpenChirp/openchirp_rest)
 [![Known Vulnerabilities](https://snyk.io/test/github/openchirp/openchirp_rest/badge.svg)](https://snyk.io/test/github/openchirp/openchirp_rest)
 # OpenChirp REST API
