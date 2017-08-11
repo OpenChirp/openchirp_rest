@@ -152,9 +152,49 @@ exports.getGateways = function(req, callback){
     
 };
 
-exports.getDevices = function(req, callback){
+//Do recursive search for devices at all child locations
+exports.getAllDevicesAtLocation = function(location_id, callback){
+    devices = [];
+    locations = [];
+  
+    locations.push(location_id);
+    var count = 0;
 
-    Device.find({ location_id : req.params._id }).select('name pubsub properties').exec(callback);    
+    async.whilst(
+        function () { return locations.length >0; },
+        function (next) {
+            var locId = locations[0];
+            locations.shift();
+            Location.findById(locId).exec(function(err, loc){
+                if(err) { return next(err); }
+                if(loc){
+                    locations.push(loc.children);
+                    console.log(locations);
+                    Device.find({ location_id : loc._id }).select('name pubsub').exec(function(err, result){
+                        if(err) { return next(err);}
+                        devices.push(result);
+                        return next(null, devices);
+                    })  
+
+                }else{
+                    return next(null, devices);
+                }
+            })
+        },
+        function (err, devices) {
+            if(err){ return callback(err); }
+            console.log("All devices ");
+            console.log(devices);
+            return callback(null, devices);
+          
+        }
+    );
+
+};
+
+exports.getDevices = function(req, callback){
+    exports.getAllDevicesAtLocation(req.params._id, callback);
+    //Device.find({ location_id : req.params._id }).select('name pubsub properties').exec(callback);    
 };
 
 exports.getLocationsByOwner = function(req, callback) {
