@@ -157,7 +157,6 @@ exports.getAllDevices = function(location_id, callback){
     var out = {};
     out.devices = [];
     out.locations = [];
-  
     out.locations.push(location_id);
     
     async.whilst(
@@ -168,14 +167,11 @@ exports.getAllDevices = function(location_id, callback){
             Location.findById(locId).exec(function(err, loc){
                 if(err) { return next(err); }
                 if(loc){
-                    console.log("pre " + out.locations);
                     Array.prototype.push.apply(out.locations, loc.children);
-                    console.log("post "+ out.ocations);
-                    Device.find({ location_id : loc._id }).select('name pubsub').exec(function(err, result){
+                    Device.find({ location_id : loc._id }).select('name location_id pubsub').exec(function(err, result){
                         if(err) { return next(err);}
                         if (result && result.length > 0){
                             Array.prototype.push.apply(out.devices, result);
-                            //devices.push(result);
                         }
                         return next(null, out);
                     })  
@@ -187,8 +183,6 @@ exports.getAllDevices = function(location_id, callback){
         },
         function (err, out) {
             if(err){ return callback(err); }
-            console.log("All devices ");
-            console.log(out.devices);
             return callback(null, out.devices);
           
         }
