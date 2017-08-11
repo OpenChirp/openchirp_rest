@@ -58,6 +58,13 @@ router.get('/:_id/devices', function(req, res, next) {
         return res.json(result);
     })
 });
+/* Get devices recursively at all child locations */
+router.get('/:_id/alldevices', function(req, res, next) {
+    locationManager.geAllDevices( req.params._id, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
 
 /* Create new child location */
 router.post('/:_id',locationAuthorizer.checkPostAccess, function(req, res, next) {

@@ -153,43 +153,43 @@ exports.getGateways = function(req, callback){
 };
 
 //Do recursive search for devices at all child locations
-exports.getAllDevicesAtLocation = function(location_id, callback){
-    var devices = [];
-    var locations = [];
+exports.getAllDevices = function(location_id, callback){
+    var out = {};
+    out.devices = [];
+    out.locations = [];
   
-    locations.push(location_id);
-    var count = 0;
-
+    out.locations.push(location_id);
+    
     async.whilst(
-        function () { return locations.length >0; },
+        function () { return out.locations.length >0; },
         function (next) {
-            var locId = locations[0];
-            locations.shift();
+            var locId = out.locations[0];
+            out.locations.shift();
             Location.findById(locId).exec(function(err, loc){
                 if(err) { return next(err); }
                 if(loc){
-                    console.log("pre " +locations);
-                    Array.prototype.push.apply(locations, loc.children);
-                    console.log("post"+ locations);
+                    console.log("pre " + out.locations);
+                    Array.prototype.push.apply(out.locations, loc.children);
+                    console.log("post "+ out.ocations);
                     Device.find({ location_id : loc._id }).select('name pubsub').exec(function(err, result){
                         if(err) { return next(err);}
                         if (result && result.length > 0){
-                            Array.prototype.push.apply(devices, result);
+                            Array.prototype.push.apply(out.devices, result);
                             //devices.push(result);
                         }
-                        return next(null, devices);
+                        return next(null, out);
                     })  
 
                 }else{
-                    return next(null, devices);
+                    return next(null, out);
                 }
             })
         },
-        function (err, devices) {
+        function (err, out) {
             if(err){ return callback(err); }
             console.log("All devices ");
-            console.log(devices);
-            return callback(null, devices);
+            console.log(out.devices);
+            return callback(null, out.devices);
           
         }
     );
@@ -197,8 +197,8 @@ exports.getAllDevicesAtLocation = function(location_id, callback){
 };
 
 exports.getDevices = function(req, callback){
-    exports.getAllDevicesAtLocation(req.params._id, callback);
-    //Device.find({ location_id : req.params._id }).select('name pubsub properties').exec(callback);    
+    
+    Device.find({ location_id : req.params._id }).select('name pubsub properties').exec(callback);    
 };
 
 exports.getLocationsByOwner = function(req, callback) {
