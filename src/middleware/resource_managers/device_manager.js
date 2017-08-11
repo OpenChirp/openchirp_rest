@@ -51,6 +51,13 @@ var deleteDeviceAclAndNotifyService = function(device, service, callback){
      
 };
 
+exports.deleteAllGroupAcls = function(groupId, callback){
+    DeviceAcl.remove({ entity_id: groupId }).exec(function(err, result){
+            if(err) { return callback(err); }
+            return callback(null, null);
+       });
+};
+
 exports.createNewDevice = function(req, callback){
     //Only user's with admin or developer role can create devices at public locations.
     if(typeof req.body.location_id != 'undefined'){

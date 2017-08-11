@@ -2,6 +2,7 @@ var async = require('async');
 var Group = require('../../models/group');
 var userManager = require('./user_manager');
 var thingTokenManager = require('./thing_token_manager');
+var deviceManager = require('./device_manager');
 
 exports.getAllGroups = function(req, callback){
     if(req.query && req.query.name ){
@@ -67,14 +68,13 @@ exports.removeMember = function(req, callback){
 };
 
 exports.removeGroupFromUsers= function(groupId, callback){
-  userManager.deleteGroup(groupId, callback);
-  
-  /*async.parallel([
+ 
+  async.parallel([
     function(next){
      userManager.deleteGroup(groupId, next);             
  },
  function(next){
-     thingTokenManager.deleteGroup(groupId, next);
+     deviceManager.deleteAllGroupAcls(groupId, next);
  }
  ],
  function(err, results){
@@ -83,7 +83,7 @@ exports.removeGroupFromUsers= function(groupId, callback){
          console.log(err);
      }
      return callback(null, null);
- }) */      
+ })       
 };
 
 exports.deleteGroup = function(req, callback){
