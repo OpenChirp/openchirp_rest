@@ -15,7 +15,7 @@ exports.getAllStats = function(req, callback){
 	       Location.count({}, next);
 	    },
 	    device: function(next) {
-	        Location.count({}, next);
+	        Device.count({}, next);
 	    },
 	    devicetemplate: function(next) {
 	        DeviceTemplate.count({}, next);
