@@ -168,11 +168,15 @@ exports.getAllDevicesAtLocation = function(location_id, callback){
             Location.findById(locId).exec(function(err, loc){
                 if(err) { return next(err); }
                 if(loc){
+                    console.log("pre " +locations);
                     locations.push(loc.children);
-                    console.log(locations);
+                    console.log("post"+ locations);
                     Device.find({ location_id : loc._id }).select('name pubsub').exec(function(err, result){
                         if(err) { return next(err);}
-                        devices.push(result);
+                        if (result && result.length > 0){
+                            Array.prototype.push.apply(devices, result);
+                            //devices.push(result);
+                        }
                         return next(null, devices);
                     })  
 
