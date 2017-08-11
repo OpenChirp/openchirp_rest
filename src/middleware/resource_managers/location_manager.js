@@ -154,8 +154,8 @@ exports.getGateways = function(req, callback){
 
 //Do recursive search for devices at all child locations
 exports.getAllDevicesAtLocation = function(location_id, callback){
-    devices = [];
-    locations = [];
+    var devices = [];
+    var locations = [];
   
     locations.push(location_id);
     var count = 0;
@@ -169,7 +169,7 @@ exports.getAllDevicesAtLocation = function(location_id, callback){
                 if(err) { return next(err); }
                 if(loc){
                     console.log("pre " +locations);
-                    locations.push(loc.children);
+                    Array.prototype.push.apply(locations, loc.children);
                     console.log("post"+ locations);
                     Device.find({ location_id : loc._id }).select('name pubsub').exec(function(err, result){
                         if(err) { return next(err);}
