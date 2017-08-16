@@ -4,13 +4,26 @@ version: v1.7.1
 ignore:
   'npm:http-signature:20150122':
     - passport-google-id-token > request > http-signature:
-        reason: No easy fix at the time; Waiting for next version of passport-google-id-token
+        reason: >-
+          No easy fix at the time; Waiting for next version of
+          passport-google-id-token
   'npm:qs:20170213':
     - passport-google-id-token > request > qs:
-        reason: No easy fix at the time; Waiting for next version of passport-google-id-token
+        reason: >-
+          No easy fix at the time; Waiting for next version of
+          passport-google-id-token
   'npm:ms:20170412':
     - passport-google-id-token > jsonwebtoken > ms:
-        reason: No easy fix at the time; Waiting for next version of passport-google-id-token
+        reason: >-
+          No easy fix at the time; Waiting for next version of
+          passport-google-id-token
   'npm:request:20160119':
     - passport-google-id-token > request:
-        reason: No easy fix at the time; Waiting for next version of passport-google-id-token
+        reason: >-
+          No easy fix at the time; Waiting for next version of
+          passport-google-id-token
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  'npm:tough-cookie:20160722':
+    - passport-google-id-token > request > tough-cookie:
+        patched: '2017-08-16T01:03:07.341Z'
