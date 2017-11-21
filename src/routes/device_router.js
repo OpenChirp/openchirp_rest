@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var ObjectId = require('mongoose').Types.ObjectId;
+var bodyParser = require('body-parser');
 
 var deviceManager = require('../middleware/resource_managers/device_manager');
 var transducerManager = require('../middleware/resource_managers/transducer_manager');
@@ -113,6 +114,10 @@ router.get('/:_id/transducer', function(req, res, next){
         return res.json(result);
     })
 });
+
+
+/* Register extra body parsers only for publishing transducer values */
+router.post('/:_id/transducer/:_transducerId', bodyParser.text(), bodyParser.raw());
 
 /* Publish to device transducer */
 router.post('/:_id/transducer/:_transducerId', deviceAuthorizer.checkExecuteAccess, function(req, res, next ){
