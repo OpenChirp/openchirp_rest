@@ -33,7 +33,7 @@ exports.run = function(req, callback ){
 				}
 				deviceAuthorizer.checkPublicLinkAccess(user, device, function(err, access){
 					if(err) { return callback(err); }
-					commandManager.doExecute(device, link.command_id, function(err, out){
+					commandManager.doExecute(user, device, link.command_id, function(err, out){
 						if(err){ return callback(invalid_link_error); }
 						return callback(null, out);
 					})

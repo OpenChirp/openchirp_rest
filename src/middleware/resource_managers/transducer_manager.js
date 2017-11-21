@@ -69,12 +69,18 @@ var getTransducerLastValue = function(device, callback){
 };
 
 exports.publishToDeviceTransducer = function(req, callback ){
-    exports.publish(req.device, req.params._transducerId, req.body, callback);
+    exports.publish(req.user, req.device, req.params._transducerId, req.body, callback);
 };
 
-exports.publish = function(device, transducerId, message, callback){    
-    var transducer = device.transducers.id(transducerId);
-    if (! transducer.is_actuable) {
+exports.publish = function(user, device, transducerId, message, callback){
+    // Note: If thing_type is not defined (say when authentication is
+    //       disabled), we cannot determine if accessors is a user,
+    //       device, or service. In this case, the current action
+    //       is to not enforce the is_actuator check.
+    var isTypeUser = !user.thing_type;
+	var transducer = device.transducers.id(transducerId);
+    // only disallow users from posting ti a non-actuator
+    if (!transducer.is_actuable && isTypeUser) {
         var error = new Error();
         error.message = 'Transducer not actuable';
         return callback(error);

@@ -76,10 +76,10 @@ exports.getAllCommands = function(req, callback ){
 };
 
 exports.executeCommand = function(req, callback){
-	exports.doExecute(req.device, req.params._commandId, callback);
+	exports.doExecute(req.user, req.device, req.params._commandId, callback);
 };
 
-exports.doExecute = function(device, commandId, callback){
+exports.doExecute = function(user, device, commandId, callback){
     var command = device.commands.id(commandId);
     if(!command){
         var error = new Error();
@@ -87,7 +87,7 @@ exports.doExecute = function(device, commandId, callback){
         return callback(error);
     }
     var message = command.value;
-    transducerManager.publish(device, command.transducer_id, message, callback);
+    transducerManager.publish(user, device, command.transducer_id, message, callback);
 };
 
 exports.deleteCommand = function(req, callback){
