@@ -80,6 +80,10 @@ exports.publish = function(device, transducerId, message, callback){
         return callback(error);
     }
     var topic = device.pubsub.endpoint+'/transducer/'+ transducer.name ;
+    // MQTT Client only accepts strings and Buffers
+    if (!(typeof message == 'string') && !(message instanceof Buffer)) {
+        message = JSON.stringify(message);
+    }
     mqttClient.publish(topic, message, callback);
 };
 
