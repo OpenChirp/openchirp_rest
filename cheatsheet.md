@@ -4,13 +4,28 @@
 
 ## `/user`
 - GET - Fetch user profile info
-- TODO
+- PUT - Update user info
+* `/token`
+    - GET - Simply get's the user's real id
+    - POST - Generate a user token
+    - DELETE - Delete the user's token
+* `/mydevices`
+    - GET
+* `/mylocations`
+    - GET
+* `/shortcuts`
+    - GET - Get all user shortcuts
+    - POST - Create a user shortcut
+* `/shortcuts/<shct_id>`
+    - DELETE - Delete the user shortcut
+* `/group/<grp_id>`
+    - DELETE - Leave group
+* `/all`
+    - GET - Get's all the user's information
 
 ## `/group`
 - GET- Fetch all group info
 - TODO
-
-
 
 
 ## `/location`
@@ -27,8 +42,6 @@
         - GET - Fetch immediate devices
     * `/alldevices`
         - GET - Fetch recursive all devices
-
-
 
 
 ## `/device`
