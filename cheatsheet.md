@@ -1,6 +1,6 @@
-# REST Cheatsheet
+# REST/MQTT Cheatsheet
 
-# Targets
+# REST Targets
 
 ## `/user`
 - GET - Fetch user profile info
@@ -96,3 +96,8 @@
 
 ## `/admin`
 - TODO
+
+# MQTT Targets
+
+* `openchirp/devices/`
+* `openchirp/services/`
