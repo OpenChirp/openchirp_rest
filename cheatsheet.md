@@ -92,7 +92,19 @@
 - TODO
 
 ## `/service`
-- TODO
+- GET - Get all services
+- POST - Create a new service
+
+* `/<srv_id>`
+    - PUT - Update service settings
+    - DELETE - Delete a service
+
+    * `/things`
+        - GET - Get all linked devices list/info
+    * `/token`
+        - POST - Generate the service token
+        - PUT - Regenerate the service token
+        - DELETE - Delete the service token
 
 ## `/admin`
 - TODO
