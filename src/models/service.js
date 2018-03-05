@@ -39,7 +39,7 @@ serviceSchema.virtual('pubsub.events_endpoint').get(function(){
 });
 
 serviceSchema.virtual('pubsub.status_endpoint').get(function(){
-  return this.pubsub.endpoint + '/thing/status';
+  return this.pubsub.endpoint + '/status';
 });
 
 serviceSchema.index({ name :"text" , description : "text" });
