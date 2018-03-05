@@ -93,6 +93,57 @@
 
 ## `/service`
 - GET - Get all services
+    <details>
+    <summary>Click to see example response</summary>
+    <pre>
+    [
+        {
+            "_id": "592880c57d6ec25f901d9668",
+            "updated_at": "2018-03-04T03:17:40.541Z",
+            "created_at": "2017-05-26T19:23:49.953Z",
+            "owner": {
+                "_id": "5911f5ab65dd1376d1996d3f",
+                "email": "hesling.craig@gmail.com",
+                "name": "Craig Hesling",
+                "id": "5911f5ab65dd1376d1996d3f"
+            },
+            "name": "LoRaWAN",
+            "description": "LoRaWAN device registration",
+            "__v": 22,
+            "properties": {
+                "MQTTUser": "something",
+                "MQTTPass": "blahhh",
+                "MQTTQos": "0",
+                "MQTTBroker": "something",
+                "AppServerTarget": "something",
+                "AppServerUser": "something",
+                "AppServerPass": "blahh",
+                "AppServerApplicationID": "somenumber"
+            },
+            "config_required": [
+                {
+                    "key_name": "DevEUI",
+                    "key_description": "A device's unique identifier (8 byte hexadecimal)",
+                    "key_example": "1122334455667788",
+                    "key_required": true
+                },
+            ],
+            "status": {
+                "timestamp": "2018-03-04T03:17:40.541Z",
+                "message": "Running"
+            },
+            "pubsub": {
+                "protocol": "MQTT",
+                "endpoint": "openchirp/services/592880c57d6ec25f901d9668",
+                "events_endpoint": "openchirp/services/592880c57d6ec25f901d9668/thing/events",
+                "status_endpoint": "openchirp/services/592880c57d6ec25f901d9668/status"
+            },
+            "device_permission": 0,
+            "id": "592880c57d6ec25f901d9668"
+        }
+    ]
+    </pre>
+    </details>
 - POST - Create a new service
 
 * `/<srv_id>`
