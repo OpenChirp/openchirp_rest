@@ -111,5 +111,8 @@
 
 # MQTT Targets
 
-* `openchirp/devices/`
-* `openchirp/services/`
+* `openchirp/device/<dev_id>`
+    - `/transducer` - Time series recorded
+* `openchirp/service/<srv_id>`
+    - `/thing/events`
+    - `/status`

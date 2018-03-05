@@ -36,7 +36,7 @@ var deviceSchema = new Schema({
 );
 
 deviceSchema.virtual('pubsub.endpoint').get(function () {
-  return 'openchirp/devices/' + this._id;
+  return 'openchirp/device/' + this._id;
 });
 
 deviceSchema.index({ location_id : 1});

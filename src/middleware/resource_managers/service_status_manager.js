@@ -5,7 +5,7 @@ var deviceManager = require('./device_manager');
 exports.start = function(){
 	var client = mqtt_client.createClient();
 	client.on('connect', function () {
-		 client.subscribe('openchirp/services/+/status');
+		 client.subscribe('openchirp/service/+/status');
 	});
 	
 	client.on('message', function (topic, message) {
