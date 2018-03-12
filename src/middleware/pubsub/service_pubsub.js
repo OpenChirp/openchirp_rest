@@ -14,6 +14,7 @@ exports.publishNewDevice = function(service, device, linkConfig, callback){
      message.thing = {};
      message.thing.type ="device";
      message.thing.id = device._id;
+     message.thing.pubsub = device.pubsub;
      message.thing.config = linkConfig;
      mqttClient.publish(topic, JSON.stringify(message), callback);        
 };
