@@ -1,10 +1,12 @@
 var mqttClient = require('./mqtt_client');
 
+// Publishes a service property change event
 exports.publishUpdateProperties = function(service, properties, callback){
      var topic = service.pubsub.events_endpoint+"/properties";    
      mqttClient.publish(topic, JSON.stringify(properties), callback);        
 };
 
+// Publishes a service's new device event
 exports.publishNewDevice = function(service, device, linkConfig, callback){
 	 var topic = service.pubsub.events_endpoint;
      var message = {};
@@ -16,6 +18,7 @@ exports.publishNewDevice = function(service, device, linkConfig, callback){
      mqttClient.publish(topic, JSON.stringify(message), callback);        
 };
 
+// Publishes a service's update device (config) event
 exports.publishUpdateDevice = function(service, device, linkConfig, callback){
 	 var topic = service.pubsub.events_endpoint;
      var message = {};
@@ -27,6 +30,7 @@ exports.publishUpdateDevice = function(service, device, linkConfig, callback){
      mqttClient.publish(topic, JSON.stringify(message), callback);        
 };
 
+// Publishes a service's delete device event
 exports.publishDeleteDevice = function(service, device, callback){
     var topic = service.pubsub.events_endpoint;
     var message = {};
