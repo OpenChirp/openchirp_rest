@@ -78,11 +78,12 @@ exports.publish = function(user, device, transducerId, message, callback){
     //       device, or service. In this case, the current action
     //       is to not enforce the is_actuator check.
     var isTypeUser = !user.thing_type;
-	var transducer = device.transducers.id(transducerId);
+    var transducer = device.transducers.id(transducerId);
     // only disallow users from posting ti a non-actuator
     if (!transducer.is_actuable && isTypeUser) {
         var error = new Error();
         error.message = 'Transducer not actuable';
+        //console.log(error);
         return callback(error);
     }
     var topic = device.pubsub.endpoint+'/transducer/'+ transducer.name ;
@@ -111,13 +112,15 @@ exports.getDeviceTransducer = function(req, res){
 	/* construct limit, offset and chunked query parameters */
 	var limit=""
 	var offset="";
+	query_string.q = "select value from \""+ measurement+"\"";
 	query_string.chunked=true; // default is chunked response
 	if (typeof req.query.limit != 'undefined') {
 		var ilimit = parseInt(req.query.limit);
 		if (ilimit > 10000 || ilimit <= 0) ilimit = 10000;
-		limit=" LIMIT " + ilimit;
+		query_string.q += " LIMIT " + ilimit;
 		query_string.chunked=false;
 	}
+	//console.log("q2:" + query_string.q);
 	if (typeof req.query.page != 'undefined') {
 		var ilimit=10000;
 		if (limit == "") {
@@ -125,7 +128,7 @@ exports.getDeviceTransducer = function(req, res){
 		} else {
 			ilimit=parseInt(req.query.limit);
 		}
-		offset=" OFFSET " + Math.max(parseInt(req.query.page)-1, 0)*ilimit;
+		query_string.q += " OFFSET " + Math.max(parseInt(req.query.page)-1, 0)*ilimit;
 		query_string.chunked=false;
 	}
 	if (query_string.chunked == true) 
@@ -141,11 +144,15 @@ exports.getDeviceTransducer = function(req, res){
 		console.log("end time:"+req.query.etime);
   		time_query+=util.format(' and time < %s', req.query.etime);
 	}
-	   
+	if(time_query.length > 0){
+		query_string.q += time_query;
+	}
+	//console.log("q5:"+ query_string.q);
   	/* the influxdb query */
-	query_string.q = SqlString.format('select value from ? ? ? ?', [measurement, time_query, limit, offset]).replace(new RegExp('\'', 'g'), '"');
-	query_string.q = query_string.q.replace(new RegExp('\ \\\"\\\"', 'g'), ''); // remove empty strings
-
+/*
+	query_string.q = SqlString.format('select value from ? ? ? ?', [measurement, time_query, limit, offset]);
+	query_string.q = query_string.q.replace(new RegExp('\'', 'g'), '"');
+	query_string.q = query_string.q.replace(new RegExp('\ \\"\\\"', 'g'), ''); // remove empty strings
 	/* if request type is csv, tell influxdb to return csv (by adding Accept header); otherwise, default is json */
 	var http_headers = {};
 	if (typeof req.headers['content-type'] != 'undefined') {
