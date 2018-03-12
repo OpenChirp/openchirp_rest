@@ -166,4 +166,4 @@
     - `/transducer` - Time series recorded
 * `openchirp/service/<srv_id>`
     - `/thing/events`
-    - `/status`
+    - `/status` - Dual use, push device-service link status and service's main status.
