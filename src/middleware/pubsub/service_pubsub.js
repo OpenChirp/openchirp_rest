@@ -14,7 +14,9 @@ exports.publishNewDevice = function(service, device, linkConfig, callback){
      message.thing = {};
      message.thing.type ="device";
      message.thing.id = device._id;
-     message.thing.pubsub = device.pubsub;
+     message.thing.pubsub = {};
+     message.thing.pubsub.protocol = device.pubsub.protocol;
+     message.thing.pubsub.endpoint = device.pubsub.endpoint;
      message.thing.config = linkConfig;
      mqttClient.publish(topic, JSON.stringify(message), callback);        
 };
@@ -27,6 +29,9 @@ exports.publishUpdateDevice = function(service, device, linkConfig, callback){
      message.thing = {};
      message.thing.type ="device";
      message.thing.id = device._id;
+     message.thing.pubsub = {};
+     message.thing.pubsub.protocol = device.pubsub.protocol;
+     message.thing.pubsub.endpoint = device.pubsub.endpoint;
      message.thing.config = linkConfig;
      mqttClient.publish(topic, JSON.stringify(message), callback);        
 };
@@ -39,6 +44,9 @@ exports.publishDeleteDevice = function(service, device, callback){
     message.thing = {};
     message.thing.type = "device";
     message.thing.id = device._id;
+    message.thing.pubsub = {};
+    message.thing.pubsub.protocol = device.pubsub.protocol;
+    message.thing.pubsub.endpoint = device.pubsub.endpoint;
     mqttClient.publish(topic, JSON.stringify(message), callback); 
 };
 
