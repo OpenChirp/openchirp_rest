@@ -94,7 +94,7 @@
 ## `/service`
 - GET - Get all services
     <details>
-    <summary>Click to see example response</summary>
+    <summary>Example Response</summary>
     <pre>
     [
         {
@@ -111,13 +111,7 @@
             "description": "LoRaWAN device registration",
             "__v": 22,
             "properties": {
-                "MQTTUser": "something",
-                "MQTTPass": "blahhh",
-                "MQTTQos": "0",
-                "MQTTBroker": "something",
                 "AppServerTarget": "something",
-                "AppServerUser": "something",
-                "AppServerPass": "blahh",
                 "AppServerApplicationID": "somenumber"
             },
             "config_required": [
@@ -163,7 +157,63 @@
 # MQTT Targets
 
 * `openchirp/device/<dev_id>`
-    - `/transducer` - Time series recorded
+    - `/transducer/<any_topic>` - Time series recorded transducer topics
+    - `/<any_topic>` - Topics for device related communication that should not
+      be recorded by time series.
 * `openchirp/service/<srv_id>`
     - `/thing/events`
+        <details>
+        <summary>Example Device Event - New</summary>
+        <pre>
+            {
+                "action":"new",
+                "thing":{
+                    "type":"device",
+                    "id":"5aa7198f69da9508643081c1",
+                    "pubsub":{
+                        "protocol":"MQTT","endpoint":"openchirp/device/5aa7198f69da9508643081c1"
+                    },
+                    "config":[
+                        {"key":"rxconfig","value":"blahRX"},
+                        {"key":"txconfig","value":"blahTX"}
+                    ]
+                }
+            }
+        </pre>
+        </details>
+        <details>
+        <summary>Example Device Event - Update</summary>
+        <pre>
+            {
+                "action":"update",
+                "thing":{
+                    "type":"device",
+                    "id":"5aa7198f69da9508643081c1",
+                    "pubsub":{
+                        "protocol":"MQTT","endpoint":"openchirp/device/5aa7198f69da9508643081c1"
+                    },
+                    "config":[
+                        {"key":"rxconfig","value":"blahNewRX"},
+                        {"key":"txconfig","value":"blahTX"}
+                    ]
+                }
+            }
+        </pre>
+        </details>
+        <details>
+        <summary>Example Device Event - Delete</summary>
+        <pre>
+            {
+                "action":"delete",
+                "thing":{
+                    "type":"device",
+                    "id":"5aa7198f69da9508643081c1",
+                    "pubsub":{
+                        "protocol":"MQTT",
+                        "endpoint":"openchirp/device/5aa7198f69da9508643081c1"
+                    }
+                }
+            }
+        </pre>
+        </details>
     - `/status` - Dual use, push device-service link status and service's main status.
