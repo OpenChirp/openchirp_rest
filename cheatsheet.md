@@ -217,3 +217,7 @@
         </pre>
         </details>
     - `/status` - Dual use, push device-service link status and service's main status.
+
+# Developer Notes
+* Service configs are totally free form.
+  You can link to a service without conforming to it's specified required config scheme. The config could be one number, a string, an array, or maybe even a json object.
