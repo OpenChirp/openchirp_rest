@@ -14,7 +14,10 @@ exports.getAllServices = function(callback){
 exports.createNewService = function(req, callback){
 	var service = new Service(req.body);
     service.owner = req.user._id;
-    service.save(callback);
+    service.save(function (err, result) {
+        if(err) { return callback(err); }
+        result.populate('owner', 'name email').populate(callback);
+    });
 };
 
 exports.getById = function(id, callback){
