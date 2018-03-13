@@ -1,5 +1,11 @@
 # REST/MQTT Cheatsheet
 
+# Table of Contents
+* [REST Targets](#rest-targets)
+* [MQTT Targets](#mqtt-targets)
+* [Developer Notes](#developer-notes)
+
+
 # REST Targets
 
 ## `/user`
