@@ -1,6 +1,7 @@
 var Device = require('../../models/device');
 var PublicLink = require('../../models/public_link');
 var transducerManager = require('./transducer_manager');
+var nconf = require('nconf');
 
 exports.createCommand = function(req, callback ){
    var command = new Object(req.body);
@@ -38,11 +39,11 @@ exports.createPublicLink = function(req, callback ){
         // publicLink.payload = Buffer.from(String(publicLink._id)).toString('base64');
            publicLink.save(function(err, result){
                 if(err) { return callback(err); }
-                var link = "pc/"+result._id;
+                var link = String(nconf.get('pc_prefix'))+result._id;
                 return callback(null, link);
              })
         }else{
-           var link = "pc/"+result[0]._id;
+           var link = String(nconf.get('pc_prefix'))+result[0]._id;
            return callback(null, link);
         }
     });
@@ -60,7 +61,7 @@ exports.getPublicLink = function(req, callback){
             error.message = "No public link found";
             return callback(error);
         }else{
-            var link = "pc/"+result[0]._id;
+            var link = String(nconf.get('pc_prefix'))+result[0]._id;
             return callback(null, link);
         }
     })

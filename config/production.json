@@ -1,8 +1,33 @@
 {
-"db": "mongodb://localhost/openchirp",
-"mqtt": {
-   	"broker": "mqtts://localhost/",
-   	"user":"openchirp_rest",
-   	"pass":""
-}
+	"db": "mongodb://localhost/openchirp",
+	"mqtt": {
+		"broker": "tls://localhost",
+		"port":"1883",
+		"user":"openchirp_rest",
+		"pass":""
+	},
+	"influxdb":{
+		"host":"localhost",
+		"port":"8086"
+	},
+	"redis":{
+		"host":"localhost",
+		"port":6379
+	},
+	"pc_base_url":"https://openchirp.io",
+	/*
+		The pc_prefix allows us to provide hacked URIs to
+		support the website until the websit itself can provide
+		buttons for publick links
+	*/
+	"pc_prefix":"pc/",
+	"log_dir":"/var/log/openchirp/",
+	"session_secret":"",
+	"enable_auth" : true,
+	"website_url":"https://openchirp.io",
+	"auth_google":{
+		"clientID": "blahhhhhh.apps.googleusercontent.com",
+		"clientSecret": "",
+		"callbackURL": "https://openchirp.io/authv1/google/callback"
+	}
 }
