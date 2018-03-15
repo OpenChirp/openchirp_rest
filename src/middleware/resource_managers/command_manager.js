@@ -29,7 +29,7 @@ exports.createPublicLink = function(req, callback ){
         return callback(error);
     }
     PublicLink.find({user_id : userId, device_id: deviceId, command_id: commandId }).exec(function (err, result) {
-        if(err) { return callback(err) ; }      
+        if(err) { return callback(err) ; }
         if(!result || result.length == 0 ){
            var publicLink = new PublicLink();
            publicLink.device_id = deviceId;
@@ -40,12 +40,12 @@ exports.createPublicLink = function(req, callback ){
                 if(err) { return callback(err); }
                 var link = "pc/"+result._id;
                 return callback(null, link);
-             })            
+             })
         }else{
            var link = "pc/"+result[0]._id;
            return callback(null, link);
         }
-    });    
+    });
 };
 
 exports.getPublicLink = function(req, callback){
@@ -53,17 +53,17 @@ exports.getPublicLink = function(req, callback){
     var userId = req.user._id;
     var commandId = req.params._commandId;
     PublicLink.find({user_id : userId, device_id: deviceId, command_id: commandId }).exec(function (err, result) {
-        if(err) { return callback(err) ; }      
+        if(err) { return callback(err) ; }
         if(!result || result.length == 0){
             var error = new Error();
             error.status = 404;
-            error.message = "No public link found";     
-            return callback(error);  
+            error.message = "No public link found";
+            return callback(error);
         }else{
             var link = "pc/"+result[0]._id;
             return callback(null, link);
         }
-    })    
+    })
 };
 
 exports.getAllCommands = function(req, callback ){
