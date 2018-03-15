@@ -20,7 +20,7 @@
 		support the website until the websit itself can provide
 		buttons for publick links
 	*/
-	"pc_prefix":"pc/",
+	"pc_prefix":"pc",
 	"log_dir":"/var/log/openchirp/",
 	"session_secret":"",
 	"enable_auth" : true,
