@@ -31,7 +31,7 @@ router.param('_id', function(req, res, next, id) {
         return next(error);
     }
     serviceManager.getById(id, function (err, result) {
-        if (err) { return next(err)};    
+        if (err) { return next(err); }
         req.service = result;
         thingTokenManager.getTokenByThingId(id, function(err, thingToken){
             if(err) { return next(err); }
@@ -54,6 +54,13 @@ router.get('/:_id', function(req, res, next) {
 
 router.get('/:_id/things', function(req, res, next){
     serviceManager.getThings(req, function(err, result){
+        if(err) {return next(err); }
+        return res.json(result);
+    })
+});
+
+router.get('/:_id/deviceinfo', function(req, res, next){
+    serviceManager.getDeviceInfo(req, function(err, result){
         if(err) {return next(err); }
         return res.json(result);
     })
