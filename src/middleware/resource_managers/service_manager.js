@@ -107,6 +107,7 @@ exports.getThings = function(req, callback){
         for (var i = 0; i < result.length; i++) {
            var thing = {};
            thing.id = result[i]._id;
+           thing.name = result[i].name;
            thing.type = 'device';
            thing.pubsub = {};
            thing.pubsub.protocol = result[i].pubsub.protocol;
