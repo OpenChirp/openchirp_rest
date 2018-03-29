@@ -14,11 +14,14 @@
  	"host" :"redis",
  	"port" : "6379"
  },
-  "session_secret": "sessionSecret",
-  "log_dir":"/tmp/",
+ "session_secret": "secret123",
+ "log_dir":"/tmp/openchirp_rest/",
  "enable_auth" : false, 
+ "website_url":"http://localhost",
+ "pc_base_url":"http://localhost",
+ "pc_prefix":"pc",
  "auth_google":{
-    "clientID": "clientID",
+    "clientID": "blahhhhhh.apps.googleusercontent.com",
     "clientSecret": "clientSecret",
     "callbackURL": "http://rest:10010/auth/google/callback"
  }
