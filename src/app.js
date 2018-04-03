@@ -184,8 +184,11 @@ app.get('/auth/google/token', passport.authenticate('google-id-token'),
     res.send(req.user);
 });
 
-
-if(nconf.get("enable_auth")){
+var enableAuth = true;
+if(nconf.get("enable_auth") == 'false'){
+  enableAuth = false;
+}
+if(enableAuth){
   app.use('/api/*', ensureAuthenticated);
 } else{
   app.use('/api/*', function(req, res, next){
