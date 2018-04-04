@@ -29,11 +29,12 @@ app.use(cookieParser());
 
 //app.use(express.static(path.join(__dirname, '../public/')));
 
-//Setup Config
+/***************Load Config File *******************/
 nconf.env();
 var environment = process.env.NODE_ENV || 'development';
 var filename = path.join(__dirname, '../config/'+environment+".json")
 nconf.file({ file: filename });
+/*******************************************************/
 
 
 var allowCrossDomain = function(req, res, next) {
@@ -54,6 +55,7 @@ var allowCrossDomain = function(req, res, next) {
 
 app.use(allowCrossDomain);
 
+/************* Initialize Mongo DB connection *************/
 var dbConnect = function(){
    var options = {
       server: {
@@ -67,12 +69,15 @@ var dbConnect = function(){
 };
 
 dbConnect();
+
+/*******************************************************/
+
+// Start service manager that listens for service status messages and stores in database
+
 serviceStatusManager.start();
 
-// TODO: Cleanup all the auth related code.
 
-
-// Passport Session setup
+/************** User Session setup **********************/
 passport.serializeUser(function(user, next) {
   next(null, user._id);
   
@@ -81,38 +86,31 @@ passport.serializeUser(function(user, next) {
 passport.deserializeUser(function(id, next) {  
   userManager.getUserById(id, next );
 });
+app.use(session({
+    store: new RedisStore( nconf.get("redis") ),
+    secret: nconf.get("session_secret"),
+    resave: true,
+    saveUninitialized: true
+}));
 
 
-var fetchProfile =  function(accessToken, refreshToken, profile, next) {
-    var userCopy = {};
-  
-    if(profile.emails && profile.emails.length > 0){
-      userCopy.email = profile.emails[0].value;
-    }
-    if(profile.photos && profile.photos.length > 0){
-      userCopy.photo_link = profile.photos[0].value;
-    }
-  
-    userCopy.name = profile.displayName;
-    userCopy.google_id = profile.id;
-    userCopy.json = profile._json;
-    
-    userManager.createUser(userCopy, function(err, result){
-      if(err) { return next(err); }
-      if(result) { return next(null, result); }
-      var error = new Error();
-      error.message = "Error in creating user in database";
-      return next(error);
-    }) 
-};
+//Init Passport Authentication
+app.use(passport.initialize());
+//Persistent login sessions
+app.use(passport.session());
+
+/*******************************************************/
+
+
 
 var fetchProfileFromToken =  function(parsedToken, googleId, next) {
+  console.log("here");
     var payload = parsedToken.payload;
     var userCopy = {};
     userCopy.email = payload.email;
     userCopy.name = payload.name;
     userCopy.google_id = googleId;
-
+    console.log(userCopy);
 
     userManager.createUser(userCopy, function(err, result){
       if(err) { return next(err); }
@@ -123,7 +121,7 @@ var fetchProfileFromToken =  function(parsedToken, googleId, next) {
     }) 
 };
 
-passport.use(new GoogleStrategy(nconf.get("auth_google"), fetchProfile ));
+//passport.use(new GoogleStrategy(nconf.get("auth_google"), fetchProfile ));
 
 passport.use(new GoogleTokenStrategy({ clientID: nconf.get("auth_google.clientID") }, fetchProfileFromToken ));
 
@@ -138,51 +136,13 @@ passport.use(new GoogleTokenStrategy({ clientID: nconf.get("auth_google.clientID
 }));*/
 
 
-app.use(session({
-    store: new RedisStore( nconf.get("redis") ),
-    secret: nconf.get("session_secret"),
-    resave: true,
-    saveUninitialized: true
-}));
 
 
-//Init Passport Authentication
-app.use(passport.initialize());
-//Persistent login sessions
-app.use(passport.session());
-
-// GET /auth/google
-//   Use passport.authenticate() as route middleware to authenticate the
-//   request.  The first step in Google authentication will involve
-//   redirecting the user to google.com.  After authorization, Google
-//   will redirect the user back to this application at /auth/google/callback
-app.get('/auth/google',
-  passport.authenticate('google', { scope: ['openid email'] }));
-
-// GET /auth/google/callback
-//   Use passport.authenticate() as route middleware to authenticate the
-//   request.  If authentication fails, the user will be redirected back to the
-//   login page.  Otherwise, the primary route function function will be called,
-//   which, in this example, will redirect the user to the home page.
-app.get('/auth/google/callback',
-  passport.authenticate('google', {
-    failureRedirect: nconf.get("website_url")
-  }),
-  function(req, res) {
-    // Authenticated successfully
-    res.redirect(nconf.get("website_url")+'/home');
-  });
-
-//For Android app login
 app.post('/auth/google/token',  passport.authenticate('google-id-token'),
  function(req, res) {
     res.send(req.user);
 });
 
-app.get('/auth/google/token', passport.authenticate('google-id-token'),
- function(req, res) {
-    res.send(req.user);
-});
 
 var enableAuth = true;
 if(nconf.get("enable_auth") == 'false'){
@@ -206,7 +166,7 @@ if(enableAuth){
   });
 }
 
-//Logging
+/*****************Loggging ************************/
 var accessLogStream = rfs('access.log', {
   interval: '1d', // rotate daily
   path: nconf.get("log_dir")
@@ -227,15 +187,23 @@ else{
   app.use(morgan('common', {stream: accessLogStream}));
 }
 
+/*****************************************************/
+
+/**************Routes*********************************/
+
+// Public Link Routes
+app.use('/pc', require('./routes/public_link_router'));
 
 // REST API Routes
 app.use('/api', require('./routes/api_router'));
 
-
+// Logout 
 app.get('/auth/logout', function(req, res) {
   req.logout();
   res.redirect(nconf.get("website_url"));
 });
+
+/*****************************************************/
 
 var verifyDigestAuth = function(id, password, done) {
    thingTokenManager.validateToken(id, password, function(err, thingCredential) {
@@ -297,9 +265,80 @@ function ensureAuthenticated(req, res, next) {
 
 }
 
-// Public Link Routes
-app.use('/pc', require('./routes/public_link_router'));
 
+
+/************ Error Handling ***********/
+
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  var err = new Error();
+  err.status = 404;
+  err.message = 'Not Found '+ req.url;
+  next(err);
+});
+
+
+// error handler
+app.use(function(err, req, res, next) {  
+  res.status(err.status || 500);
+  res.send({ error: err });
+});
+
+/*****************************************************/
+
+
+module.exports = app;
+
+
+// Unused Code
+
+
+/*var fetchProfile =  function(accessToken, refreshToken, profile, next) {
+    var userCopy = {};
+  
+    if(profile.emails && profile.emails.length > 0){
+      userCopy.email = profile.emails[0].value;
+    }
+    if(profile.photos && profile.photos.length > 0){
+      userCopy.photo_link = profile.photos[0].value;
+    }
+  
+    userCopy.name = profile.displayName;
+    userCopy.google_id = profile.id;
+    userCopy.json = profile._json;
+    
+    userManager.createUser(userCopy, function(err, result){
+      if(err) { return next(err); }
+      if(result) { return next(null, result); }
+      var error = new Error();
+      error.message = "Error in creating user in database";
+      return next(error);
+    }) 
+};
+*/
+
+// GET /auth/google
+//   Use passport.authenticate() as route middleware to authenticate the
+//   request.  The first step in Google authentication will involve
+//   redirecting the user to google.com.  After authorization, Google
+//   will redirect the user back to this application at /auth/google/callback
+/*app.get('/auth/google',
+  passport.authenticate('google', { scope: ['openid email'] }));
+*/
+// GET /auth/google/callback
+//   Use passport.authenticate() as route middleware to authenticate the
+//   request.  If authentication fails, the user will be redirected back to the
+//   login page.  Otherwise, the primary route function function will be called,
+//   which, in this example, will redirect the user to the home page.
+/*app.get('/auth/google/callback',
+  passport.authenticate('google', {
+    failureRedirect: nconf.get("website_url")
+  }),
+  function(req, res) {
+    // Authenticated successfully
+    res.redirect(nconf.get("website_url")+'/home');
+  });
+*/
 
 
 /*function ensureAuthenticated(req, res, next) {
@@ -323,22 +362,3 @@ app.use('/pc', require('./routes/public_link_router'));
     }
   }
 }*/
-
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error();
-  err.status = 404;
-  err.message = 'Not Found '+ req.url;
-  next(err);
-});
-
-
-// error handler
-app.use(function(err, req, res, next) {  
-  res.status(err.status || 500);
-  res.send({ error: err });
-});
-
-
-module.exports = app;

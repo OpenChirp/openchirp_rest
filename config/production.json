@@ -24,10 +24,7 @@
 	"log_dir":"/var/log/openchirp/",
 	"session_secret":"",
 	"enable_auth" : true,
-	"website_url":"https://openchirp.io",
 	"auth_google":{
-		"clientID": "blahhhhhh.apps.googleusercontent.com",
-		"clientSecret": "",
-		"callbackURL": "https://openchirp.io/authv1/google/callback"
+		"clientID": "blahhhhhh.apps.googleusercontent.com"
 	}
 }

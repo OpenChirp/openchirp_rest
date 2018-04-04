@@ -14,12 +14,10 @@
  	"host" :"redis",
  	"port" : "6379"
  },
-  "log_dir":"/tmp/",
+ "log_dir":"/tmp/",
  "session_secret": "sessionSecret",
  "enable_auth" : false, 
  "auth_google":{
-    "clientID": "clientID",
-    "clientSecret": "clientSecret",
-    "callbackURL": "http://rest:10010/auth/google/callback"
+    "clientID": "blahhhhhh.apps.googleusercontent.com"
  }
 }
