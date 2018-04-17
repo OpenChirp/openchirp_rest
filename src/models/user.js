@@ -9,7 +9,8 @@ var shortcutSchema = require('./shortcut_schema');
 var userSchema = new Schema({
   name:  String,
   email: { type: String, required : true, unique :true, lowercase: true, trim : true}, 
-  userid: { type: String, required : true, unique :true, lowercase: true, trim : true}, 
+  userid: { type: String, required : true, unique :true, lowercase: true, trim : true},
+  password: {type: String}, // for basic auth users 
   google_id: String,
   photo_link : String,
   json : Schema.Types.Mixed,
@@ -23,6 +24,9 @@ var userSchema = new Schema({
 }, 
  schemaOptions
 );
+
+// Set userid to email for now.
+// In future, users should be asked to set a unique user id that is used in lieu of email to avoid email leak.
 userSchema.pre('save', function(next) {
   if(!this.userid || this.userid.length == 0){
     this.userid = this.email;

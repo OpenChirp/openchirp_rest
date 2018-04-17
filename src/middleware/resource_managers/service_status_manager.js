@@ -2,6 +2,8 @@ var mqtt_client = require('../pubsub/mqtt_client');
 var serviceManager = require('./service_manager');
 var deviceManager = require('./device_manager');
 
+//TODO: This may have a mqtt connection leak problem.
+// A client connection with broker is started when node.js starts but there is no connection termination on node.js stop/restart.
 exports.start = function(){
 	var client = mqtt_client.createClient();
 	client.on('connect', function () {

@@ -4,10 +4,10 @@
    	"broker": "tls://iot.andrew.cmu.edu",
    	"port":"1883",
    	"user":"openchirp_rest",
-   	"pass":"fL82tE8xTq"
+   	"pass":""
  },
  "influxdb": {
- 	"host": "openchirp.andrew.cmu.edu",
+ 	"host": "localhost",
  	"port": "8086"
  },
  "redis":{
@@ -16,7 +16,7 @@
  },
  "log_dir":"/tmp/logs",
  "session_secret": "sessionSecret",
- "enable_auth" : false, 
+ "enable_auth" : true, 
  "auth_google":{
     "clientID": "701190672217-a5u7oepjr23de6qjmjus7s0qgkjdddii.apps.googleusercontent.com"
  }

@@ -1,5 +1,7 @@
 var User = require('../../models/user');
+var auth = require('../../auth');
 
+//When a new user logs in using Google account, this method is invoked
 exports.createUser = function(user, callback){
 	//Search by email and if the user already exists return that
 	User.find({"email" : user.email }).exec( function(err, result){
@@ -13,6 +15,54 @@ exports.createUser = function(user, callback){
 	})
 	
 };
+
+//When a new user signs up using user/pass, this method is invoked
+exports.createBasicAuthUser = function(user, callback){
+    //Search by email and if the user already exists return an error
+    User.find({"email" : user.email }).exec( function(err, result){
+        if(err) { return callback(err); }
+        if(result && result.length > 0 ) { 
+             var error = new Error();
+             error.message = "User already signed up with this email";
+            return callback(error); 
+        }
+        auth.hashPassword(user.password, function(error2, hashedPassword){
+            if(error2) { return callback(error2); }
+            var newUser = new User();
+            newUser.email = user.email;
+            newUser.name = user.name;
+            newUser.password = hashedPassword;
+
+            if(!newUser.userid){
+                 newUser.userid = newUser.email;
+            }
+            newUser.save(callback);
+        })
+    })    
+    
+};
+
+//When a user logs in using user/pass, this method is invoked
+exports.checkPassword = function(email, password, callback){
+    var wrong_pass_error = new Error();
+    wrong_pass_error.message = "Invalid User or Password ";
+    exports.getUserByEmail( email, function(err, user){
+        if(err) { return callback(err); }
+        if(!user){ 
+            return callback(wrong_pass_error); 
+        }
+        auth.verifyPassword(password, user.password, function(error, result){
+            if(error) { 
+                return callback(error);
+            }
+            if(result) {
+                return callback(null, user);
+            } else {        
+                return callback(wrong_pass_error);
+            }
+        });
+    });
+}
 
 exports.getUserById = function(id, callback){
 	User.findById(id).exec(function (err, result) {

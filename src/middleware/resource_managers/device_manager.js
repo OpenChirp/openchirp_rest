@@ -62,7 +62,10 @@ exports.createNewDevice = function(req, callback){
     //Only user's with admin or developer role can create devices at public locations.
     if(typeof req.body.location_id != 'undefined'){
         if(!utils.isAdminOrDeveloper(req.user)){
-            return callback(forbidden_error);
+            var df_error = new Error();
+            df_error.status = 403;
+            df_error.message = "Only users in developer group can add devices to location tree ! Please contact an openchirp admin to get access ! ";
+            return callback(df_error);
         }
     }
     var template_id = req.body.template_id;

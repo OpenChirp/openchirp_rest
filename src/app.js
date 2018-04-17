@@ -11,9 +11,8 @@ var nconf = require('nconf');
 var session = require('express-session');
 var RedisStore = require('connect-redis')(session);
 var passport = require('passport');
-var GoogleStrategy = require('passport-google-oauth20').Strategy;
 var GoogleTokenStrategy = require('passport-google-id-token');
-//var BasicStrategy = require('passport-http').BasicStrategy;
+var BasicStrategy = require('passport-http').BasicStrategy;
 
 var userManager = require('./middleware/resource_managers/user_manager');
 var groupManager = require('./middleware/resource_managers/group_manager');
@@ -77,7 +76,7 @@ dbConnect();
 serviceStatusManager.start();
 
 
-/************** User Session setup **********************/
+/**************Begin User Session Setup *****************/
 passport.serializeUser(function(user, next) {
   next(null, user._id);
   
@@ -86,6 +85,8 @@ passport.serializeUser(function(user, next) {
 passport.deserializeUser(function(id, next) {  
   userManager.getUserById(id, next );
 });
+
+//Configure session store
 app.use(session({
     store: new RedisStore( nconf.get("redis") ),
     secret: nconf.get("session_secret"),
@@ -99,19 +100,19 @@ app.use(passport.initialize());
 //Persistent login sessions
 app.use(passport.session());
 
-/*******************************************************/
+/*************End User Session Setup*****************/
 
 
+/*********Begin configuration of user authenticators **********/
 
+// Fetch profile from Google ID token
 var fetchProfileFromToken =  function(parsedToken, googleId, next) {
-  console.log("here");
     var payload = parsedToken.payload;
     var userCopy = {};
     userCopy.email = payload.email;
     userCopy.name = payload.name;
     userCopy.google_id = googleId;
-    console.log(userCopy);
-
+   
     userManager.createUser(userCopy, function(err, result){
       if(err) { return next(err); }
       if(result) { return next(null, result); }
@@ -121,28 +122,74 @@ var fetchProfileFromToken =  function(parsedToken, googleId, next) {
     }) 
 };
 
-//passport.use(new GoogleStrategy(nconf.get("auth_google"), fetchProfile ));
 
 passport.use(new GoogleTokenStrategy({ clientID: nconf.get("auth_google.clientID") }, fetchProfileFromToken ));
 
-/*passport.use(new BasicStrategy(
-  function(username, password, done) {
-   userManager.getUserByEmail(username, function(err, user) {
-      if (err) { console.log("error"); return done(err); }
-      if (!user) { console.log("no user"); return done(null, false); }
-      if (user.password != password) { console.log("wrong password"); return done(null, false); }
+passport.use(new BasicStrategy(
+  function(email, password, done) {
+    userManager.checkPassword(email, password, function(err, user) {
+      if (err) { console.log("Invalid password for " + id); return done(err); }  
       return done(null, user);
     });
-}));*/
+}));
 
+/*********End configuration of user authenticators **********/
 
+/******Begin routing for all auth routes *****************/
 
-
+//Login using google auth
 app.post('/auth/google/token',  passport.authenticate('google-id-token'),
  function(req, res) {
     res.send(req.user);
 });
 
+//Login using user/pass
+app.post('/auth/basic',  passport.authenticate('basic'),
+ function(req, res) {
+    res.send(req.user);
+});
+
+// New User Signup
+app.post('/auth/signup', function(req, res,next) {
+  var user = {};
+  //TODO: add check for valid email
+  if(typeof req.body.email != 'undefined') user.email = req.body.email;
+  if(typeof req.body.password != 'undefined') user.password = req.body.password;
+  if(typeof req.body.name != 'undefined') user.name = req.body.name;
+
+  userManager.createBasicAuthUser(user, function(err, result){
+      if(err) { return next(err); }
+      if(result) { res.send("Done"); }
+      var error = new Error();
+      error.message = "Error in signup ! ";
+      return next(error);
+    }) 
+});
+
+// Logout 
+app.get('/auth/logout', function(req, res) {
+  req.logout();
+  res.send({ });  
+});
+
+/******End routing for all auth routes *****************/
+
+
+
+
+
+/**********Add authentication check for all routes in /api/* **********/
+
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+   
+    return next();
+  }else{
+
+    doAuthenticate(req, res,next);
+  }
+
+}
 
 var enableAuth = true;
 if(nconf.get("enable_auth") == 'false'){
@@ -166,7 +213,10 @@ if(enableAuth){
   });
 }
 
-/*****************Loggging ************************/
+/*******************************************************/
+
+/************Begin Loggging section *********************/
+
 var accessLogStream = rfs('access.log', {
   interval: '1d', // rotate daily
   path: nconf.get("log_dir")
@@ -187,23 +237,23 @@ else{
   app.use(morgan('common', {stream: accessLogStream}));
 }
 
-/*****************************************************/
+/***************End Logging Section***********************/
 
-/**************Routes*********************************/
 
-// Public Link Routes
+
+/********Begin Routing Section for api and public link routes*************/
+
+// Public Link Route
 app.use('/pc', require('./routes/public_link_router'));
 
 // REST API Routes
 app.use('/api', require('./routes/api_router'));
 
-// Logout 
-app.get('/auth/logout', function(req, res) {
-  req.logout();
-  res.redirect(nconf.get("website_url"));
-});
 
-/*****************************************************/
+
+/********End Routing Section for api and public link routes*******************/
+
+
 
 var verifyDigestAuth = function(id, password, done) {
    thingTokenManager.validateToken(id, password, function(err, thingCredential) {
@@ -254,22 +304,15 @@ var doAuthenticate = function(req, res, next){
   })
 }
 
-function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-   
-    return next();
-  }else{
-
-    doAuthenticate(req, res,next);
-  }
-
-}
 
 
 
-/************ Error Handling ***********/
+/*********Begin Error Handling ***********/
 
-// catch 404 and forward to error handler
+/* Now that all routes have been handled in the code above, 
+ * return 404 for everything else 
+ */
+
 app.use(function(req, res, next) {
   var err = new Error();
   err.status = 404;
@@ -278,19 +321,24 @@ app.use(function(req, res, next) {
 });
 
 
-// error handler
+/* Catch errors and add a 500 http status code 
+ *  if no status exists
+ */
 app.use(function(err, req, res, next) {  
   res.status(err.status || 500);
   res.send({ error: err });
 });
 
-/*****************************************************/
+/************End Error Handling***************/
 
 
 module.exports = app;
 
+//END
 
-// Unused Code
+
+
+// Obsolete Code 
 
 
 /*var fetchProfile =  function(accessToken, refreshToken, profile, next) {
