@@ -17,7 +17,7 @@ exports.createUser = function(user, callback){
 };
 
 //When a new user signs up using user/pass, this method is invoked
-exports.createBasicAuthUser = function(user, callback){
+exports.createUserPass = function(user, callback){
     //Search by email and if the user already exists return an error
     User.find({"email" : user.email }).exec( function(err, result){
         if(err) { return callback(err); }

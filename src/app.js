@@ -12,7 +12,8 @@ var session = require('express-session');
 var RedisStore = require('connect-redis')(session);
 var passport = require('passport');
 var GoogleTokenStrategy = require('passport-google-id-token');
-var BasicStrategy = require('passport-http').BasicStrategy;
+var Strategy = require('passport-local').Strategy;
+//var BasicStrategy = require('passport-http').BasicStrategy;
 
 var userManager = require('./middleware/resource_managers/user_manager');
 var groupManager = require('./middleware/resource_managers/group_manager');
@@ -122,13 +123,14 @@ var fetchProfileFromToken =  function(parsedToken, googleId, next) {
     }) 
 };
 
-
+// Google Token Validator
 passport.use(new GoogleTokenStrategy({ clientID: nconf.get("auth_google.clientID") }, fetchProfileFromToken ));
 
-passport.use(new BasicStrategy(
+// User/Password Validator
+passport.use(new Strategy(
   function(email, password, done) {
     userManager.checkPassword(email, password, function(err, user) {
-      if (err) { console.log("Invalid password for " + id); return done(err); }  
+      if (err) { return done(err); }  
       return done(null, user);
     });
 }));
@@ -137,32 +139,41 @@ passport.use(new BasicStrategy(
 
 /******Begin routing for all auth routes *****************/
 
-//Login using google auth
+//This call does session setup for login using google auth
 app.post('/auth/google/token',  passport.authenticate('google-id-token'),
  function(req, res) {
     res.send(req.user);
 });
 
-//Login using user/pass
-app.post('/auth/basic',  passport.authenticate('basic'),
+//This call does session setup for login using user/pass
+app.post('/auth/basic',  passport.authenticate('local'),
  function(req, res) {
     res.send(req.user);
 });
 
 // New User Signup
-app.post('/auth/signup', function(req, res,next) {
+app.post('/auth/signup', function(req, res) {
   var user = {};
   //TODO: add check for valid email
   if(typeof req.body.email != 'undefined') user.email = req.body.email;
   if(typeof req.body.password != 'undefined') user.password = req.body.password;
   if(typeof req.body.name != 'undefined') user.name = req.body.name;
-
-  userManager.createBasicAuthUser(user, function(err, result){
-      if(err) { return next(err); }
-      if(result) { res.send("Done"); }
-      var error = new Error();
-      error.message = "Error in signup ! ";
-      return next(error);
+  userManager.createUserPass(user, function(err, result){
+      if(err) {
+         res.status(500);
+         res.send({error: err }); 
+         return;
+      }
+      if(result) { 
+         res.send({"message":"Done"});
+         return;
+      }else{
+        var signUperror = new Error();
+        signUperror.message = "Error in signup ! ";
+        res.status(500);
+        res.send({error: signUperror});
+        return; 
+      } 
     }) 
 });
 
@@ -182,15 +193,15 @@ app.get('/auth/logout', function(req, res) {
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
-   
+    //For users using a browser (which means they have a session)
     return next();
   }else{
-
+    //For programs that provide user/pass in every API call and have no session
     doAuthenticate(req, res,next);
   }
 
 }
-
+//Configuration to disable auth for development/test environments. By default, auth is enabled.
 var enableAuth = true;
 if(nconf.get("enable_auth") == 'false'){
   enableAuth = false;
@@ -199,7 +210,7 @@ if(enableAuth){
   app.use('/api/*', ensureAuthenticated);
 } else{
   app.use('/api/*', function(req, res, next){
-    //Set test user for debugging in development mode
+    //Set test user for debugging in development/test mode
     var testUser = {};
     testUser.email = "test@test.com";
 
@@ -252,6 +263,7 @@ app.use('/api', require('./routes/api_router'));
 
 
 /********End Routing Section for api and public link routes*******************/
+
 
 
 
