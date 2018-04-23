@@ -154,8 +154,20 @@ app.post('/auth/basic',  passport.authenticate('local'),
 // New User Signup
 app.post('/auth/signup', function(req, res) {
   var user = {};
-  //TODO: add check for valid email
-  if(typeof req.body.email != 'undefined') user.email = req.body.email;
+ 
+  if(typeof req.body.email != 'undefined') {
+      let username = String(req.body.email).toLowerCase();
+      if(userManager.validateEmail(username)){
+          user.email = username;
+      }else{
+          var badEmailError = new Error();
+          badEmailError.message = "Username should be a valid email"
+          res.status(500);
+          res.send({error: badEmailError});
+          return;
+      }
+  }
+
   if(typeof req.body.password != 'undefined') user.password = req.body.password;
   if(typeof req.body.name != 'undefined') user.name = req.body.name;
   userManager.createUserPass(user, function(err, result){

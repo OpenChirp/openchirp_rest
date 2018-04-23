@@ -1,6 +1,12 @@
 var User = require('../../models/user');
 var auth = require('../../auth');
 
+exports.validateEmail = function(email) {
+    //Regex copied from a stackoverflow post
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+}
+
 //When a new user logs in using Google account, this method is invoked
 exports.createUser = function(user, callback){
 	//Search by email and if the user already exists return that
