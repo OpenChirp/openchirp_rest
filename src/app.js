@@ -148,6 +148,7 @@ app.post('/auth/google/token',  passport.authenticate('google-id-token'),
 //This call does session setup for login using user/pass
 app.post('/auth/basic',  passport.authenticate('local'),
  function(req, res) {
+    console.log("auth done");
     res.send(req.user);
 });
 
@@ -204,7 +205,7 @@ app.get('/auth/logout', function(req, res) {
 /**********Add authentication check for all routes in /api/* **********/
 
 function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
+  if(req.isAuthenticated()) {
     //For users using a browser (which means they have a session)
     return next();
   }else{
