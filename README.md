@@ -1,6 +1,7 @@
 <!--[![Build Status](https://travis-ci.org/OpenChirp/openchirp_rest.svg?branch=master)](https://travis-ci.org/OpenChirp/openchirp_rest)-->
 [![Code Climate](https://codeclimate.com/github/OpenChirp/openchirp_rest/badges/gpa.svg)](https://codeclimate.com/github/OpenChirp/openchirp_rest)
 [![Known Vulnerabilities](https://snyk.io/test/github/openchirp/openchirp_rest/badge.svg)](https://snyk.io/test/github/openchirp/openchirp_rest)
+
 # OpenChirp Core
 Openchirp's core framework that provides a REST interface to manage metadata for device, user, service, device templates, tokens and access control.
 
@@ -26,9 +27,9 @@ The configuration files are in config/. By default, env is set to development an
 * **influxdb**: Host and port of influxdb.
 * **redis**: Host and port of redis.
 * **log_dir**: Log directory.
-* **session_secret**: Should be set to a random string. Used as a secret for redis session store.
-* **enable_auth**: By default, authentication is enabled. This flag can be to set to false to disable authentication in test/development environments.
-* **auth_google**: If Google Oauth Sign-In is enabled, then the server needs the clientID to validate token. The client ID here should be the same as the one set in openchirp website.
+* **session_secret**: Should be set to a random string and then not updated in a deployment. Used as a secret for redis session store.
+* **enable_auth**: By default, authentication is enabled. This flag can be set to false to disable authentication in test/development environments.
+* **auth_google**: If Google Oauth Sign-In is enabled, then the server needs the clientID to validate google token. The clientID here should be the same as the one set in openchirp website.
  
 Sample configuration file:
 
