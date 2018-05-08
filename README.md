@@ -1,10 +1,8 @@
 <!--[![Build Status](https://travis-ci.org/OpenChirp/openchirp_rest.svg?branch=master)](https://travis-ci.org/OpenChirp/openchirp_rest)-->
 [![Code Climate](https://codeclimate.com/github/OpenChirp/openchirp_rest/badges/gpa.svg)](https://codeclimate.com/github/OpenChirp/openchirp_rest)
 [![Known Vulnerabilities](https://snyk.io/test/github/openchirp/openchirp_rest/badge.svg)](https://snyk.io/test/github/openchirp/openchirp_rest)
-# OpenChirp REST API
-
-## API Documentation
-https://openchirp.github.io/api_doc/
+# OpenChirp Core
+Openchirp's core framework that provides a REST interface to manage metadata for device, user, service, device templates, tokens and access control.
 
 # Dependencies
 Openchirp core has dependencies on the following componenents.
@@ -21,22 +19,22 @@ After cloning the repository, run the following command. This will download all 
 npm install
 ```
 
-## Update config
+## Config
 The configuration files are in config/. By default, env is set to development and the server loads config/development.json. 
-* **db** :
-* **mqtt** :
-* **influxdb**:
-* **redis**:
-* **log_dir**:
-* **session_secret**:
-* **enable_auth**:
-* **auth_google**:
-* 
+* **db** : Mongo DB connection string in format "mongodb://$mongodb_host/$db_name". The $db_name should be set to "openchirp" as it is shared by openchirp core and mosquitto.
+* **mqtt** : Host, port, user and pass for mosquitto. 
+* **influxdb**: Host and port of influxdb.
+* **redis**: Host and port of redis.
+* **log_dir**: Log directory.
+* **session_secret**: Should be set to a random string. Used as a secret for redis session store.
+* **enable_auth**: By default, authentication is enabled. This flag can be to set to false to disable authentication in test/development environments.
+* **auth_google**: If Google Oauth Sign-In is enabled, then the server needs the clientID to validate token. The client ID here should be the same as the one set in openchirp website.
+ 
 Sample configuration file:
 
 ```
 {
-"db": "mongodb://localhost/openchirp_test",
+"db": "mongodb://localhost/openchirp",
 "mqtt": {
     "broker": "tls://localhost",
     "port":"1883",
@@ -55,7 +53,7 @@ Sample configuration file:
  "session_secret": "sessionSecret",
  "enable_auth" : true, 
  "auth_google":{
-    "clientID": "701190672217-a5u7oepjr23de6qjmjus7s0qgkjdddii.apps.googleusercontent.com"
+    "clientID": "blah-blahhh.apps.googleusercontent.com"
  }
 }
 ```
@@ -69,3 +67,9 @@ npm start
 ```
 npm test
 ```
+
+
+## API Documentation
+https://openchirp.github.io/api_doc/
+
+The documentation repo is [here](https://github.com/OpenChirp/api_doc/tree/master/source/includes). After making changes, run [deploy.sh](https://github.com/OpenChirp/api_doc/blob/master/deploy.sh) to push the updates to github pages.

@@ -1,7 +1,8 @@
+/* Config Documentation:  https://github.com/OpenChirp/openchirp_rest#config*/
 {
-"db": "mongodb://localhost/openchirp_test",
+"db": "mongodb://localhost/openchirp",
 "mqtt": {
-   	"broker": "tls://iot.andrew.cmu.edu",
+   	"broker": "tcp://localhost",
    	"port":"1883",
    	"user":"openchirp_rest",
    	"pass":""
