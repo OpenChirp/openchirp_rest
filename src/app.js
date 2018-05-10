@@ -273,7 +273,10 @@ app.use('/pc', require('./routes/public_link_router'));
 // REST API Routes
 app.use('/api', require('./routes/api_router'));
 
-
+// HACK for docker.. add routers for apiv1 for mapper service that uses go framework with hardcoded apiv1
+if(environment == "docker"){
+    app.use('/apiv1', require('./routes/api_router'));
+}
 
 /********End Routing Section for api and public link routes*******************/
 

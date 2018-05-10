@@ -21,7 +21,7 @@ npm install
 ```
 
 ## Config
-The configuration files are in config/. By default, env is set to development and the server loads config/development.json. 
+The configuration files are in config/. By default, env is set to development and the server loads config/development.json. To load another configuration file, set the NODE_ENV environment variable to production or test before starting the server. 
 * **db** : Mongo DB connection string in format "mongodb://$mongodb_host/$db_name". The $db_name should be set to "openchirp" as it is shared by openchirp core and mosquitto.
 * **mqtt** : Host, port, user and pass for mosquitto. 
 * **influxdb**: Host and port of influxdb.

@@ -1,4 +1,3 @@
-/* Config Documentation:  https://github.com/OpenChirp/openchirp_rest#config*/
 {
 "db": "mongodb://localhost/openchirp",
 "mqtt": {
