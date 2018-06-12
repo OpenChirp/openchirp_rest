@@ -173,6 +173,7 @@ exports.getDevicesByOwner = function(req, callback) {
     if(req.query && req.query.name ){
         var name = req.query.name;
     }
+    // This currently does not perform a search on name, as it's limited by userid...
     if(name){
         Device.find({"owner" : userId, $text: { $search: name }}).exec(callback);
     }else{
