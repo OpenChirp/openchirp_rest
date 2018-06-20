@@ -93,6 +93,9 @@
         - PUT - Update access to user or group
         - DELETE - Remove access to user or group
 
+* `/search/transducer?q=<query>`
+    - GET - Search by transducer name. 
+    (Optional: search by comma separated list of names) 
 
 ## `/devicetemplate`
 - TODO

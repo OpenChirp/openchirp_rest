@@ -17,9 +17,24 @@ exports.getAllDeviceTransducers = function(req, callback ){
 	Device.findById(deviceId).exec(function(err, result){
 		if(err) { return callback(err); } 
 		getTransducerLastValue(result, callback);
-		
 	})
 };
+
+exports.getTransducerDevices = function(query, callback) {
+    let searchStrings = query.split(',').map(item => item.trim());
+    if (!searchStrings.length) { return callback(null, {}); }
+    let searchParams = [];
+    for (let i = 0; i < searchStrings.length; i++) {
+        searchParams.push({ $elemMatch: {name: searchStrings[i]} });
+	}
+    Device.find({transducers: {$all: searchParams}})
+	.select("name transducers")
+	.exec(function (err, result) {
+        if (err) { return callback(err); }
+        return callback(null, result);
+    })
+};
+
 
 var getTransducerLastValue = function(device, callback){
 	var transducers  = device.transducers;
