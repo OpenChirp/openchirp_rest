@@ -127,6 +127,7 @@ exports.updateDevice = function(req, callback){
     var deviceToUpdate = req.device;
     if(typeof req.body.name != 'undefined') deviceToUpdate.name = req.body.name;
     if(typeof req.body.location_id != 'undefined') deviceToUpdate.location_id = req.body.location_id;
+    if(typeof req.body.owner != 'undefined') deviceToUpdate.owner = req.body.owner;
     if(typeof req.body.gateway_id != 'undefined') deviceToUpdate.gateway_id = req.body.gateway_id;
     if(typeof req.body.type != 'undefined') deviceToUpdate.type = req.body.type;
     if(typeof req.body.enabled != 'undefined') deviceToUpdate.enabled = req.body.enabled;
@@ -175,6 +176,7 @@ exports.getDevicesByOwner = function(req, callback) {
     if(req.query && req.query.name ){
         var name = req.query.name;
     }
+    // This currently does not perform a search on name, as it's limited by userid...
     if(name){
         Device.find({"owner" : userId, $text: { $search: name }}).exec(callback);
     }else{
