@@ -137,9 +137,9 @@ exports.getDeviceInfo = function(req, callback){
     var serviceId = req.service._id;
     var devices = [];
     let isAuthorized = serviceAuthorizer.isAuthorized(req);
-    Device.find({"linked_services.service_id" : serviceId }, {"linked_services.$" : 1 }).
-        populate('owner', 'name email').
-        select('owner pubsub name linked_services.config').
+    Device.find({'linked_services.service_id' : serviceId }, {'linked_services.$' : 1, 'owner' : 1, 'location_id': 1 }).
+        populate('owner location_id').
+        select('owner location_id pubsub name linked_services').
         exec(function(err, result){
         if(err) { return callback(err); }
         for (var i = 0; i < result.length; i++) {
