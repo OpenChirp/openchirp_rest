@@ -107,6 +107,21 @@ router.delete('/:_id', deviceAuthorizer.checkWriteAccess, function(req, res, nex
     })   
 });
 
+/***************** Search ***************************/
+
+/*
+* Find by all-matching list of transducer names.
+* HTTP GET query 'q' accepts comma delimited list, e.g. `/search/transducer?q=gps,temperature`
+*/
+router.get('/search/transducer', function(req, res, next){
+    if (!('q' in req.query)) { return res.json([]); }
+    transducerManager.getTransducerDevices(req.query.q, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
+
 /*************** Transducers ***************************/
 
 /* Add a transducer to device */
@@ -124,7 +139,6 @@ router.get('/:_id/transducer', function(req, res, next){
         return res.json(result);
     })
 });
-
 
 /* Register extra body parsers only for publishing transducer values */
 router.post('/:_id/transducer/:_transducerId', bodyParser.text(), bodyParser.raw());
