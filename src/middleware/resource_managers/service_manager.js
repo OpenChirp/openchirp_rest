@@ -23,7 +23,7 @@ exports.createNewService = function(req, callback){
 exports.getById = function(id, callback){
 	Service.findById(id).populate('owner', 'name email').exec(function (err, result) {
         if(err) { return callback(err) ; }
-        if (result == null ) { 
+        if (result == null ) {
             var error = new Error();
             error.message = 'Could not find a service with id :'+ id ;
             return callback(error);
@@ -43,10 +43,10 @@ exports.updateService = function(req, callback){
     if(typeof req.body.properties != 'undefined') {
         updateProps = true;
         serviceToUpdate.properties = req.body.properties;
-    }   
+    }
     serviceToUpdate.save(function(err, result){
          if(err) { return callback(err); }
-         if(updateProps){ 
+         if(updateProps){
             service_pubsub.publishUpdateProperties(req.service, serviceToUpdate.properties , callback);
          }else{
             return callback(null, result);
@@ -59,7 +59,7 @@ exports.updateStatus = function(serviceId, newStatus, callback){
 exports.postDeleteCleanup = function(serviceId, callback){
     async.parallel([
             function(next){
-                Device.update({"linked_services.service_id" : serviceId }, { $pull: { linked_services: { service_id : serviceId }}}, { multi: true}, next);    
+                Device.update({"linked_services.service_id" : serviceId }, { $pull: { linked_services: { service_id : serviceId }}}, { multi: true}, next);
             },
             function(next){
                 DeviceTemplate.update({"linked_services.service_id" : serviceId }, { $pull: { linked_services: { service_id : serviceId }}}, { multi: true}, next);
@@ -74,17 +74,17 @@ exports.postDeleteCleanup = function(serviceId, callback){
           console.log(err);
         }
         return callback(null, null);
-    })       
-    
+    })
+
 }
 
 exports.deleteService = function(req, callback){
-    var serviceToDelete = req.service;  
+    var serviceToDelete = req.service;
     serviceToDelete.remove(function(err, result){
         if(err) { return callback(err); }
         exports.postDeleteCleanup(serviceToDelete._id, callback);
-    });  
-  
+    });
+
 };
 
 exports.getServicesByOwner = function(req, callback) {
@@ -111,7 +111,10 @@ exports.getThings = function(req, callback){
         for (var i = 0; i < result.length; i++) {
            var thing = {};
            thing.id = result[i]._id;
-           thing.type = 'device';
+           thing.name = result[i].name;
+           thing.owner = {};
+           thing.owner.name = result[i].owner.name;
+           thing.owner.email = result[i].owner.email;
            thing.pubsub = {};
            thing.pubsub.protocol = result[i].pubsub.protocol;
            thing.pubsub.endpoint = result[i].pubsub.endpoint;
@@ -125,6 +128,44 @@ exports.getThings = function(req, callback){
 
          return callback(null, things);
      })
+};
+
+/**
+ * Returns more detailed device information than getThings
+ */
+exports.getDeviceInfo = function(req, callback){
+    var serviceId = req.service._id;
+    var devices = [];
+    let isAuthorized = serviceAuthorizer.isAuthorized(req);
+    Device.find({"linked_services.service_id" : serviceId }, {"linked_services.$" : 1 }).
+        populate('owner', 'name email').
+        select('owner pubsub name linked_services.config').
+        exec(function(err, result){
+        if(err) { return callback(err); }
+        for (var i = 0; i < result.length; i++) {
+            var device = {};
+            device.id = result[i]._id;
+            device.name = result[i].name;
+            device.owner = {};
+            device.owner.name = result[i].owner.name;
+            device.owner.email = result[i].owner.email;
+            device.location = {};
+            device.location.name = (result[i].location_id) ? result[i].location_id.name : '-';
+            device.pubsub = {};
+            device.pubsub.protocol = result[i].pubsub.protocol;
+            device.pubsub.endpoint = result[i].pubsub.endpoint;
+            device.config = [];
+            if (isAuthorized || result[i].owner.id == req.user.id) {
+               // The search query ensures that only 1 object is returned in linked_services.
+               device.config = result[i].linked_services[0].config;
+            }
+            device.status = {};
+            device.status.message = result[i].linked_services[0].status.message;
+            devices.push(device);
+        }
+
+        return callback(null, devices);
+    })
 };
 
 
