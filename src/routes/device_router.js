@@ -10,6 +10,7 @@ var commandManager = require('../middleware/resource_managers/command_manager');
 var thingTokenManager = require('../middleware/resource_managers/thing_token_manager');
 
 var deviceAuthorizer = require('../middleware/accesscontrol/device_authorizer');
+const utils = require('../middleware/accesscontrol/utils');
 
 /* GET all devices */
 router.get('/', function(req, res, next) {
@@ -36,7 +37,7 @@ router.param('_id', function(req, res, next, id) {
         return next(error);
     }
     deviceManager.getDeviceById(id, function (err, device) {
-        if (err) { return next(err); }    
+        if (err) { return next(err); }
         req.device = device;
         thingTokenManager.getTokenByThingId(id, function(err, thingToken){
             if(err) { return next(err); }
@@ -73,12 +74,21 @@ router.param('_serviceId', function(req, res, next, serviceId) {
 /* GET a device */
 router.get('/:_id', function(req, res, next) {
     //TODO: inefficient way to do shallow copy.
-    var result = JSON.parse(JSON.stringify(req.device));
-    if(req.token){
-        result.token = {};
-        result.token._id = req.token._id;
-    }  
- 	return res.json(result);
+    deviceAuthorizer.checkWriteAccess(req, res, function(accessErr){
+        var result = JSON.parse(JSON.stringify(req.device));
+        // TODO: remove services info completely from this endpoint, use device/<id>/service
+        if (accessErr) {
+            let serviceCount = result.linked_services.length;
+            for (let i = 0; i < serviceCount; i++) {
+                delete result.linked_services[i].config;
+            }
+        }
+        if(req.token){
+            result.token = {};
+            result.token._id = req.token._id;
+        }
+        return res.json(result);
+    })
 });
 
 /* Update a device */
@@ -201,7 +211,41 @@ router.delete('/:_id/command/:_commandId', deviceAuthorizer.checkWriteAccess,  f
 
 /*************** Services ***************************/
 
-/* Link device to a service */
+router.get('/:_id/service', function(req, res, next){
+    deviceAuthorizer.checkWriteAccess(req, res, function(accessErr){
+        let result = req.device.linked_services;
+        if (accessErr) {
+            // If not write access, hide configs
+            let serviceCount = result.length;
+            for (let i = 0; i < serviceCount; i++) {
+                result[i].config = [];
+            }
+        }
+        return res.json(result);
+    })
+});
+
+router.get('/:_id/service/:_serviceId', function(req, res, next ){
+    let result = {};
+    deviceAuthorizer.checkWriteAccess(req, res, function(accessErr){
+        // Allow exception for service token of respective service
+        let isServiceToken = (req.user.thing_type && req.user.thing_type == "service");
+        let isServiceOwner = (req.service.owner.id == req.user.id);
+        let serviceCount = req.device.linked_services.length;
+        for (let i = 0; i < serviceCount; i++) {
+            let curServiceId = req.device.linked_services[i].service_id;
+            if (req.service.id == curServiceId) {
+                if (!accessErr || isServiceOwner || (isServiceToken && req.user.username == curServiceId)) {
+                    result = req.device.linked_services[i];
+                    break;
+                }
+            }
+        }
+        return res.json(result);
+    });
+});
+
+    /* Link device to a service */
 router.post('/:_id/service/:_serviceId', deviceAuthorizer.checkWriteAccess,  function(req, res, next ){
     deviceManager.linkService(req, function(err, result){
         if(err) { return next(err); }
