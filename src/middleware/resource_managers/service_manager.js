@@ -1,4 +1,3 @@
-
 var Gateway = require('../../models/gateway');
 var Device = require('../../models/device');
 var DeviceTemplate = require('../../models/device_template');
@@ -6,6 +5,7 @@ var Service = require('../../models/service');
 var async = require('async');
 var service_pubsub = require('../pubsub/service_pubsub');
 var thingTokenManager = require('./thing_token_manager');
+const serviceAuthorizer = require('../accesscontrol/service_authorizer');
 
 exports.getAllServices = function(callback){
 	Service.find().populate('owner', 'name email').exec(callback);
@@ -102,7 +102,11 @@ exports.getServicesByOwner = function(req, callback) {
 exports.getThings = function(req, callback){
     var serviceId = req.service._id;
     var things = [];
-    Device.find({"linked_services.service_id" : serviceId }, {"linked_services.$" : 1 }).select("pubsub name linked_services.config").exec(function(err, result){
+    let isAuthorized = serviceAuthorizer.isAuthorized(req);
+    Device.find({"linked_services.service_id" : serviceId }, {"linked_services.$" : 1 }).
+        populate('owner', 'name email').
+        select('owner pubsub name linked_services.config').
+        exec(function(err, result){
         if(err) { return callback(err); }
         for (var i = 0; i < result.length; i++) {
            var thing = {};
@@ -111,7 +115,11 @@ exports.getThings = function(req, callback){
            thing.pubsub = {};
            thing.pubsub.protocol = result[i].pubsub.protocol;
            thing.pubsub.endpoint = result[i].pubsub.endpoint;
-           thing.config = result[i].linked_services[0].config; // The search query ensures that only 1 object is returned in linked_services.
+           thing.config = [];
+           if (isAuthorized || result[i].owner.id == req.user.id) {
+               // The search query ensures that only 1 object is returned in linked_services.
+               thing.config = result[i].linked_services[0].config;
+           }
            things.push(thing);
          }
 

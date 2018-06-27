@@ -191,8 +191,7 @@ exports.getAllDevices = function(location_id, callback){
 };
 
 exports.getDevices = function(req, callback){
-    
-    Device.find({ location_id : req.params._id }).select('name pubsub location_id').exec(callback);    
+    Device.find({ location_id : req.params._id }).select('name pubsub location_id').exec(callback);
 };
 
 exports.getLocationsByOwner = function(req, callback) {
