@@ -62,6 +62,16 @@
     * `/transducer`
         - GET - Fetch all transducers' info
         - POST - Create a new transducer
+            <details>
+            <summary>Example Request</summary>
+            <pre>
+            {
+                "name":"Temperature",
+                "unit":"Celsius",
+                "is_actuable": false
+            }
+            </pre>
+            </details>
     * `/transducer/<trans_id>`
         - GET - Get info about transducer
         - POST - Publish data to transducer
