@@ -6,13 +6,13 @@ exports.checkWriteAccess = function(req, res, next){
     if(isAdmin){
         return next();
     }
-	
+
     //Owner Check
     if(String(req.user._id) === String(req.group.owner._id)){
        return next();
     }
 
-    //Logged-in User's groups:    
+    //Logged-in User's groups:
     var groupId = req.group._id;
     var userGroups = req.user.groups;
     var isAllowed = false;
@@ -26,8 +26,8 @@ exports.checkWriteAccess = function(req, res, next){
            break;
         }
     }
-    
-	
+
+
     if (isAllowed ){
         return next();
     }else{

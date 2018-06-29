@@ -6,7 +6,7 @@ var Schema = mongoose.Schema;
 var schemaOptions = require('./schema_options');
 
 var deviceTemplateSchema = new Schema({
-	name: { type : String, required: true },	
+	name: { type : String, required: true },
 	description: {type : String},
 	transducers : [{
 		_id: false,

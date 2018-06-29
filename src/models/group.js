@@ -8,7 +8,7 @@ var schemaOptions = require('./schema_options');
 var groupSchema = new Schema({
   name: { type: String, required : true, unique :true, lowercase: true, trim : true},
   owner: { type: Schema.Types.ObjectId, ref: 'User' , required : true }
-}, 
+},
  schemaOptions
 );
 groupSchema.index({name : "text" });

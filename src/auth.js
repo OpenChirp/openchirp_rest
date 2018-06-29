@@ -31,16 +31,16 @@ function hashPassword(password, callback) {
 
     }
     var salt = result.toString('base64');
-   
+
     crypto.pbkdf2(password, salt, config.iterations, config.hashLen, config.digest,
       function(err, hash) {
 
       if (err) {
         return callback(err);
       }
-    
+
       var result = "PBKDF2$"+config.digest+"$"+config.iterations+"$" +salt+"$"+hash.toString('base64');
-    
+
       return callback(null, result);
     });
   });

@@ -25,9 +25,9 @@ var serviceSchema = new Schema({
   	key_example : { type : String },
   	key_required : { type : Boolean , default : false }
   }],
-	owner: { type: Schema.Types.ObjectId, ref: 'User' , required : true },  
-}, 
- schemaOptions 
+	owner: { type: Schema.Types.ObjectId, ref: 'User' , required : true },
+},
+ schemaOptions
 );
 
 serviceSchema.virtual('pubsub.endpoint').get(function () {

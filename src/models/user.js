@@ -8,20 +8,20 @@ var shortcutSchema = require('./shortcut_schema');
 //Schema
 var userSchema = new Schema({
   name:  String,
-  email: { type: String, required : true, unique :true, lowercase: true, trim : true}, 
+  email: { type: String, required : true, unique :true, lowercase: true, trim : true},
   userid: { type: String, required : true, unique :true, lowercase: true, trim : true},
-  password: {type: String}, // for basic auth users 
+  password: {type: String}, // for basic auth users
   google_id: String,
   photo_link : String,
   json : Schema.Types.Mixed,
   shortcuts : [ shortcutSchema ],
-  groups: [{ 
+  groups: [{
   	_id : false,
   	group_id: { type: Schema.Types.ObjectId, ref: 'Group', required: true },
   	name: { type: String, required: true },
   	write_access: { type: Boolean, default: false }
   }]
-}, 
+},
  schemaOptions
 );
 

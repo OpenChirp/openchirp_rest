@@ -14,7 +14,7 @@ router.get('/', function(req, res, next) {
 });
 
 /* Create new device template */
-router.post('/', deviceTemplateAuthorizer.checkPostAccess, function(req, res, next) {	
+router.post('/', deviceTemplateAuthorizer.checkPostAccess, function(req, res, next) {
     deviceTemplateManager.createNew(req, function (err, result) {
 		if(err) { return next(err); }
   		res.json(result);
@@ -33,7 +33,7 @@ router.param('_id', function(req, res, next, id) {
         req.deviceTemplate = result;
         next();
     })
-   
+
 });
 
 /* GET a device template */
@@ -48,8 +48,8 @@ router.delete('/:_id', deviceTemplateAuthorizer.checkWriteAccess, function(req, 
         if(err) { return next(err); }
         return res.json({message: 'Done'});
     })
-  
-	
+
+
 });
 
 module.exports = router;

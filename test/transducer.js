@@ -94,7 +94,7 @@ describe('Transducers', function() {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.id.should.equal(theDevice.id); // only check id of device ...                 
+                    res.body.id.should.equal(theDevice.id); // only check id of device ...
                     res.body.should.have.property('transducers');
                     res.body.transducers.length.should.be.eql(2);
                     res.body.transducers[0].should.have.property('name');
@@ -108,7 +108,7 @@ describe('Transducers', function() {
                     res.body.transducers[1].should.have.property('unit');
                     res.body.transducers[1].unit.should.equal('Fahrenheit');
                     res.body.transducers[1].should.have.property('is_actuable');
-                    res.body.transducers[1].is_actuable.should.equal(false); // default                      
+                    res.body.transducers[1].is_actuable.should.equal(false); // default
                     done();
                 });
         });

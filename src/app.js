@@ -50,7 +50,7 @@ var allowCrossDomain = function(req, res, next) {
     else {
         next();
     }
-    
+
 };
 
 app.use(allowCrossDomain);
@@ -80,10 +80,10 @@ serviceStatusManager.start();
 /**************Begin User Session Setup *****************/
 passport.serializeUser(function(user, next) {
   next(null, user._id);
-  
+
 });
 
-passport.deserializeUser(function(id, next) {  
+passport.deserializeUser(function(id, next) {
   userManager.getUserById(id, next );
 });
 
@@ -113,14 +113,14 @@ var fetchProfileFromToken =  function(parsedToken, googleId, next) {
     userCopy.email = payload.email;
     userCopy.name = payload.name;
     userCopy.google_id = googleId;
-   
+
     userManager.createUser(userCopy, function(err, result){
       if(err) { return next(err); }
       if(result) { return next(null, result); }
       var error = new Error();
       error.message = "Error in creating user in database";
       return next(error);
-    }) 
+    })
 };
 
 // Google Token Validator
@@ -130,7 +130,7 @@ passport.use(new GoogleTokenStrategy({ clientID: nconf.get("auth_google.clientID
 passport.use(new Strategy(
   function(email, password, done) {
     userManager.checkPassword(email, password, function(err, user) {
-      if (err) { return done(err); }  
+      if (err) { return done(err); }
       return done(null, user);
     });
 }));
@@ -155,7 +155,7 @@ app.post('/auth/basic',  passport.authenticate('local'),
 // New User Signup
 app.post('/auth/signup', function(req, res) {
   var user = {};
- 
+
   if(typeof req.body.email != 'undefined') {
       let username = String(req.body.email).toLowerCase();
       if(userManager.validateEmail(username)){
@@ -174,10 +174,10 @@ app.post('/auth/signup', function(req, res) {
   userManager.createUserPass(user, function(err, result){
       if(err) {
          res.status(500);
-         res.send({error: err }); 
+         res.send({error: err });
          return;
       }
-      if(result) { 
+      if(result) {
          res.send({"message":"Done"});
          return;
       }else{
@@ -185,15 +185,15 @@ app.post('/auth/signup', function(req, res) {
         signUperror.message = "Error in signup ! ";
         res.status(500);
         res.send({error: signUperror});
-        return; 
-      } 
-    }) 
+        return;
+      }
+    })
 });
 
-// Logout 
+// Logout
 app.get('/auth/logout', function(req, res) {
   req.logout();
-  res.send({ });  
+  res.send({ });
 });
 
 /******End routing for all auth routes *****************/
@@ -232,8 +232,8 @@ if(enableAuth){
       req.user = result;
       groupManager.doCreateGroup(result._id, "developer",function(err, result){
            return next();
-      })   
-    })     
+      })
+    })
   });
 }
 
@@ -246,9 +246,9 @@ var accessLogStream = rfs('access.log', {
   path: nconf.get("log_dir")
 });
 
-morgan.token('remote-user', function (req, res) { 
-    if(req.user) { 
-      return req.user.email || req.user.thing_type +"_" + req.user.username 
+morgan.token('remote-user', function (req, res) {
+    if(req.user) {
+      return req.user.email || req.user.thing_type +"_" + req.user.username
     } else{
       return "";
     }
@@ -285,7 +285,7 @@ if(environment == "docker"){
 
 var verifyDigestAuth = function(id, password, done) {
    thingTokenManager.validateToken(id, password, function(err, thingCredential) {
-      if (err) { console.log("Invalid password for "+id); return done(err); }  
+      if (err) { console.log("Invalid password for "+id); return done(err); }
       return done(null, thingCredential);
     });
 };
@@ -299,23 +299,23 @@ var doAuthenticate = function(req, res, next){
 
   var authorization = req.headers['authorization'];
   if (!authorization) { return next(error_401); }
-  
+
   var parts = authorization.split(' ')
   if (parts.length < 2) { return next(error_401); }
-  
+
   var scheme = parts[0]
     , credentials = new Buffer(parts[1], 'base64').toString().split(':');
 
-  
+
   if (credentials.length < 2) { return next(error_401); }
-  
+
   var userid = credentials[0];
   var password = credentials[1];
   if (!userid || !password) {
     return next(error_401);
   }
   verifyDigestAuth(userid, password, function(err, thingCred){
-    if(err) { return next(error_401); } 
+    if(err) { return next(error_401); }
     if(!thingCred) { return next(error_401); }
     //if it is user token, then load user's profile
     if(thingCred.thing_type == "user"){
@@ -328,7 +328,7 @@ var doAuthenticate = function(req, res, next){
         req.user = thingCred;
         req.ownerid = thingCred.owner;
         return next();
-    }    
+    }
   })
 }
 
@@ -337,8 +337,8 @@ var doAuthenticate = function(req, res, next){
 
 /*********Begin Error Handling ***********/
 
-/* Now that all routes have been handled in the code above, 
- * return 404 for everything else 
+/* Now that all routes have been handled in the code above,
+ * return 404 for everything else
  */
 
 app.use(function(req, res, next) {
@@ -349,10 +349,10 @@ app.use(function(req, res, next) {
 });
 
 
-/* Catch errors and add a 500 http status code 
+/* Catch errors and add a 500 http status code
  *  if no status exists
  */
-app.use(function(err, req, res, next) {  
+app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.send({ error: err });
 });
@@ -366,30 +366,30 @@ module.exports = app;
 
 
 
-// Obsolete Code 
+// Obsolete Code
 
 
 /*var fetchProfile =  function(accessToken, refreshToken, profile, next) {
     var userCopy = {};
-  
+
     if(profile.emails && profile.emails.length > 0){
       userCopy.email = profile.emails[0].value;
     }
     if(profile.photos && profile.photos.length > 0){
       userCopy.photo_link = profile.photos[0].value;
     }
-  
+
     userCopy.name = profile.displayName;
     userCopy.google_id = profile.id;
     userCopy.json = profile._json;
-    
+
     userManager.createUser(userCopy, function(err, result){
       if(err) { return next(err); }
       if(result) { return next(null, result); }
       var error = new Error();
       error.message = "Error in creating user in database";
       return next(error);
-    }) 
+    })
 };
 */
 
@@ -423,7 +423,7 @@ module.exports = app;
     return next();
   }else{
     if(req.query && req.query.basic ){
-       
+
       return passport.authenticate('basic')(req, res, function(err, result){
         if(err) { return next(err);}
         req.body.owner = req.user._id;

@@ -109,7 +109,7 @@ describe('Locations', () => {
                     res.body.should.have.property('geo_loc');
                     res.body.geo_loc.should.have.property('coordinates');
                     res.body.geo_loc.coordinates.should.be.a('array');
-                    /**expected to return coordinates: 
+                    /**expected to return coordinates:
                     res.body.geo_loc.coordinates.should.deep.equal([40.4509146,-79.9024777]); */
                     done();
                 });
@@ -187,7 +187,7 @@ describe('Locations', () => {
                         res.body.should.have.property('geo_loc');
                         res.body.geo_loc.should.have.property('coordinates');
                         res.body.geo_loc.coordinates.should.be.a('array');
-                        /**expected to return coordinates:  
+                        /**expected to return coordinates:
                         res.body.geo_loc.coordinates.should.deep.equal([40.442395,-79.946875]); */
                         done();
                     });
@@ -217,7 +217,7 @@ describe('Locations', () => {
                         res.should.have.status(200);
                         res.body.should.be.a('object');
                         res.body.should.have.property('message');
-                        res.body.message.should.equal('Delete successful');                              
+                        res.body.message.should.equal('Delete successful');
                         done();
                     });
             });

@@ -9,7 +9,7 @@ var deviceAclSchema = new Schema({
 	entity_id: { type: Schema.Types.ObjectId, required: true }, // User ID, GroupId or ServiceId
 	entity_type: { type: String, required: true, enum: ['user','group','service'] },
 	perm : { type: Number, required: true, min: 0, max: 2 } // "Exec = 1" and "Write =2"
-  }, 
+  },
   schemaOptions
 );
 

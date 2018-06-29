@@ -35,7 +35,7 @@ var checkAccess = function(perm, user, device, next){
 		if( result != null && result.perm < perm ){
 			return next(forbidden_error);
 		}
-		
+
 		var groupIDs = [];
 		var groups = user.groups;
 
@@ -62,7 +62,7 @@ var checkAccess = function(perm, user, device, next){
 				}
 			}
 			return next(forbidden_error);
-		})		
+		})
 	})
 
 }
@@ -77,7 +77,7 @@ exports.checkWriteAccess = function(req, res, next){
 
 exports.checkExecuteAccess = function(req, res, next){
 	checkAccess( 1, req.user, req.device, next);
-	
+
 }
 
 exports.checkAclReadAccess = function(req, res, next){

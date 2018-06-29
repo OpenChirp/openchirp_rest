@@ -95,7 +95,7 @@ describe('Commands', function() {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.id.should.equal(theDevice.id); // only check id of device ... 
+                    res.body.id.should.equal(theDevice.id); // only check id of device ...
                     res.body.should.have.property('commands');
                     res.body.transducers.length.should.be.eql(1);
                     res.body.commands[0].should.have.property('name');
@@ -162,7 +162,7 @@ describe('Commands', function() {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    /**expected a return message: 
+                    /**expected a return message:
                         res.body.should.have.property('message');
                         res.body.message.should.equal('Delete successful'); */
                     done();

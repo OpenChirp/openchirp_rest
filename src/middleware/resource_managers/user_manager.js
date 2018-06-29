@@ -12,14 +12,14 @@ exports.createUser = function(user, callback){
 	//Search by email and if the user already exists return that
 	User.find({"email" : user.email }).exec( function(err, result){
 		if(err) { return callback(err); }
-        if(result && result.length > 0 ) { return callback(null, result[0]); }       
+        if(result && result.length > 0 ) { return callback(null, result[0]); }
         var newUser = new User(user);
         if(!newUser.userid){
              newUser.userid = newUser.email;
         }
         newUser.save(callback);
 	})
-	
+
 };
 
 //When a new user signs up using user/pass, this method is invoked
@@ -27,10 +27,10 @@ exports.createUserPass = function(user, callback){
     //Search by email and if the user already exists return an error
     User.find({"email" : user.email }).exec( function(err, result){
         if(err) { return callback(err); }
-        if(result && result.length > 0 ) { 
+        if(result && result.length > 0 ) {
              var error = new Error();
              error.message = "User already signed up with this email";
-            return callback(error); 
+            return callback(error);
         }
         auth.hashPassword(user.password, function(error2, hashedPassword){
             if(error2) { return callback(error2); }
@@ -44,8 +44,8 @@ exports.createUserPass = function(user, callback){
             }
             newUser.save(callback);
         })
-    })    
-    
+    })
+
 };
 
 //When a user logs in using user/pass, this method is invoked
@@ -54,16 +54,16 @@ exports.checkPassword = function(email, password, callback){
     wrong_pass_error.message = "Invalid User or Password ";
     exports.getUserByEmail( email, function(err, user){
         if(err) { return callback(err); }
-        if(!user){ 
-            return callback(wrong_pass_error); 
+        if(!user){
+            return callback(wrong_pass_error);
         }
         auth.verifyPassword(password, user.password, function(error, result){
-            if(error) { 
+            if(error) {
                 return callback(error);
             }
             if(result) {
                 return callback(null, user);
-            } else {        
+            } else {
                 return callback(wrong_pass_error);
             }
         });
@@ -72,8 +72,8 @@ exports.checkPassword = function(email, password, callback){
 
 exports.getUserById = function(id, callback){
 	User.findById(id).exec(function (err, result) {
-        if(err) { return callback(err); } 
-        if (result == null ) { 
+        if(err) { return callback(err); }
+        if (result == null ) {
             var error = new Error();
             error.message = 'Could not find a user with id :'+ id ;
             return callback(error);
@@ -88,9 +88,9 @@ exports.getAll = function(callback){
 
 exports.getUserByEmail = function(email, callback){
 	User.find({"email": email}).exec( function(err, result){
-        if(err) { return callback(err); } 
+        if(err) { return callback(err); }
         if(!result) { return callback(null, null); }
-        if(result.length == 1) { return callback(null, result[0]); } 
+        if(result.length == 1) { return callback(null, result[0]); }
         if(result.length > 1 ){
             var error = new Error();
             error.message = "More than one user found in the database with this email. FATAL !";
@@ -100,9 +100,9 @@ exports.getUserByEmail = function(email, callback){
 };
 exports.getUserByUserId = function(userid, callback){
     User.find({"userid": userid}).exec( function(err, result){
-        if(err) { return callback(err); } 
+        if(err) { return callback(err); }
         if(!result) { return callback(null, null); }
-        if(result.length == 1) { return callback(null, result[0]); } 
+        if(result.length == 1) { return callback(null, result[0]); }
         if(result.length > 1 ){
             var error = new Error();
             error.message = "More than one user found in the database with this userid. FATAL !";
@@ -120,7 +120,7 @@ exports.updateUser = function(req, callback){
         var result = new Object();
         result.message = "Done";
         return callback(null, result);
-    })    
+    })
 };
 
 exports.createCommandShortcut = function(req, callback){
@@ -131,7 +131,7 @@ exports.createCommandShortcut = function(req, callback){
         result.message = "Shortcut created";
         return callback(null, result);
     })
-    
+
 };
 
 exports.deleteCommandShortcut = function(req, callback){
@@ -151,34 +151,34 @@ exports.doAddUserToGroup = function(group, user_id, write_access, callback){
     var canEditGroup = false;
     var invalid_user_err = new Error();
     invalid_user_err.message = "user_id is either null or invalid";
-  
+
     var already_member_err = new Error();
     already_member_err.message = "User is already member of group";
-  
+
     if (typeof write_access != "undefined" && write_access){
-        canEditGroup = write_access; 
+        canEditGroup = write_access;
     }
     var newGroupMembership = { group_id: group._id , name: group.name , write_access: canEditGroup };
 
     exports.getUserById(user_id, function(err, user){
         if(err) { return callback(err); }
         if(!user) { return callback(invalid_user_err); }
-        
+
         user.groups.forEach(function(userGroup){
             if(String(userGroup.group_id) === String(group._id )) {
                return callback(already_member_err);
             }
-        }) 
+        })
 
         user.update({$addToSet: { groups: newGroupMembership }},function (err, result) {
-             if(err) {           
+             if(err) {
                  return callback(err);
              }
             var result = new Object();
-            result.message = "Done";            
+            result.message = "Done";
             return callback(null, result);
         })
-    })   
+    })
 };
 
 exports.removeUserFromGroup = function(req, callback){
@@ -227,7 +227,7 @@ exports.getUsersNotInGroup = function(groupId, callback){
             u._id = result[i]._id;
             u.id = result[i].id;
             u.name = result[i].name;
-            u.email = result[i].email;           
+            u.email = result[i].email;
             users.push(u);
 
         }

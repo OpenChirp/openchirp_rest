@@ -62,7 +62,7 @@ router.get('/myservices', function(req, res, next) {
 	serviceManager.getServicesByOwner(req, function (err, result) {
         if(err) { return next(err); }
         return res.json(result);
-    })  
+    })
 });
 
 /* Get all Shortcut */
@@ -76,7 +76,7 @@ router.post('/shortcut', function(req, res, next) {
   userManager.createCommandShortcut(req, function (err, result) {
         if(err) { return next(err); }
         return res.json(result);
-    })  
+    })
 });
 /* Delete shortcut */
 router.delete('/shortcut/:_shortcutId', function(req, res, next ){
@@ -93,18 +93,18 @@ router.post('/token', function(req, res, next ){
          var error = new Error();
          error.message = "Token already exists for user";
          return next(error);
-       }                 
+       }
        thingTokenManager.createToken(req.user.userid, "user" , "", req.user._id,  function(err, result){
         if(err) { return next(err); }
         return res.json(result);
       })
-  })      
+  })
 });
 
 
 /* Delete a token */
 router.delete('/token',  function(req, res, next ){
-  thingTokenManager.getUserTokenByOwnerId(req.user._id, function(err, thingToken){  
+  thingTokenManager.getUserTokenByOwnerId(req.user._id, function(err, thingToken){
         if(err) { return next(err); }
         if(!thingToken){
             var error = new Error();
@@ -133,7 +133,7 @@ router.get('/all', function(req, res, next) {
   userManager.getAll(function (err, result) {
         if(err) { return next(err); }
         return res.json(result);
-    })  
+    })
 });
 
 module.exports = router;

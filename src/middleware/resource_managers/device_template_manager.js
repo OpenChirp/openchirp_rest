@@ -28,11 +28,11 @@ exports.createNew = function(req,  callback){
         var commands = device.commands;
 
         transducers.forEach(function(tdc){
-            deviceTemplate.transducers.push(copyTransducerToTemplate(tdc, commands));               
+            deviceTemplate.transducers.push(copyTransducerToTemplate(tdc, commands));
         });
-      
+
         deviceTemplate.save(callback);
-    })  
+    })
 };
 
 var copyTransducerToTemplate = function(tdc, commands){
@@ -47,7 +47,7 @@ var copyTransducerToTemplate = function(tdc, commands){
             var commandCopy = {};
             commandCopy.name  = command.name;
             commandCopy.value = command.value;
-            tdcCopy.commands.push(commandCopy);                    
+            tdcCopy.commands.push(commandCopy);
         }
     });
     return tdcCopy;
@@ -56,7 +56,7 @@ var copyTransducerToTemplate = function(tdc, commands){
 exports.getById = function(id, callback){
 	DeviceTemplate.findById(id).populate('owner', 'name email').exec(function (err, result) {
         if(err) { return callback(err); }
-        if (result == null ) { 
+        if (result == null ) {
             var error = new Error();
             error.message = 'Could not find a device template with id :'+ id ;
             return callback(error);

@@ -28,7 +28,7 @@ exports.createGroup = function(req, callback){
 
 exports.doCreateGroup = function(ownerid, groupname, callback){
   var group = new Group();
-  group.name = groupname;   
+  group.name = groupname;
   group.owner = ownerid;
   group.save(function(err, result){
       if(err) { return callback(err); }
@@ -39,7 +39,7 @@ exports.doCreateGroup = function(ownerid, groupname, callback){
 exports.getById = function(id, callback){
 	Group.findById(id).populate('owner', 'name email').exec(function (err, result) {
         if(err) { return callback(err); }
-        if (result == null ) { 
+        if (result == null ) {
             var error = new Error();
             error.status = 404;
             error.message = 'Could not find a group with id :'+ id ;
@@ -58,20 +58,20 @@ exports.getMembersNotInGroup = function(req, callback){
 };
 
 
-exports.addMember = function(req, callback){ 
- userManager.addUserToGroup(req, callback);       
- 
+exports.addMember = function(req, callback){
+ userManager.addUserToGroup(req, callback);
+
 };
 
-exports.removeMember = function(req, callback){ 
+exports.removeMember = function(req, callback){
   userManager.removeUserFromGroup(req, callback);
 };
 
 exports.removeGroupFromUsers= function(groupId, callback){
- 
+
   async.parallel([
     function(next){
-     userManager.deleteGroup(groupId, next);             
+     userManager.deleteGroup(groupId, next);
  },
  function(next){
      deviceManager.deleteAllGroupAcls(groupId, next);
@@ -83,15 +83,15 @@ exports.removeGroupFromUsers= function(groupId, callback){
          console.log(err);
      }
      return callback(null, null);
- })       
+ })
 };
 
 exports.deleteGroup = function(req, callback){
-	var groupToDelete = req.group;  
+	var groupToDelete = req.group;
   groupToDelete.remove(function(err, result){
         if(err) { return callback(err); }
         exports.removeGroupFromUsers(groupToDelete._id, callback);
-  });  
+  });
 };
 
 module.exports = exports;

@@ -3,8 +3,8 @@ var User = require('../../models/user');
 
 // Publishes a service property change event
 exports.publishUpdateProperties = function(service, properties, callback){
-     var topic = service.pubsub.events_endpoint+"/properties";    
-     mqttClient.publish(topic, JSON.stringify(properties), callback);        
+     var topic = service.pubsub.events_endpoint+"/properties";
+     mqttClient.publish(topic, JSON.stringify(properties), callback);
 };
 
 // Publishes a service's new device event

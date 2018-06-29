@@ -9,11 +9,11 @@ var locationSchema = new Schema({
   name:  {type: String, required: true},
   type: {type: String, enum: ['BUILDING', 'INDOOR','OUTDOOR'], required: false},
   geo_loc:{
-  	type: { type: String, default: 'Point'}, 
+    type: { type: String, default: 'Point'},
     coordinates: [Number]
   },
   children: [{ type: Schema.Types.ObjectId, ref: 'Location' }],
-  owner: { type: Schema.Types.ObjectId, ref: 'User' , required: true }, 
+  owner: { type: Schema.Types.ObjectId, ref: 'User' , required: true },
   test: { type: Boolean, default: false }
 },
  schemaOptions

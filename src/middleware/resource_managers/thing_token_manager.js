@@ -19,7 +19,7 @@ exports.createToken = function(thing_id, thing_type, thing_endpoint, owner, call
 			let rwTopic = thing_endpoint +"/#";
 			let topics  = {};
 			topics[rwTopic]="rw";
-			topics["openchirp/#"] = "r";		
+			topics["openchirp/#"] = "r";
 			thingCred.topics = topics;
 		}else if(thing_type == "service"){
 			thingCred.superuser = true;
@@ -28,11 +28,11 @@ exports.createToken = function(thing_id, thing_type, thing_endpoint, owner, call
 			topics["openchirp/#"] = "r";
 			thingCred.topics = topics;
 		}
-		thingCred.save(function(error, result){ 
+		thingCred.save(function(error, result){
 			if(error ) { return callback(error); }
 			return callback(null, token);
 		  });
-		
+
 	});
 };
 
@@ -65,16 +65,16 @@ exports.validateToken = function(id, password, callback){
 	invalid_token_error.message = "Invalid token ";
 	exports.getTokenByThingId( id, function(err, thingCred){
 		if(err) { return callback(err); }
-		if(!thingCred){ 
-			return callback(invalid_token_error); 
+		if(!thingCred){
+			return callback(invalid_token_error);
 		}
 		auth.verifyPassword(password, thingCred.password, function(error, result){
-			if(error) { 
+			if(error) {
 				return callback(error);
 			}
 			if(result) {
 				return callback(null, thingCred);
-			} else { 		
+			} else {
 				return callback(invalid_token_error);
 			}
 		});
@@ -84,14 +84,14 @@ exports.validateToken = function(id, password, callback){
 exports.recreateToken = function(token, callback){
 	var newPassword = exports.generateToken();
 	auth.hashPassword( newPassword, function(err, hashedPassword){
-		if(err) { return callback(err); }	
+		if(err) { return callback(err); }
 			var thingCred = token;
 			thingCred.password = hashedPassword;
-			thingCred.save(function(error, result){ 
+			thingCred.save(function(error, result){
 				if(error ) { return callback(error); }
 				return callback(null, newPassword);
 		  })
-	})						
+	})
 };
 
 exports.deleteToken = function(token, callback){

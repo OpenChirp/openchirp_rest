@@ -41,14 +41,14 @@ router.param('_id', function(req, res, next, id) {
         req.device = device;
         thingTokenManager.getTokenByThingId(id, function(err, thingToken){
             if(err) { return next(err); }
-            req.token = thingToken;                   
+            req.token = thingToken;
             next();
-        })        
+        })
     })
 });
 
 /* Validate _transducerId in all request URLs */
-router.param('_transducerId', function(req, res, next, transducerId) {   
+router.param('_transducerId', function(req, res, next, transducerId) {
     if(!ObjectId.isValid(transducerId)){
         var error = new Error();
         error.message = "Invalid Object ID " + transducerId ;
@@ -92,19 +92,19 @@ router.get('/:_id', function(req, res, next) {
 });
 
 /* Update a device */
-router.put('/:_id', deviceAuthorizer.checkWriteAccess,  function(req, res, next) {  
+router.put('/:_id', deviceAuthorizer.checkWriteAccess,  function(req, res, next) {
   deviceManager.updateDevice(req, function(err, result){
  		if(err) { return next(err); }
  		return res.json(result);
- 	})  			
+	})
 });
 
 /* Delete a device */
-router.delete('/:_id', deviceAuthorizer.checkWriteAccess, function(req, res, next) {   
+router.delete('/:_id', deviceAuthorizer.checkWriteAccess, function(req, res, next) {
 	deviceManager.deleteDevice(req, function(err){
         if(err) { return next(err); }
-         return res.json({ message: 'Delete successful'});  
-    })   
+         return res.json({ message: 'Delete successful'});
+    })
 });
 
 /***************** Search ***************************/
@@ -154,7 +154,7 @@ router.post('/:_id/transducer/:_transducerId', deviceAuthorizer.checkExecuteAcce
 /* Get device transducer values */
 router.get('/:_id/transducer/:_transducerId', function(req, res, next ){
 	/* getDeviceTransducer will directly pipe the incoming response from influxdb to the browser (so no callback) */
-    transducerManager.getDeviceTransducer(req, res); 
+    transducerManager.getDeviceTransducer(req, res);
 });
 
 /* Delete transducer */
@@ -274,7 +274,7 @@ router.put('/:_id/service/:_serviceId', deviceAuthorizer.checkWriteAccess,  func
         if(err) { return next(err); }
         return res.json(result);
     })
-}); 
+});
 
 /* Remove device from a serivce */
 router.delete('/:_id/service/:_serviceId', deviceAuthorizer.checkWriteAccess, function(req, res, next){
@@ -328,7 +328,7 @@ router.delete('/:_id/token', deviceAuthorizer.checkWriteAccess, function(req, re
 
 /*************** ACL ***************************/
 /* Get User ACLs for a given device */
-router.get('/:_id/acl/users', deviceAuthorizer.checkAclReadAccess,  function(req, res, next ){   
+router.get('/:_id/acl/users', deviceAuthorizer.checkAclReadAccess,  function(req, res, next ){
     deviceManager.getAclForUsers(req.device._id,  function(err, result){
         if(err) { return next(err); }
         return res.json(result);
@@ -336,7 +336,7 @@ router.get('/:_id/acl/users', deviceAuthorizer.checkAclReadAccess,  function(req
 });
 
 /* Get Group ACLs for a given device */
-router.get('/:_id/acl/groups', deviceAuthorizer.checkAclReadAccess,  function(req, res, next ){   
+router.get('/:_id/acl/groups', deviceAuthorizer.checkAclReadAccess,  function(req, res, next ){
     deviceManager.getAclForGroups(req.device._id,  function(err, result){
         if(err) { return next(err); }
         return res.json(result);
@@ -344,7 +344,7 @@ router.get('/:_id/acl/groups', deviceAuthorizer.checkAclReadAccess,  function(re
 });
 
 /* Grant Access to a user or group */
-router.post('/:_id/acl/:_entityId', deviceAuthorizer.checkWriteAccess,  function(req, res, next ){   
+router.post('/:_id/acl/:_entityId', deviceAuthorizer.checkWriteAccess,  function(req, res, next ){
     deviceManager.createAcl(req,  function(err, result){
         if(err) { return next(err); }
         return res.json(result);
@@ -352,7 +352,7 @@ router.post('/:_id/acl/:_entityId', deviceAuthorizer.checkWriteAccess,  function
 });
 
 /* Update access  */
-router.put('/:_id/acl/:_entityId', deviceAuthorizer.checkWriteAccess, function(req, res, next ){   
+router.put('/:_id/acl/:_entityId', deviceAuthorizer.checkWriteAccess, function(req, res, next ){
     deviceManager.updateAcl(req, function(err, result){
         if(err) { return next(err); }
         return res.json(result);
@@ -360,7 +360,7 @@ router.put('/:_id/acl/:_entityId', deviceAuthorizer.checkWriteAccess, function(r
 });
 
 /* Delete access to a user or group */
-router.delete('/:_id/acl/:_entityId', deviceAuthorizer.checkWriteAccess, function(req, res, next ){   
+router.delete('/:_id/acl/:_entityId', deviceAuthorizer.checkWriteAccess, function(req, res, next ){
     deviceManager.deleteAcl(req, function(err, result){
         if(err) { return next(err); }
         return res.json(result);

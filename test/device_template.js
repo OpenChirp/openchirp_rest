@@ -24,7 +24,7 @@ var baseDevice;
 //Our parent block
 describe('Device Templates', function() {
 	// Before all tests we add a user to be owner of our new test devices and a device
-    before('Creating User and Device for tests...', (done) => { 
+    before('Creating User and Device for tests...', (done) => {
         User.findOne({
             email: 'test@test.com'
         }, function(err, user) {
@@ -65,7 +65,7 @@ describe('Device Templates', function() {
  	});
 
 	//Before each test we remove all device templates
-    beforeEach((done) => { 
+    beforeEach((done) => {
         DeviceTplt.remove({}, (err) => {
             done();
         });

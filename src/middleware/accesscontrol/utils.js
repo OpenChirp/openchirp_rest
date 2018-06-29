@@ -33,7 +33,7 @@ exports.isAdmin = function(user){
 exports.isAdminOrDeveloper = function(user){
     let isAD = false;
     let grps = user.groups;
-    
+
     if(!grps){
         return false;
     }

@@ -7,7 +7,7 @@ var util = require('util');
 var SqlString = require('sqlstring');
 
 exports.createDeviceTransducer = function(req, callback ){
-	
+
 	req.device.transducers.push(req.body);
 	req.device.save(callback);
 };
@@ -15,7 +15,7 @@ exports.createDeviceTransducer = function(req, callback ){
 exports.getAllDeviceTransducers = function(req, callback ){
 	var deviceId = req.device._id;
 	Device.findById(deviceId).exec(function(err, result){
-		if(err) { return callback(err); } 
+		if(err) { return callback(err); }
 		getTransducerLastValue(result, callback);
 	})
 };
@@ -56,7 +56,7 @@ var getTransducerLastValue = function(device, callback){
 			 	var series = data.results[0].series;
 			 	if(series && series.length >0 ){
 			 		var values = series[0].values[0];
-			 		lastValues[index] = {};		 	
+					lastValues[index] = {};
 			 		lastValues[index].timestamp  = values[0];
 			 		lastValues[index].value = values[1];
 				 }
@@ -65,7 +65,7 @@ var getTransducerLastValue = function(device, callback){
 		});
 	};
 	transducers.forEach(function(tdc){
-		measurements.push(device._id+"_"+tdc.name.toLowerCase());		
+		measurements.push(device._id+"_"+tdc.name.toLowerCase());
 	})
 
 	async.forEachOf(measurements, getFromInfluxdb, function(err, result) {
@@ -119,11 +119,11 @@ exports.getDeviceTransducer = function(req, res){
     measurement = req.device._id+'_'+transducer.name;
 
 	// parameters added to the http get query string
-  	var query_string = { 
+	var query_string = {
 			"db" : "openchirp",
 			"pretty": req.query.pretty,
 	};
-		
+
 	/* construct limit, offset and chunked query parameters */
 	var limit=""
 	var offset="";
@@ -146,15 +146,15 @@ exports.getDeviceTransducer = function(req, res){
 		query_string.q += " OFFSET " + Math.max(parseInt(req.query.page)-1, 0)*ilimit;
 		query_string.chunked=false;
 	}
-	if (query_string.chunked == true) 
-		query_string.chunk_size = "10000"; //by default, if no limit is given, the response is divided in chunks of 10000 values 
+	if (query_string.chunked == true)
+		query_string.chunk_size = "10000"; //by default, if no limit is given, the response is divided in chunks of 10000 values
 
 	/* construct start time and end time query parameters */
 	var time_query="";
-  	if (typeof req.query.stime != 'undefined') {
+	if (typeof req.query.stime != 'undefined') {
   		console.log("start time:"+req.query.stime);
-  		time_query=util.format(' where time > %s', req.query.stime);
-  	}  	
+		  time_query=util.format(' where time > %s', req.query.stime);
+	}
 	if (typeof req.query.etime != 'undefined') {
 		console.log("end time:"+req.query.etime);
   		time_query+=util.format(' and time < %s', req.query.etime);
@@ -171,47 +171,47 @@ exports.getDeviceTransducer = function(req, res){
 	/* if request type is csv, tell influxdb to return csv (by adding Accept header); otherwise, default is json */
 	var http_headers = {};
 	if (typeof req.headers['content-type'] != 'undefined') {
-		if (req.headers['content-type'].includes("text/csv") 
+		if (req.headers['content-type'].includes("text/csv")
 			|| req.headers['content-type'].includes("application/csv")) {
 				http_headers = { "Accept": "application/csv" };
 		}
 	}
-	
+
 	/* construct final influxdb request options */
 	var options = {
-  		url: influxdb_url,
-  		headers: http_headers,
-  		qs: query_string	
+		url: influxdb_url,
+		headers: http_headers,
+		qs: query_string
 	};
-	
+
 	//console.log("Query:" + JSON.stringify(options, null, 3));
- 
+
  	// pipe the incoming response from influxdb to the response sent to the browser
     req.pipe(request(options)).pipe(res);
 };
 
-exports.deleteDeviceTransducer = function(req, callback){	
+exports.deleteDeviceTransducer = function(req, callback){
 	var tdcId = req.params._transducerId;
-	var commands = req.device.commands;	
+	var commands = req.device.commands;
 	var cmdsToDelete = [];
-	
-	if(commands){		
+
+	if(commands){
 		commands.forEach(function(cmd) {
 			if ( String(cmd.transducer_id) === String(tdcId)){
 				cmdsToDelete.push(cmd._id);
 			}
 		});
 	}
-	cmdsToDelete.forEach(function(cid){		
+	cmdsToDelete.forEach(function(cid){
 		req.device.commands.id(cid).remove();
 	});
-	
+
 	req.device.transducers.id(tdcId).remove();
 	req.device.save( function(err) {
 		if(err) { return callback(err); }
 		var result = new Object();
         result.message = "Done";
-        return callback(null, result);		
+        return callback(null, result);
 	})
 };
 

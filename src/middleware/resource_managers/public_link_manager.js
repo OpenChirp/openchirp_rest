@@ -9,11 +9,11 @@ exports.run = function(req, callback ){
 	var invalid_link_error = new Error();
 	invalid_link_error.message = "Invalid link";
 	let publicLinkId = req.params._payload;
-	
+
 	exports.getById(publicLinkId, function(err, link){
 		if(err) { return callback(invalid_link_error); }
 		var deviceId = link.device_id;
-		var userId = link.user_id;	
+		var userId = link.user_id;
 
 		async.parallel({
 			device: function(next){
@@ -38,14 +38,14 @@ exports.run = function(req, callback ){
 						return callback(null, out);
 					})
 				})
-			})		
-	})	
+			})
+	})
 };
 
 exports.getById = function(id, callback){
 	PublicLink.findById(id).exec(function (err, result) {
 		if(err) { return callback(err) ; }
-		if (result == null ) { 
+		if (result == null ) {
 			var error = new Error();
 			error.message = 'Invalid link '+ id ;
 			return callback(error);

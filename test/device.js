@@ -29,7 +29,7 @@ describe('Devices', function() {
                     email: 'test@test.com'
                 });
                 user.save();
-                ownerUserId = user.id              
+                ownerUserId = user.id
                 done();
             } else ownerUserId = user.id;
             done();
@@ -71,7 +71,7 @@ describe('Devices', function() {
                 .post('/api/device/')
                 .send(dev)
                 .end((err, res) => {
-                    /**expected : 
+                    /**expected :
                     res.should.have.status(400); */
                     res.should.have.status(500);
                     res.body.should.be.a('object');
@@ -93,7 +93,7 @@ describe('Devices', function() {
 					  'unit':'Celsius',
 					  'properties':{
 					    'protobuf':'uint:32'
-					    }  
+					    }
 					}]
             }
             chai.request(server)
@@ -110,7 +110,7 @@ describe('Devices', function() {
                     res.body.enabled.should.equal(true);
                     res.body.should.have.property('transducers');
                     res.body.transducers.should.be.a('array');
-                    res.body.transducers.length.should.be.eql(1);                    
+                    res.body.transducers.length.should.be.eql(1);
                     done();
                 });
         });
@@ -135,12 +135,12 @@ describe('Devices', function() {
                         res.should.have.status(200);
                         res.body.should.be.a('object');
                         res.body.id.should.equal(device.id);
-                        res.body.should.have.property('name');                           
+                        res.body.should.have.property('name');
                         res.body.name.should.equal('Test Device');
                         res.body.should.have.property('type');
                         res.body.type.should.equal('LORA');
                         res.body.should.have.property('enabled');
-                        res.body.enabled.should.equal(true);                     
+                        res.body.enabled.should.equal(true);
                         done();
                     });
             });
@@ -162,7 +162,7 @@ describe('Devices', function() {
 					  'unit':'Celsius',
 					  'properties':{
 					    'protobuf':'uint:32'
-					    }  
+					    }
 					}]
             });
             device.save((err, device) => {
@@ -178,15 +178,15 @@ describe('Devices', function() {
                         res.should.have.status(200);
                         res.body.should.be.a('object');
                         res.body.id.should.equal(device.id);
-                        res.body.should.have.property('name');                        
+                        res.body.should.have.property('name');
                         res.body.name.should.equal('Updated Test Device');
                         res.body.should.have.property('type');
                         res.body.type.should.equal('LORA');
                         res.body.should.have.property('enabled');
                         res.body.enabled.should.equal(false);
-                    	res.body.should.have.property('transducers'); /* transducers array stays the same ...*/
-                    	res.body.transducers.should.be.a('array');
-                    	res.body.transducers.length.should.be.eql(1);                          
+                        res.body.should.have.property('transducers'); /* transducers array stays the same ...*/
+                        res.body.transducers.should.be.a('array');
+                        res.body.transducers.length.should.be.eql(1);
                         done();
                     });
             });
@@ -212,7 +212,7 @@ describe('Devices', function() {
                         res.should.have.status(200);
                         res.body.should.be.a('object');
                         res.body.should.have.property('message');
-                        res.body.message.should.equal('Delete successful');                        
+                        res.body.message.should.equal('Delete successful');
                         done();
                     });
             });

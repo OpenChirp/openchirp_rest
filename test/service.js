@@ -163,12 +163,12 @@ describe('Services', function() {
                         res.body.should.be.a('object');
                         res.body.id.should.equal(srv.id);
                     res.body.should.have.property('name');
-                    res.body.name.should.equal('Updated Test Service');                    
+                    res.body.name.should.equal('Updated Test Service');
                     res.body.should.have.property('description');
-                    res.body.description.should.equal('Updated service description');                           
+                    res.body.description.should.equal('Updated service description');
                 */
                 done();
-                /*    
+                /*
 
                     });
                 */

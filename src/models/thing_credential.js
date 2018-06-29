@@ -12,7 +12,7 @@ var thingCredentialSchema = new Schema({
 	  owner: { type: Schema.Types.ObjectId, ref:'User', required:true },
 	  superuser: { type: Boolean, default: false},
 	  topics: { type: Schema.Types.Mixed }
-  }, 
+  },
   schemaOptions
 );
 

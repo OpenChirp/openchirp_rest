@@ -7,7 +7,7 @@ exports.createClient = function(){
     	username: nconf.get('mqtt:user'),
     	password: nconf.get('mqtt:pass')
 	};
-	
+
 	return mqtt.connect(nconf.get('mqtt:broker'), options);
 };
 
@@ -34,10 +34,10 @@ exports.publish = function(topic, message, callback ){
 		var error = new Error();
         error.message = 'Could not connect to mqtt broker';
         return callback(error);
-	});	
-}; 
+	});
+};
 
- 
+
 
 /*Using async */
 /*exports.publish = function(topic, message, callback ){
@@ -46,16 +46,16 @@ exports.publish = function(topic, message, callback ){
     client.on('error', handleError);
 
     async function doPublish(){
-    
+
         try{
             await client.publish(topic, message);
             await client.end();
-     
+
             var result = new Object();
             result.message = "Done";
             return callback(null, result);
         }catch(e){
-           
+
             var error = new Error();
             error.message = 'Could not connect to mqtt broker';
             return callback(error);
@@ -63,14 +63,13 @@ exports.publish = function(topic, message, callback ){
     }
 
     async function handleError(){
-       
+
         await client.end();
         var error = new Error();
         error.message = 'Could not connect to mqtt broker';
         return callback(error);
     }
 }; */
-
 
 
 module.exports = exports;
