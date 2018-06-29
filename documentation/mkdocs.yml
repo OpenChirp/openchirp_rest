@@ -5,7 +5,6 @@ pages:
     - Introduction : index.md
     - Resources :
         - Location : location.md
-        - Gateway : gateway.md
         - Device : device.md
         - Transducer : transducer.md
         - Service : service.md

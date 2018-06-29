@@ -33,5 +33,3 @@
     * type
     * enabled
     * pubsub
-    * gateway_id
-

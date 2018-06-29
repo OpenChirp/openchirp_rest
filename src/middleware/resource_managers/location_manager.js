@@ -1,6 +1,5 @@
- 
+
 var Location = require('../../models/location')
-var Gateway = require('../../models/gateway');
 var Device = require('../../models/device');
 var async = require('async');
 
@@ -112,9 +111,6 @@ exports.deleteLocation = function(req, callback){
     }
     async.parallel([
             function(next){
-                exports.getGateways(req, next);
-            },
-            function(next){
                 exports.getDevices(req, next);
             }
 
@@ -128,7 +124,7 @@ exports.deleteLocation = function(req, callback){
         })
         if(! locationEmpty){
             var error = new Error();
-            error.message = "Location has gateways/devices. Cannot delete it.";
+            error.message = "Location has devices. Cannot delete it.";
             return callback(error);
         }
 
@@ -144,12 +140,6 @@ exports.deleteLocation = function(req, callback){
                     })
             })
     })
-};
-
-exports.getGateways = function(req, callback){
-    
-    Gateway.find({ location_id : req.params._id }).exec(callback);
-    
 };
 
 //Do recursive search for devices at all child locations

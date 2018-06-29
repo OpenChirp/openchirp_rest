@@ -5,7 +5,6 @@
 |/api/location| GET | Get Root Location|
 |/api/location/{*parentLocationId*} |POST| Create new location under a given parent location|
 |/api/location/{*locationId*} | GET, PUT, DELETE| Create, read, update, delete a location respectively|
-|/api/location/{*locationId*}/gateways| GET| Get all gateways at a location|
 |/api/location/{*locationId*}/devices| GET| Get all devices at a location|
 
 ### Location Resource Description
@@ -155,23 +154,6 @@ DELETE /api/location/582e2b2c065b2545ded3aabd HTTP/1.1
 ** Example Response **
 ```http
 HTTP/1.1 200 OK
-```
-
-### Find gateways at a location 
-<span class ="operation">GET /api/location/{*locationId*}/gateways</span>
-
-- **Request parameters**
-
-    * id (string) - Location ID
-
-** Example Request **
-```http
-GET /api/location/582e2b2c065b2545ded3aabd/gateways HTTP/1.1
-```
-
-** Example Response **
-```http
-TODO
 ```
 
 ### Find devices at a location

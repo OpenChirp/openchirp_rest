@@ -1,4 +1,3 @@
-var Gateway = require('../../models/gateway');
 var Device = require('../../models/device');
 var DeviceTemplate = require('../../models/device_template');
 var Service = require('../../models/service');

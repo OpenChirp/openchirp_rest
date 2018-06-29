@@ -42,15 +42,6 @@ router.get('/:_id', function(req, res, next) {
  	return res.json(req.location);
 });
 
-/* Get all gateways at this location */
-router.get('/:_id/gateways', function(req, res, next) {
-    locationManager.getGateways( req, function(err, result){
-        if(err) { return next(err); }
-        return res.json(result);
-    })
-    
-});
-
 /* Get all devices at this location */
 router.get('/:_id/devices', function(req, res, next) {
     locationManager.getDevices( req, function(err, result){

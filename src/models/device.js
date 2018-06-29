@@ -12,7 +12,6 @@ var deviceSchema = new Schema({
   name: { type: String, required: true },
   type: { type: String },
   location_id: { type: Schema.Types.ObjectId, ref: "Location"},
-  gateway_id: { type: Schema.Types.ObjectId, ref: "Gateway" },
   pubsub : {
   	protocol : { type: String, enum: ['XMPP', 'MQTT', 'AMQP'], default: 'MQTT'}
   },
