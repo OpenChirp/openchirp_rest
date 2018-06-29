@@ -96,7 +96,7 @@ exports.updateLocation = function(req, callback){
  	if(typeof req.body.name != 'undefined') locationToUpdate.name = req.body.name;
  	if(typeof req.body.test != 'undefined') locationToUpdate.test = req.body.test;
     if(typeof req.body.type != 'undefined') locationToUpdate.type = req.body.type;
-    if(typeof req.body.geoLoc != 'undefined') locationToUpdate.geoLoc = req.body.geoLoc;
+    if(typeof req.body.geo_loc != 'undefined') locationToUpdate.geo_loc = req.body.geo_loc;
 
     locationToUpdate.save(callback);
 };
