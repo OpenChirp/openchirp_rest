@@ -163,12 +163,12 @@
                     "type": "integer",
                     "format": "int64"
                 },
-                {                                                                                   
-                    "name": "name",                                                                       
-                    "in": "formData",                                                                       
-                    "description": "ID of location to update",                                          
-                    "required": false,                                                                   
-                    "type": "string"                                                                
+                {
+                    "name": "name",
+                    "in": "formData",
+                    "description": "ID of location to update",
+                    "required": false,
+                    "type": "string"
                 }
                 ],
                 "responses": {
@@ -221,7 +221,7 @@
             "get": {
                 "summary": "Returns all gateways at the location matching the given ID.",
                 "tags": [
-                    "Location"                    
+                    "Location"
                 ],
                 "parameters": [
                 {
@@ -250,13 +250,13 @@
                         }
                     }
                 }
-            }           
+            }
         },
          "/location/{id}/devices": {
             "get": {
                 "summary": "Returns all devices at the location matching the given ID.",
                 "tags": [
-                    "Location"                
+                    "Location"
                 ],
                 "parameters": [
                 {
@@ -285,12 +285,12 @@
                         }
                     }
                 }
-            }           
+            }
         },
          "/gateway": {
             "get": {
                 "summary": "Returns all gateways.",
-                "tags": [                  
+                "tags": [
                     "Gateway"
                 ],
                 "responses": {
@@ -313,14 +313,14 @@
             },
             "post": {
                 "summary": "Create a new gateway",
-                "tags": [                  
+                "tags": [
                     "Gateway"
                 ],
                 "responses": {
                     "200": {
                         "description": "A gateway object.",
-                        "schema": {                           
-                            "$ref": "#/definitions/Gateway"                           
+                        "schema": {
+                            "$ref": "#/definitions/Gateway"
                         }
                     },
                     "default": {
@@ -330,7 +330,7 @@
                         }
                     }
                 }
-            }          
+            }
         },
          "/gateway/{id}": {
             "get": {
@@ -377,12 +377,12 @@
                     "type": "integer",
                     "format": "int64"
                 },
-                {                                                                                   
-                    "name": "name",                                                                       
-                    "in": "formData",                                                                       
-                    "description": "Name of gateway to update",                                          
-                    "required": false,                                                                   
-                    "type": "string"                                                                
+                {
+                    "name": "name",
+                    "in": "formData",
+                    "description": "Name of gateway to update",
+                    "required": false,
+                    "type": "string"
                 }
                 ],
                 "responses": {
@@ -434,13 +434,13 @@
          "/device": {
             "post": {
                 "summary": "Create a new device",
-                "tags": [                  
+                "tags": [
                     "Device"
                 ],
                 "responses": {
                     "200": {
                         "description": "A device object.",
-                        "schema": {                            
+                        "schema": {
                             "$ref": "#/definitions/Device"
                         }
                     },
@@ -451,7 +451,7 @@
                         }
                     }
                 }
-            }          
+            }
         }
     },
     "definitions": {

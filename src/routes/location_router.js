@@ -19,7 +19,7 @@ router.post('/', locationAuthorizer.checkPostAccess, function(req, res, next) {
         if(err) { return next(err); }
         return res.json(result);
 
-    })	
+    })
 });
 
 /*Validate _id in all request URLs*/
@@ -71,13 +71,13 @@ router.post('/:_id',locationAuthorizer.checkPostAccess, function(req, res, next)
 	locationManager.createNewChildLocation(req, function(err, result){
         if(err) { return next(err); }
         return res.json(result);
-    })			
+    })
 });
 
 /* Update a location */
 router.put('/:_id',locationAuthorizer.checkPutAccess,function(req, res, next) {
     locationManager.updateLocation(req, function(err, result) {
-        if(err) {  return next(err); }      
+        if(err) {  return next(err); }
         return res.json(result);
     })
 
@@ -89,7 +89,7 @@ router.delete('/:_id', function(req, res, next) {
         if(err) { return next(err); }
         return res.json(result);
     })
-	
+
 });
 
 module.exports = router;

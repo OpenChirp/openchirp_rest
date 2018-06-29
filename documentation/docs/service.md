@@ -1,4 +1,4 @@
-### URLs 
+### URLs
 
 |URL | Supported HTTP verbs| Action
 |:----------|:-------|:-------------|

@@ -28,10 +28,10 @@ var deviceSchema = new Schema({
       message : { type: String }
     },
   }],
-  owner: { type: Schema.Types.ObjectId, ref: 'User' , required : true },  
+  owner: { type: Schema.Types.ObjectId, ref: 'User' , required : true },
   enabled: { type: Boolean, default: true },
   properties : { type: Schema.Types.Mixed	}
-  }, 
+  },
   schemaOptions
 );
 

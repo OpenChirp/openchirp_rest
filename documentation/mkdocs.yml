@@ -3,7 +3,7 @@ theme: readthedocs
 extra_css: [extra.css]
 pages:
     - Introduction : index.md
-    - Resources : 
+    - Resources :
         - Location : location.md
         - Gateway : gateway.md
         - Device : device.md

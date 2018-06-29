@@ -5,15 +5,15 @@ var Device = require('../../models/device');
 var async = require('async');
 
 exports.getRootLocation = function(callback){
-    
+
     Location.find({"name":"root"}).exec(callback);
 
 };
 
 exports.getLocationById = function(id, callback){
 	Location.findById(id).populate('owner', 'name email').exec(function (err, result) {
-        if(err) { return callback(err); } 
-        if (result == null ) { 
+        if(err) { return callback(err); }
+        if (result == null ) {
             var error = new Error();
             error.status = 404;
             error.message = 'Could not find a location with id :'+ id ;
@@ -34,7 +34,7 @@ var constructLocationModel = function(req){
 
 exports.createNewLocation = function(req, callback){
     var location = constructLocationModel(req);
-    
+
     if(!location.name || location.name.length ==0){
         var error = new Error();
         error.message = "Location name cannot be empty";
@@ -66,7 +66,7 @@ exports.createNewChildLocation = function(req, callback){
         error.message = "Cannot create location with name root";
         return callback(error);
     }
-    
+
     var parentId = req.params._id;
     newLocation.save(function(err, result){
         if(err) { return callback(err); }
@@ -75,12 +75,12 @@ exports.createNewChildLocation = function(req, callback){
             if(err) {
              //Rollback.. Delete the newly created location
              console.log("Error in adding to parent");
-             newLocation.remove( function(err) { 
-                if(err) return callback(err); 
+             newLocation.remove( function(err) {
+                if(err) return callback(err);
             })
             return callback(err);
-         }   
-         
+         }
+
          return callback(null, newLocation);
         })
     })
@@ -93,13 +93,13 @@ exports.updateLocation = function(req, callback){
         error.message = "Cannot update root location";
         return callback(error);
     }
-    
+
  	if(typeof req.body.name != 'undefined') locationToUpdate.name = req.body.name;
  	if(typeof req.body.test != 'undefined') locationToUpdate.test = req.body.test;
     if(typeof req.body.type != 'undefined') locationToUpdate.type = req.body.type;
     if(typeof req.body.geoLoc != 'undefined') locationToUpdate.geoLoc = req.body.geoLoc;
-    
- 	locationToUpdate.save(callback);  
+
+    locationToUpdate.save(callback);
 };
 
 exports.deleteLocation = function(req, callback){
@@ -109,7 +109,7 @@ exports.deleteLocation = function(req, callback){
         var error = new Error();
         error.message =  "Location is not empty. Cannot delete it.";
         return callback(error);
-    }  
+    }
     async.parallel([
             function(next){
                 exports.getGateways(req, next);
@@ -158,7 +158,7 @@ exports.getAllDevices = function(location_id, callback){
     out.devices = [];
     out.locations = [];
     out.locations.push(location_id);
-    
+
     async.whilst(
         function () { return out.locations.length >0; },
         function (next) {
@@ -174,7 +174,7 @@ exports.getAllDevices = function(location_id, callback){
                             Array.prototype.push.apply(out.devices, result);
                         }
                         return next(null, out);
-                    })  
+                    })
 
                 }else{
                     return next(null, out);
@@ -184,7 +184,7 @@ exports.getAllDevices = function(location_id, callback){
         function (err, out) {
             if(err){ return callback(err); }
             return callback(null, out.devices);
-          
+
         }
     );
 
@@ -203,7 +203,7 @@ exports.getLocationsByOwner = function(req, callback) {
         Location.find({"owner" : userId, $text: { $search: name }}).exec(callback);
     }else{
         Location.find({"owner" : userId }).exec(callback);
-    }    
+    }
 };
 
 module.exports = exports;
