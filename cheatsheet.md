@@ -52,6 +52,8 @@
 
 ## `/device`
 - GET - Get all devices' info (You can actually ask for all devices)
+    You can optionally do an exact name search by adding `?name=NAME_OF_DEVICE`
+    to the request.
 - POST - Create new device
 
 * `/<dev_id>`
