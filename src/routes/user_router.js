@@ -11,6 +11,7 @@ var thingTokenManager = require('../middleware/resource_managers/thing_token_man
 router.get('/', function(req, res, next) {
    var result = {};
    result._id = req.user._id;
+   result.id = req.user._id;
    result.name = req.user.name;
    result.email = req.user.email;
    result.userid = req.user.userid;
