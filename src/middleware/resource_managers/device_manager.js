@@ -19,7 +19,7 @@ exports.getAllDevices = function(req, callback){
     }else{
        var query = Device.find();
     }
-    query.select("name");
+    query.select("name pubsub");
     query.exec(callback);
 };
 
