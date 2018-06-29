@@ -366,4 +366,5 @@ router.delete('/:_id/acl/:_entityId', deviceAuthorizer.checkWriteAccess, functio
         return res.json(result);
     })
 });
+
 module.exports = router;
