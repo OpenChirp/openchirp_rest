@@ -19,6 +19,7 @@ exports.getAllDevices = function(req, callback){
     }else{
        var query = Device.find();
     }
+    query.populate('owner location_id', 'name email');
     query.select("name pubsub");
     query.exec(callback);
 };
