@@ -189,8 +189,7 @@ exports.getDevicesByOwner = function(req, callback) {
 exports.linkService = function(req, callback){
     var newLink = {};
     newLink.service_id = req.params._serviceId;
-    newLink.config = req.body;
-
+    newLink.config = (JSON.stringify(req.body) === "{}") ? [] : req.body;
     var deviceId = req.device._id;
     var linkedServices = req.device.linked_services;
     var linkExists = false;
