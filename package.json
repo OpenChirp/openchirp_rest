@@ -7,6 +7,7 @@
     "test": "mocha --timeout 10000"
   },
   "dependencies": {
+    "@types/node": "^10.5.2",
     "async": "^2.1.5",
     "body-parser": "^1.15.1",
     "connect-redis": "^3.3.0",
