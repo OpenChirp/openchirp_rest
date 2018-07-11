@@ -18,6 +18,7 @@ OpenChirp core has dependencies on the following components.
 After cloning the repository, run the following command. This will download all the javascript dependencies.
 ```
 npm install
+tsc
 ```
 
 ## Config
