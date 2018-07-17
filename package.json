@@ -5,7 +5,8 @@
   "scripts": {
     "start": "supervisor ./bin/www",
     "test": "mocha --timeout 10000",
-    "tsc": "./node_modules/typescript/bin/tsc"
+    "tsc": "./node_modules/typescript/bin/tsc",
+    "build": "npm run tsc"
   },
   "dependencies": {
     "async": "^2.1.5",
