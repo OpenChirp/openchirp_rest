@@ -51,10 +51,10 @@ router.param('_id', function(req, res, next, id) {
 router.param('_transducerId', function(req, res, next, transducerId) {
     if(!ObjectId.isValid(transducerId)){
         // Lookup transducerID by name if ID was not detected
-        for (var i in req.device.transducers) {
+        for (var i = 0; i < req.device.transducers.length; i++) {
             if (transducerId == req.device.transducers[i].name) {
-                req._transducerId = req.device.transducers[i]._id;
-                next();
+                req.params._transducerId = req.device.transducers[i]._id;
+                return next();
             }
         }
 
