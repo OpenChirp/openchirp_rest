@@ -50,8 +50,16 @@ router.param('_id', function(req, res, next, id) {
 /* Validate _transducerId in all request URLs */
 router.param('_transducerId', function(req, res, next, transducerId) {
     if(!ObjectId.isValid(transducerId)){
+        // Lookup transducerID by name if ID was not detected
+        for (var i in req.device.transducers) {
+            if (transducerId == req.device.transducers[i].name) {
+                req._transducerId = req.device.transducers[i]._id;
+                next();
+            }
+        }
+
         var error = new Error();
-        error.message = "Invalid Object ID " + transducerId ;
+        error.message = "Invalid Object ID " + transducerId;
         return next(error);
     }
     next();
