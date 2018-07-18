@@ -74,9 +74,9 @@
             }
             </pre>
             </details>
-    * `/transducer/<trans_id>`
-        - GET - Get info about transducer
-        - POST - Publish data to transducer
+    * `/transducer/<trans_id>`, where `<trans_id>` can be the actual transducer ID or the transducer's name.
+        - GET - Get time-series data for the given transducer
+        - POST - Publish data to the transducer. Can take `Content-Type: plain/text`.
         - DELETE - Delete the transducer
 
     * `/token`
