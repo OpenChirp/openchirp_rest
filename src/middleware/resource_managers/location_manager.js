@@ -7,7 +7,7 @@ exports.getRootLocation = function(callback){
 };
 
 exports.getAllLocations = function(callback){
-    Location.find().exec(callback)
+    Location.find().populate('owner', 'name email').exec(callback)
 };
 
 exports.getLocationById = function(id, callback){
