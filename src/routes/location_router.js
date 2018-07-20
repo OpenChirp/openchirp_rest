@@ -5,9 +5,17 @@ var ObjectId = require('mongoose').Types.ObjectId;
 var locationManager = require('../middleware/resource_managers/location_manager');
 var locationAuthorizer = require('../middleware/accesscontrol/location_authorizer');
 
-/* GET all locations. */
+/* GET root location */
 router.get('/', function(req, res, next) {
  	locationManager.getRootLocation(function(err, result){
+        if(err) { return next(err); }
+        res.json(result);
+    })
+});
+
+/* GET all locations */
+router.get('/all', function(req, res, next) {
+    locationManager.getAllLocations(function(err, result){
         if(err) { return next(err); }
         res.json(result);
     })

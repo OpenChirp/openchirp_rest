@@ -1,12 +1,13 @@
-
-var Location = require('../../models/location')
+var Location = require('../../models/location');
 var Device = require('../../models/device');
 var async = require('async');
 
 exports.getRootLocation = function(callback){
-
     Location.find({"name":"root"}).exec(callback);
+};
 
+exports.getAllLocations = function(callback){
+    Location.find().exec(callback)
 };
 
 exports.getLocationById = function(id, callback){
@@ -21,6 +22,7 @@ exports.getLocationById = function(id, callback){
         return callback(null, result);
     })
 };
+
 var constructLocationModel = function(req){
     var location = new Location();
     location.name = req.body.name;
@@ -29,7 +31,7 @@ var constructLocationModel = function(req){
     location.geoLoc = req.body.geoLoc;
     location.owner = req.user._id;
     return location;
-}
+};
 
 exports.createNewLocation = function(req, callback){
     var location = constructLocationModel(req);
