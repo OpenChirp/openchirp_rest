@@ -15,11 +15,6 @@
 		"port":6379
 	},
 	"pc_base_url":"https://openchirp.io",
-	/*
-		The pc_prefix allows us to provide hacked URIs to
-		support the website until the websit itself can provide
-		buttons for publick links
-	*/
 	"pc_prefix":"pc",
 	"log_dir":"/var/log/openchirp/",
 	"session_secret":"",
