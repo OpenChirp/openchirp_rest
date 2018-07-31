@@ -14,6 +14,7 @@
 		"host":"localhost",
 		"port":6379
 	},
+	"redis_last_value": true,
 	"pc_base_url":"https://openchirp.io",
 	"pc_prefix":"pc",
 	"log_dir":"/var/log/openchirp/",

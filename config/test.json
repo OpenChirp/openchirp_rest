@@ -14,6 +14,7 @@
  	"host" :"redis",
  	"port" : "6379"
  },
+ "redis_last_value": true,
  "log_dir":"/tmp/",
  "session_secret": "sessionSecret",
  "enable_auth" : false, 

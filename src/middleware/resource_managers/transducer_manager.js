@@ -16,7 +16,13 @@ exports.getAllDeviceTransducers = function(req, callback ){
 	var deviceId = req.device._id;
 	Device.findById(deviceId).exec(function(err, result){
 		if(err) { return callback(err); }
-		getTransducerLastValue(result, callback);
+		if (nconf.get('redis_last_value')) {
+			var redisClient = req.app.get('redis');
+			getTransducerLastValueRedis(redisClient, result, callback);
+		} else {
+			getTransducerLastValue(result, callback);
+		}
+
 	})
 };
 
@@ -35,6 +41,46 @@ exports.getTransducerDevices = function(query, callback) {
     })
 };
 
+// Use redis to fetch the last value and timestamp for all transducers
+// listed in the given device
+var getTransducerLastValueRedis = function (redisClient, device, callback) {
+	// Grab the array of transducers to add value and timestamp to
+	var transducers = device.transducers;
+
+	// Start a multi get transaction
+	var multi = redisClient.multi();
+
+	transducers.forEach(function (tdc) {
+		var devPrefix = ocDeviceRedisPrefix + device._id + ':' + tdc.name;
+		multi.get(devPrefix);
+		multi.get(devPrefix + ":time");
+	})
+
+	multi.execAsync().then(
+		function (values) {
+			var results = [];
+
+			/*
+			   Results should have all transducer information combined with
+			   the last values and timestamps.
+			*/
+			for (var i = 0; i < transducers.length; i++) {
+				results[i] = transducers[i];
+
+				if ((typeof values[i * 2] != 'undefined') && (typeof values[(i * 2) + 1] != 'undefined')) {
+					results[i].value = values[i * 2];
+					results[i].timestamp = values[(i * 2) + 1];
+				}
+			}
+
+			callback(null, results);
+		},
+		function (err) {
+			console.log('Redis error:', err)
+			callback(new Error('Redis Error'), null);
+		});
+
+};
 
 var getTransducerLastValue = function(device, callback){
 	var transducers  = device.transducers;

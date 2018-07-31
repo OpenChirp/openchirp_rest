@@ -10,6 +10,8 @@ var mongoose = require('mongoose');
 var nconf = require('nconf');
 var session = require('express-session');
 var RedisStore = require('connect-redis')(session);
+const bluebird = require('bluebird');
+const redis = bluebird.promisifyAll(require('redis'));
 var passport = require('passport');
 var GoogleTokenStrategy = require('passport-google-id-token');
 var Strategy = require('passport-local').Strategy;
@@ -69,6 +71,22 @@ var dbConnect = function(){
 };
 
 dbConnect();
+
+/*******************************************************/
+
+/************* Initialize Redis DB connection *************/
+
+// This redis connection assumed localhost port 6379 - db 1
+var redisClient = redis.createClient();
+
+// if you'd like to select database 3, instead of 0 (default), call
+redisClient.select(1);
+
+redisClient.on("error", function (err) {
+    console.log("Redis Error " + err);
+});
+
+app.set('redis', redisClient);
 
 /*******************************************************/
 
