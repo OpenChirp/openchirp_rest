@@ -77,7 +77,7 @@ dbConnect();
 /************* Initialize Redis DB connection *************/
 
 // This redis connection assumed localhost port 6379 - db 1
-redisURI = 'tcp://'+nconf.get('redis').host+':'+nconf.get('redis').port;
+const redisURI = 'tcp://'+nconf.get('redis').host+':'+nconf.get('redis').port;
 var redisClient = redis.createClient(redisURI);
 
 // if you'd like to select database 3, instead of 0 (default), call
