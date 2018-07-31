@@ -6,6 +6,9 @@ var nconf = require('nconf');
 var util = require('util');
 var SqlString = require('sqlstring');
 
+// Prefix entries in Redis for last values
+const redisOCDevicePrefix = nconf.get('redis_device_prefix');
+
 exports.createDeviceTransducer = function(req, callback ){
 
 	req.device.transducers.push(req.body);
@@ -51,7 +54,7 @@ var getTransducerLastValueRedis = function (redisClient, device, callback) {
 	var multi = redisClient.multi();
 
 	transducers.forEach(function (tdc) {
-		var devPrefix = ocDeviceRedisPrefix + device._id + ':' + tdc.name;
+		var devPrefix = redisOCDevicePrefix + device._id + ':' + tdc.name;
 		multi.get(devPrefix);
 		multi.get(devPrefix + ":time");
 	})

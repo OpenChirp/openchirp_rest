@@ -15,6 +15,7 @@
  	"port" : "6379"
  },
  "redis_last_value": true,
+ "redis_device_prefix": "openchirp:device:",
  "log_dir":"/tmp/logs",
  "session_secret": "sessionSecret",
  "enable_auth" : true, 
