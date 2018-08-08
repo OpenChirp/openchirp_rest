@@ -10,7 +10,6 @@ var SqlString = require('sqlstring');
 const redisOCDevicePrefix = nconf.get('redis_device_prefix');
 
 exports.createDeviceTransducer = function(req, callback ){
-
 	req.device.transducers.push(req.body);
 	req.device.save(callback);
 };
@@ -42,6 +41,26 @@ exports.getTransducerDevices = function(query, callback) {
         if (err) { return callback(err); }
         return callback(null, result);
     })
+};
+
+exports.updateTransducer = function(req, callback){
+    let deviceToUpdate = req.device;
+    let transducerToUpdate = {};
+    let transducerIndex = -1;
+
+    for (var i = 0; i < deviceToUpdate.transducers.length; i++) {
+        if (req.params._transducerId == deviceToUpdate.transducers[i].id) {
+            transducerToUpdate = deviceToUpdate.transducers[i];
+            transducerIndex = i;
+            break;
+        }
+    }
+
+    if(typeof req.body.name != 'undefined') transducerToUpdate.name = req.body.name;
+    if(typeof req.body.unit != 'undefined') transducerToUpdate.unit = req.body.unit;
+    if(typeof req.body.is_actuable != 'undefined') transducerToUpdate.is_actuable = req.body.is_actuable;
+    deviceToUpdate.transducers[transducerIndex] = transducerToUpdate;
+    deviceToUpdate.save(callback);
 };
 
 // Use redis to fetch the last value and timestamp for all transducers

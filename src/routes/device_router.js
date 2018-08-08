@@ -148,6 +148,16 @@ router.get('/:_id/transducer', function(req, res, next){
     })
 });
 
+
+/* Update transducer  */
+router.put('/:_id/transducer/:_transducerId', deviceAuthorizer.checkWriteAccess,  function(req, res, next ){
+    transducerManager.updateTransducer(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
+
 /* Register extra body parsers only for publishing transducer values */
 router.post('/:_id/transducer/:_transducerId', bodyParser.text(), bodyParser.raw());
 
