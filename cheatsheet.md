@@ -178,9 +178,6 @@
 # MQTT Targets
 
 * `openchirp/device/<dev_id>`
-    - `/transducer/<any_topic>` - Time series recorded transducer topics
-    - `/<any_topic>` - Topics for device related communication that should not
-      be recorded by time series.
 * `openchirp/service/<srv_id>`
     - `/thing/events`
         <details>
@@ -199,6 +196,9 @@
                         {"key":"txconfig","value":"blahTX"}
                     ]
                 }
+- `/<any_topic>` - Timeseries recorded transducer topics
+- `/<any_topic_prefix>/<any_2nd_level_topic>` - Topics for device related
+    communication that should not be recorded by time series.
             }
         </pre>
         </details>
