@@ -42,5 +42,20 @@ deviceSchema.index({ location_id : 1});
 deviceSchema.index({ name : "text" });
 deviceSchema.index({ "linked_services.service_id" :1 });
 
+// Note: any existing duplicates need to be manual cleaned out in mongoDB
+deviceSchema.pre('save', function(next){
+  let transducerNames = [];
+  for (var i = 0; i < this.transducers.length; i++) {
+    if (transducerNames.includes(this.transducers[i].name.toLowerCase().replace(/ /g, "_"))) {
+        var error = new Error();
+        error.message = "Duplicate transducer name";
+        return next(error);
+     } else {
+        transducerNames.push(this.transducers[i].name);
+     }
+  }
+  next();
+});
+
 // Return model
 module.exports = mongoose.model('Device', deviceSchema);
