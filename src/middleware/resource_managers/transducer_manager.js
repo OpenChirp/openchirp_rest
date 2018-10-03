@@ -21,9 +21,9 @@ exports.getAllDeviceTransducers = function(req, callback ){
 		if(err) { return callback(err); }
 		if (nconf.get('redis_last_value')) {
 			var redisClient = req.app.get('redis');
-			getTransducerLastValueRedis(redisClient, result, callback);
+			getTransducerLastValuesRedis(redisClient, result, callback);
 		} else {
-			getTransducerLastValue(result, callback);
+			getTransducerLastValuesInflux(result, callback);
 		}
 
 	})
@@ -44,9 +44,11 @@ exports.getTransducerDevices = function(query, callback) {
     })
 };
 
-// Use redis to fetch the last value and timestamp for all transducers
-// listed in the given device
-var getTransducerLastValueRedis = function (redisClient, device, callback) {
+// Use Redis to fetch the last value and timestamp for all transducers
+// listed in the given device.
+// The result will be an array of transducer info with the value and timestamp
+// fields included.
+var getTransducerLastValuesRedis = function (redisClient, device, callback) {
 	// Grab the array of transducers to add value and timestamp to
 	var transducers = device.transducers;
 
@@ -85,7 +87,11 @@ var getTransducerLastValueRedis = function (redisClient, device, callback) {
 
 };
 
-var getTransducerLastValue = function(device, callback){
+// Use InfluxDB to fetch the last value and timestamp for all transducers
+// listed in the given device.
+// The result will be an array of transducer info with the value and timestamp
+// fields included.
+var getTransducerLastValuesInflux = function(device, callback){
 	var transducers  = device.transducers;
 	var measurements = [];
 	var lastValues = [];
