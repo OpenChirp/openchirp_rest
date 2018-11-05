@@ -13,7 +13,11 @@ exports.publishNewDevice = function(service, device, linkConfig, owner, callback
     var message = {};
     message.action = "new";
     message.thing = {};
-    message.thing.type = "device";
+    if (device.constructor.modelName == 'DeviceGroup') {
+        message.thing.type = "devicegroup";
+    } else {
+        message.thing.type = "device";
+    }
     message.thing.id = device._id;
     message.thing.name = device.name;
     message.thing.owner = {};
@@ -32,7 +36,11 @@ exports.publishUpdateDevice = function(service, device, linkConfig, owner, callb
      var message = {};
      message.action = "update";
      message.thing = {};
-     message.thing.type ="device";
+    if (device.constructor.modelName == 'DeviceGroup') {
+        message.thing.type = "devicegroup";
+    } else {
+        message.thing.type = "device";
+    }
      message.thing.id = device._id;
      message.thing.name = device.name;
      message.thing.owner = {};
@@ -51,7 +59,11 @@ exports.publishDeleteDevice = function(service, device, owner, callback){
     var message = {};
     message.action = "delete";
     message.thing = {};
-    message.thing.type = "device";
+    if (device.constructor.modelName == 'DeviceGroup') {
+        message.thing.type = "devicegroup";
+    } else {
+        message.thing.type = "device";
+    }
     message.thing.id = device._id;
     message.thing.name = device.name;
     message.thing.owner = {};
