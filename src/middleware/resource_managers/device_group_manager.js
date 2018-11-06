@@ -97,7 +97,7 @@ exports.createNewDeviceGroup = function(req, callback){
 
 
 exports.getDeviceGroupById = function(id, callback){
-    DeviceGroup.findById(id).populate('owner', 'name email').exec(function (err, result) {
+    DeviceGroup.findById(id).populate('owner', 'name email').populate('devices', 'name pubsub').exec(function (err, result) {
         if(err) { return callback(err) ; }
         if (result == null ) {
             var error = new Error();
