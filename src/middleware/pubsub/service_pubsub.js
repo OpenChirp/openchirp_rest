@@ -15,6 +15,8 @@ exports.publishNewDevice = function(service, device, linkConfig, owner, callback
     message.thing = {};
     if (device.constructor.modelName == 'DeviceGroup') {
         message.thing.type = "devicegroup";
+        message.thing.devices = device.devices;
+        message.thing.combined_pubsub = device.combined_pubsub;
     } else {
         message.thing.type = "device";
     }
@@ -38,6 +40,8 @@ exports.publishUpdateDevice = function(service, device, linkConfig, owner, callb
      message.thing = {};
     if (device.constructor.modelName == 'DeviceGroup') {
         message.thing.type = "devicegroup";
+        message.thing.devices = device.devices;
+        message.thing.combined_pubsub = device.combined_pubsub;
     } else {
         message.thing.type = "device";
     }
@@ -61,6 +65,8 @@ exports.publishDeleteDevice = function(service, device, owner, callback){
     message.thing = {};
     if (device.constructor.modelName == 'DeviceGroup') {
         message.thing.type = "devicegroup";
+        message.thing.devices = device.devices;
+        message.thing.combined_pubsub = device.combined_pubsub;
     } else {
         message.thing.type = "device";
     }
