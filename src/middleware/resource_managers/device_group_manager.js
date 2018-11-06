@@ -157,16 +157,17 @@ exports.addDevice = function(req, callback) {
 
 exports.removeDevice = function(req, callback) {
     let devicegroup = req.devicegroup;
-    let i = devicegroup.devices.indexOf(req.device._id);
-    if (i != -1) {
-        devicegroup.devices.splice(i, 1);
-        devicegroup.save(callback);
-    } else {
-        var error = new Error();
-        error.status = 404;
-        error.message = "Device is not in this device group: " + id;
-        return callback(error);
+    for (let i = 0; i < devicegroup.devices.length; i++) {
+        if (devicegroup.devices[i]._id == req.device._id) {
+            devicegroup.devices.splice(i, 1);
+            devicegroup.save(callback);
+            break;
+        }
     }
+    var error = new Error();
+    error.status = 404;
+    error.message = "Device is not in this device group: " + id;
+    return callback(error);
 };
 
 module.exports = exports;
