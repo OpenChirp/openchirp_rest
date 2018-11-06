@@ -1,18 +1,16 @@
-var express = require('express');
-var router = express.Router();
-var ObjectId = require('mongoose').Types.ObjectId;
-var bodyParser = require('body-parser');
+const express = require('express');
+const router = express.Router();
+const ObjectId = require('mongoose').Types.ObjectId;
+// bodyParser = require('body-parser');
 
-var deviceManager = require('../middleware/resource_managers/device_manager');
-var deviceGroupManager = require('../middleware/resource_managers/device_group_manager');
-var transducerManager = require('../middleware/resource_managers/transducer_manager');
-var serviceManager = require('../middleware/resource_managers/service_manager');
-var commandManager = require('../middleware/resource_managers/command_manager');
-var thingTokenManager = require('../middleware/resource_managers/thing_token_manager');
+const deviceManager = require('../middleware/resource_managers/device_manager');
+const deviceGroupManager = require('../middleware/resource_managers/device_group_manager');
+// var transducerManager = require('../middleware/resource_managers/transducer_manager');
+// var serviceManager = require('../middleware/resource_managers/service_manager');
+// var commandManager = require('../middleware/resource_managers/command_manager');
+const thingTokenManager = require('../middleware/resource_managers/thing_token_manager');
 
-const deviceRouter = require('./device_router')
-
-var deviceAuthorizer = require('../middleware/accesscontrol/device_authorizer');
+const deviceAuthorizer = require('../middleware/accesscontrol/device_authorizer');
 const utils = require('../middleware/accesscontrol/utils');
 
 /* GET all devicesgroups */
@@ -96,7 +94,7 @@ router.put('/:_id', deviceAuthorizer.checkWriteAccess,  function(req, res, next)
 
 /* Delete a devicegroup */
 router.delete('/:_id', deviceAuthorizer.checkWriteAccess, function(req, res, next) {
-    deviceManager.deleteDevice(req, function(err){
+    deviceGroupManager.deleteDeviceGroup(req, function(err){
         if(err) { return next(err); }
          return res.json({ message: 'Delete successful'});
     })

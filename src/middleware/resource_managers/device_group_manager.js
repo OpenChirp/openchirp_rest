@@ -1,6 +1,6 @@
 // var Device = require('../../models/device');
 const DeviceGroup = require('../../models/device_group');
-// const deviceManager = require('./device_manager');
+const deviceManager = require('./device_manager');
 var DeviceAcl = require('../../models/device_acl');
 // var User = require('../../models/user');
 // var Group = require('../../models/group');
@@ -124,6 +124,13 @@ exports.updateDeviceGroup = function(req, callback){
     deviceToUpdate.save(callback);
 };
 
+exports.deleteDeviceGroup = function(req, callback){
+    let deviceToDelete = req.devicegroup;
+    deviceManager.preDeleteCleanup(deviceToDelete, function(err, result){
+        if(err) { return callback(err); }
+        deviceToDelete.remove(callback);
+    })
+};
 
 exports.getDeviceGroupsByOwner = function(req, callback) {
     var userId = req.user._id;
