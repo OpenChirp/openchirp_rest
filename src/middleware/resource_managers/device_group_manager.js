@@ -21,8 +21,8 @@ exports.getAllDeviceGroups = function(req, callback){
     }else{
        var query = DeviceGroup.find();
     }
-    query.populate('owner location_id', 'name email');
-    query.select("name pubsub");
+    query.populate('owner location_id devices', 'name email');
+    query.select("name pubsub combined_pubsub devices");
     query.exec(callback);
 };
 
@@ -151,23 +151,22 @@ exports.getAllDevices = function(req, callback) {
 
 exports.addDevice = function(req, callback) {
     let devicegroup = req.devicegroup;
-    devicegroup.devices.push(req.device);
+    devicegroup.devices.push(req.device._id);
     devicegroup.save(callback);
 };
 
 exports.removeDevice = function(req, callback) {
     let devicegroup = req.devicegroup;
-    for (let i = 0; i < devicegroup.devices.length; i++) {
-        if (devicegroup.devices[i]._id == req.device._id) {
-            devicegroup.devices.splice(i, 1);
-            devicegroup.save(callback);
-            break;
-        }
+    let i = devicegroup.devices.indexOf(req.device._id);
+    if (i != -1) {
+        devicegroup.devices.splice(i, 1);
+        devicegroup.save(callback);
+    } else {
+        var error = new Error();
+        error.status = 404;
+        error.message = "Device is not in this device group: " + id;
+        return callback(error);
     }
-    var error = new Error();
-    error.status = 404;
-    error.message = "Invalid Device ID: " + id ;
-    return callback(error);
 };
 
 module.exports = exports;
