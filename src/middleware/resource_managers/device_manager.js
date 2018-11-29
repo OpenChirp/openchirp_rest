@@ -15,9 +15,9 @@ exports.getAllDevices = function(req, callback){
         var name = req.query.name;
     }
     if(name){
-        var query = Device.find({ $text: { $search: name }});
+        var query = Device.find({ $text: { $search: name }, '__t': { $ne: "DeviceGroup" }});
     }else{
-       var query = Device.find();
+       var query = Device.find({'__t': { $ne: "DeviceGroup" }});
     }
     query.populate('owner location_id', 'name email');
     query.select("name pubsub");
