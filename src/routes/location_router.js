@@ -57,6 +57,15 @@ router.get('/:_id/devices', function(req, res, next) {
         return res.json(result);
     })
 });
+
+/* Get all device groups at this location */
+router.get('/:_id/devicegroups', function(req, res, next) {
+    locationManager.getDeviceGroups( req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
 /* Get devices recursively at all child locations */
 router.get('/:_id/alldevices', function(req, res, next) {
     locationManager.getAllDevices( req.params._id, function(err, result){
