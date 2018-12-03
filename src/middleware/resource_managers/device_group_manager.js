@@ -1,4 +1,4 @@
-// var Device = require('../../models/device');
+const Device = require('../../models/device');
 const DeviceGroup = require('../../models/device_group');
 const deviceManager = require('./device_manager');
 var DeviceAcl = require('../../models/device_acl');
@@ -146,8 +146,8 @@ exports.getDeviceGroupsByOwner = function(req, callback) {
 };
 
 exports.getAllDevices = function(req, callback) {
-    groupedDevices =  req.devicegroup.devices.map(dev_id => new mongoose.Types.ObjectId(dev_id));
-    Device.find({'_id': { $in: groupedDevices }}, {'transducers': -1, 'pubsub': -1, 'commands': -1, 'linked_services': -1 })
+    let groupedDevices =  req.devicegroup.devices.map(dev => dev._id);
+    Device.find({'_id': { $in: groupedDevices }}, {'transducers': 0, 'pubsub': 0, 'commands': 0, 'linked_services': 0 })
     .populate('owner', 'name email')
     .populate('location_id', 'name')
     .exec(function (err, result) {
