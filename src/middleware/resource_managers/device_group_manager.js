@@ -152,12 +152,6 @@ exports.getAllDevices = function(req, callback) {
     .populate('location_id', 'name')
     .exec(function (err, result) {
         if(err) { return callback(err) ; }
-        if (result == null ) {
-            var error = new Error();
-            error.status = 404;
-            error.message = 'Could not find devices belonging to devicegroup: '+ id ;
-            return callback(error);
-        }
         return callback(null, result);
     })
 };
