@@ -146,7 +146,20 @@ exports.getDeviceGroupsByOwner = function(req, callback) {
 };
 
 exports.getAllDevices = function(req, callback) {
-  callback(null, req.devicegroup.devices)
+    groupedDevices =  req.devicegroup.devices.map(dev_id => new mongoose.Types.ObjectId(dev_id));
+    Device.find({'_id': { $in: groupedDevices }}, {'transducers': -1, 'pubsub': -1, 'commands': -1, 'linked_services': -1 })
+    .populate('owner', 'name email')
+    .populate('location_id', 'name')
+    .exec(function (err, result) {
+        if(err) { return callback(err) ; }
+        if (result == null ) {
+            var error = new Error();
+            error.status = 404;
+            error.message = 'Could not find devices belonging to devicegroup: '+ id ;
+            return callback(error);
+        }
+        return callback(null, result);
+    })
 };
 
 exports.addDevice = function(req, callback) {
