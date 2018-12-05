@@ -50,6 +50,13 @@ router.get('/mydevices', function(req, res, next) {
     })
 });
 
+router.get('/mydevicegroups', function(req, res, next) {
+    deviceManager.getDeviceGroupsByOwner(req, function (err, result) {
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
 /* GET  locations by owner */
 router.get('/mylocations', function(req, res, next) {
   	locationManager.getLocationsByOwner(req, function (err, result) {
