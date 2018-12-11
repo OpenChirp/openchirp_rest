@@ -5,7 +5,7 @@ const ObjectId = require('mongoose').Types.ObjectId;
 
 const deviceManager = require('../middleware/resource_managers/device_manager');
 const deviceGroupManager = require('../middleware/resource_managers/device_group_manager');
-// var transducerManager = require('../middleware/resource_managers/transducer_manager');
+const transducerManager = require('../middleware/resource_managers/transducer_manager');
 // var serviceManager = require('../middleware/resource_managers/service_manager');
 // var commandManager = require('../middleware/resource_managers/command_manager');
 const thingTokenManager = require('../middleware/resource_managers/thing_token_manager');
@@ -171,6 +171,13 @@ router.delete('/:_id/token', deviceAuthorizer.checkWriteAccess, function(req, re
     })
 });
 
-
+/*************** Transducers ***************************/
+/* Get all transducers for a given devicegroup, including sub-devices */
+router.get('/:_id/transducer', function(req, res, next){
+    transducerManager.getAllDeviceGroupTransducers(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
 
 module.exports = router;

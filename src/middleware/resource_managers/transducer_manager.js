@@ -28,6 +28,20 @@ exports.getAllDeviceTransducers = function(req, callback ){
 	})
 };
 
+exports.getAllDeviceGroupTransducers = function(req, callback ){
+    let deviceIDs = req.devicegroup.devices.map(d => d._id);
+    Device.find({ '_id': { $in: deviceIDs }}).exec( (err, result) => {
+        if(err) { return callback(err); }
+        if (nconf.get('redis_last_value')) {
+            let redisClient = req.app.get('redis');
+            getManyTransducerLastValuesRedis(redisClient, result, callback);
+        } else {
+            getManyTransducerLastValuesInflux(result, callback);
+        }
+    });
+};
+
+
 exports.getTransducerDevices = function(query, callback) {
     let searchStrings = query.split(',').map(item => item.trim());
     if (!searchStrings.length) { return callback(null, {}); }
@@ -155,6 +169,122 @@ var getTransducerLastValuesInflux = function(device, callback){
 
 	})
 
+};
+
+// Use Redis to fetch the last value and timestamp for all transducers
+// listed in the given array of devices.
+// The result will be an array of transducer info with the value and timestamp
+// fields included.
+getManyTransducerLastValuesRedis = function (redisClient, devices, callback) {
+    // Grab the array of transducers to add value and timestamp to
+    let transducers = [];
+    devices.forEach((device) => {
+        device.transducers.forEach((tdc) => {
+            let tdcAdd = {
+                devicename: device.name,
+                deviceid: device._id,
+                is_actuable: tdc.is_actuable,
+                properties: tdc.properties,
+                name: tdc.name,
+                unit: tdc.unit
+            };
+            transducers.push(tdcAdd);
+        });
+    });
+    // Start a multi get transaction
+    let multi = redisClient.multi();
+
+    transducers.forEach(function (tdc) {
+        let devPrefix = redisOCDevicePrefix + tdc.deviceid + ':' + tdc.name;
+        multi.get(devPrefix);
+        multi.get(devPrefix + ":time");
+    })
+
+    multi.execAsync().then(
+        function (values) {
+            var results = [];
+
+            /*
+               Results should have all transducer information combined with
+               the last values and timestamps.
+            */
+            for (var i = 0; i < transducers.length; i++) {
+                results[i] = transducers[i];
+
+                if ((typeof values[i * 2] != 'undefined') && (typeof values[(i * 2) + 1] != 'undefined')) {
+                    results[i].value = values[i * 2];
+                    results[i].timestamp = values[(i * 2) + 1];
+                }
+            }
+
+            callback(null, results);
+        },
+        function (err) {
+            console.log('Redis error:', err)
+            callback(new Error('Redis Error'), null);
+        });
+};
+
+// Use InfluxDB to fetch the last value and timestamp for all transducers
+// listed in the given array of devices.
+// The result will be an array of transducer info with the value and timestamp
+// fields included.
+let getManyTransducerLastValuesInflux = function(devices, callback){
+    let transducers = [];
+    devices.forEach((device) => {
+        device.transducers.forEach((tdc) => {
+            let tdcAdd = {
+                devicename: device.name,
+                deviceid: device._id,
+                is_actuable: tdc.is_actuable,
+                properties: tdc.properties,
+                name: tdc.name,
+                unit: tdc.unit
+            };
+            transducers.push(tdcAdd);
+        });
+    });
+    let measurements = [];
+    let lastValues = [];
+    let getFromInfluxdb = function(measurement, index, next){
+        var url = "http://"+ nconf.get('influxdb:host') + ":" + nconf.get("influxdb:port") +"/query" ;
+
+        var query = "select \"value\" from \""+measurement+"\" ORDER BY time DESC LIMIT 1";
+        var props = {
+            "db" : "openchirp",
+            "q" : query
+        };
+
+        request({url : url, qs : props}, function(err, response, body) {
+            if(err) { console.log(err);  }
+            var data  = JSON.parse(body);
+            if(data.results && data.results.length >0){
+                var series = data.results[0].series;
+                if(series && series.length >0 ){
+                    var values = series[0].values[0];
+                    lastValues[index] = {};
+                    lastValues[index].timestamp  = values[0];
+                    lastValues[index].value = values[1];
+                }
+            }
+            return next(null, null);
+        });
+    };
+    transducers.forEach(function(tdc){
+        measurements.push(tdc.deviceid+"_"+tdc.name.toLowerCase());
+    });
+
+    async.forEachOf(measurements, getFromInfluxdb, function(err, result) {
+        let results = [];
+        for (let i = 0; i < transducers.length ; i++){
+            results[i] = transducers[i];
+            if(typeof lastValues[i] != 'undefined'){
+                results[i].timestamp = lastValues[i].timestamp;
+                results[i].value = lastValues[i].value;
+            }
+        }
+        return callback(null, results);
+    })
 };
 
 exports.publishToDeviceTransducer = function(req, callback ){
