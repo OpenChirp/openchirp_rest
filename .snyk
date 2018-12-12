@@ -1,16 +1,35 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.7.1
+version: v1.13.1
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
   'npm:http-signature:20150122':
     - passport-google-id-token > request > http-signature:
-        reason: No easy fix at the time; Waiting for next version of passport-google-id-token
+        reason: >-
+          No easy fix at the time; Waiting for next version of
+          passport-google-id-token
   'npm:qs:20170213':
     - passport-google-id-token > request > qs:
-        reason: No easy fix at the time; Waiting for next version of passport-google-id-token
+        reason: >-
+          No easy fix at the time; Waiting for next version of
+          passport-google-id-token
   'npm:ms:20170412':
     - passport-google-id-token > jsonwebtoken > ms:
-        reason: No easy fix at the time; Waiting for next version of passport-google-id-token
+        reason: >-
+          No easy fix at the time; Waiting for next version of
+          passport-google-id-token
   'npm:request:20160119':
     - passport-google-id-token > request:
-        reason: No easy fix at the time; Waiting for next version of passport-google-id-token
+        reason: >-
+          No easy fix at the time; Waiting for next version of
+          passport-google-id-token
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  'npm:hoek:20180212':
+    - passport-google-id-token > request > hawk > hoek:
+        patched: '2018-12-12T03:21:50.048Z'
+    - passport-google-id-token > request > hawk > boom > hoek:
+        patched: '2018-12-12T03:21:50.048Z'
+    - passport-google-id-token > request > hawk > sntp > hoek:
+        patched: '2018-12-12T03:21:50.048Z'
+    - passport-google-id-token > request > hawk > cryptiles > boom > hoek:
+        patched: '2018-12-12T03:21:50.048Z'
