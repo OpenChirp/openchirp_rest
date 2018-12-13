@@ -419,4 +419,119 @@ exports.deleteDeviceTransducer = function(req, callback){
 	})
 };
 
+/** Broadcast Transducers **/
+
+exports.createBroadcastTransducer = function(req, callback ){
+    req.devicegroup.broadcast_transducers.push(req.body);
+    req.devicegroup.save(callback);
+};
+
+exports.updateBroadcastTransducer = function(req, callback){
+    let deviceToUpdate = req.devicegroup;
+    let transducerToUpdate = {};
+    let transducerIndex = -1;
+
+    for (var i = 0; i < deviceToUpdate.broadcast_transducers.length; i++) {
+        if (req.params._broadcastTransducerId == deviceToUpdate.broadcast_transducers[i].id) {
+            transducerToUpdate = deviceToUpdate.broadcast_transducers[i];
+            transducerIndex = i;
+            break;
+        }
+    }
+
+    if(typeof req.body.name != 'undefined') transducerToUpdate.name = req.body.name;
+    if(typeof req.body.unit != 'undefined') transducerToUpdate.unit = req.body.unit;
+    if(typeof req.body.is_actuable != 'undefined') transducerToUpdate.is_actuable = req.body.is_actuable;
+    deviceToUpdate.broadcast_transducers[transducerIndex] = transducerToUpdate;
+    deviceToUpdate.save(callback);
+};
+
+exports.publishToBroadcastTransducer = function(req, callback ){
+    let tdc = req.broadcastTransducer;
+    Device.find({ _id: { $in: req.devicegroup.devices },
+        transducers: { $elemMatch: { is_actuable: true, name: tdc.name, unit: tdc.unit}}},
+        { name: 1, transducers: {
+            $elemMatch: { is_actuable: true, name: tdc.name, unit: tdc.unit }
+        }}).exec( async (err, res) => {
+        if (err) { return callback(err); }
+        let deviceCount = res.length;
+        if (deviceCount === 0) {
+            let error = new Error();
+            error.message = "No devices with matching transducer.";
+            return callback(error);
+        } else {
+            let failures = [];
+            for (let i = 0; i < deviceCount; i++) {
+                let device = res[i];
+                let d = {};
+                d.pubsub = { endpoint: 'openchirp/service/' + device._id };
+                d.transducers = device.transducers;
+                await exports.asyncPublish(req.user, d, device.transducers[0]._id, req.body).catch((err) => {
+                    failures.push(device.name);
+                });
+            }
+            if (failures.length) {
+                let error = new Error();
+                error.message = "Publish failed /w device(s): " + failures.join(', ');
+                return callback(error);
+            } else {
+                let done = {};
+                done.message = "Done";
+                callback(null, done);
+            }
+        }
+    });
+};
+
+exports.asyncPublish = util.promisify(exports.publish);
+
+exports.publish = function(user, device, transducerId, message, callback){
+    // Note: If thing_type is not defined (say when authentication is
+    //       disabled), we cannot determine if accessors is a user,
+    //       device, or service. In this case, the current action
+    //       is to not enforce the is_actuator check.
+    var isTypeUser = !user.thing_type;
+    var transducer = device.transducers.id(transducerId);
+    // only disallow users from posting ti a non-actuator
+    if (!transducer.is_actuable && isTypeUser) {
+        var error = new Error();
+        error.message = 'Transducer not actuable';
+        //console.log(error);
+        return callback(error);
+    }
+    var topic = device.pubsub.endpoint+'/'+ transducer.name ;
+    console.log('publishing to', topic);
+    // MQTT Client only accepts strings and Buffers
+    if (!(typeof message == 'string') && !(message instanceof Buffer)) {
+        message = JSON.stringify(message);
+    }
+    mqttClient.publish(topic, message, callback);
+};
+
+
+exports.deleteBroadcastTransducer = function(req, callback){
+    var tdcId = req.params._broadcastTransducerId;
+    var commands = req.devicegroup.broadcast_commands;
+    var cmdsToDelete = [];
+
+    if(commands){
+        commands.forEach(function(cmd) {
+            if ( String(cmd.transducer_id) === String(tdcId)){
+                cmdsToDelete.push(cmd._id);
+            }
+        });
+    }
+    cmdsToDelete.forEach(function(cid){
+        req.devicegroup.broadcast_commands.id(cid).remove();
+    });
+
+    req.devicegroup.broadcast_transducers.id(tdcId).remove();
+    req.devicegroup.save( function(err) {
+        if(err) { return callback(err); }
+        var result = new Object();
+        result.message = "Done";
+        return callback(null, result);
+    })
+};
+
 module.exports = exports;

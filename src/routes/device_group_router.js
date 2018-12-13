@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const ObjectId = require('mongoose').Types.ObjectId;
-// bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 
 const deviceManager = require('../middleware/resource_managers/device_manager');
 const deviceGroupManager = require('../middleware/resource_managers/device_group_manager');
@@ -172,9 +172,75 @@ router.delete('/:_id/token', deviceAuthorizer.checkWriteAccess, function(req, re
 });
 
 /*************** Transducers ***************************/
-/* Get all transducers for a given devicegroup, including sub-devices */
+/* Get all grouped-device transducers for a given devicegroup */
 router.get('/:_id/transducer', function(req, res, next){
     transducerManager.getAllDeviceGroupTransducers(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
+
+/*************** Broadcast Transducers ***************************/
+
+
+/* Validate _transducerId in all request URLs */
+router.param('_broadcastTransducerId', function(req, res, next, transducerId) {
+    req.devicegroup.broadcast_transducers.forEach((tdc) => {
+        if (String(tdc._id) === transducerId) {
+            req.broadcastTransducer = tdc;
+            return next();
+        }
+    });
+    if (!req.broadcastTransducer) {
+        var error = new Error();
+        error.message = "Invalid Object ID " + transducerId;
+        return next(error);
+    }
+});
+
+/* Add a broadcast transducer to device */
+router.post('/:_id/broadcastTransducer', deviceAuthorizer.checkWriteAccess,  function(req, res, next ){
+    transducerManager.createBroadcastTransducer(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
+/* Get all broadcast transducers for a given device */
+router.get('/:_id/broadcastTransducer', function(req, res, next){
+    return res.json(req.devicegroup.broadcast_transducers);
+});
+
+/* Update broadcast transducer  */
+router.put('/:_id/broadcastTransducer/:_broadcastTransducerId', deviceAuthorizer.checkWriteAccess,  function(req, res, next ){
+    transducerManager.updateBroadcastTransducer(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
+
+/* Register extra body parsers only for publishing broadcast transducer values */
+router.post('/:_id/broadcastTransducer/:_broadcastTransducerId', bodyParser.text(), bodyParser.raw());
+
+/* Publish to broadcast transducer */
+router.post('/:_id/broadcastTransducer/:_broadcastTransducerId', deviceAuthorizer.checkExecuteAccess, function(req, res, next ){
+    transducerManager.publishToBroadcastTransducer(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
+/* Get broadcast transducer values */
+router.get('/:_id/broadcastTransducer/:_broadcastTransducerId', function(req, res, next ){
+    /* getDeviceTransducer will directly pipe the incoming response from influxdb to the browser (so no callback) */
+    transducerManager.getBroadcastTransducer(req, res);
+});
+
+/* Delete broadcast transducer */
+router.delete('/:_id/broadcastTransducer/:_broadcastTransducerId', deviceAuthorizer.checkWriteAccess, function(req, res, next ){
+    transducerManager.deleteBroadcastTransducer(req, function(err, result){
         if(err) { return next(err); }
         return res.json(result);
     })
