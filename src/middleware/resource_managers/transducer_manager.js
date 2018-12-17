@@ -5,6 +5,8 @@ var async = require('async');
 var nconf = require('nconf');
 var util = require('util');
 var SqlString = require('sqlstring');
+const Promise = require('bluebird');
+const deviceAuthorizer = Promise.promisifyAll(require('../accesscontrol/device_authorizer'));
 
 // Prefix entries in Redis for last values
 const redisOCDevicePrefix = nconf.get('redis_device_prefix');
@@ -450,29 +452,47 @@ exports.publishToBroadcastTransducer = function(req, callback ){
     let tdc = req.broadcastTransducer;
     Device.find({ _id: { $in: req.devicegroup.devices },
         transducers: { $elemMatch: { is_actuable: true, name: tdc.name, unit: tdc.unit}}},
-        { name: 1, transducers: {
+        { name: 1, owner: 1, transducers: {
             $elemMatch: { is_actuable: true, name: tdc.name, unit: tdc.unit }
         }}).exec( async (err, res) => {
         if (err) { return callback(err); }
         let deviceCount = res.length;
         if (deviceCount === 0) {
             let error = new Error();
-            error.message = "No devices with matching transducer.";
+            error.message = "No devices with matching transducer";
             return callback(error);
         } else {
             let failures = [];
+            let noAccess = [];
             for (let i = 0; i < deviceCount; i++) {
                 let device = res[i];
                 let d = {};
                 d.pubsub = { endpoint: 'openchirp/service/' + device._id };
                 d.transducers = device.transducers;
-                await exports.asyncPublish(req.user, d, device.transducers[0]._id, req.body).catch((err) => {
-                    failures.push(device.name);
+                let reqCopy = {
+                    user: req.user,
+                    device: device
+                };
+                let checkAccess = await deviceAuthorizer.checkExecuteAccessAsync(reqCopy, null).catch((err) => {
+                    noAccess.push(device.name);
                 });
+                if (!checkAccess) {
+                    await exports.asyncPublish(req.user, d, device.transducers[0]._id, req.body).catch((err) => {
+                        failures.push(device.name);
+                    });
+                }
             }
+            let errorMsg = "";
             if (failures.length) {
+                errorMsg = "MQTT Failures: [" + failures.join(', ') + "]. ";
+            }
+            if (noAccess.length) {
+                errorMsg += "Device Access Failures: [" + noAccess.join(', ') + "]. ";
+            }
+
+            if (errorMsg) {
                 let error = new Error();
-                error.message = "Publish failed /w device(s): " + failures.join(', ');
+                error.message = (deviceCount - failures.length - noAccess.length) + "/" + deviceCount + " succeeded. " + errorMsg + "Value";
                 return callback(error);
             } else {
                 let done = {};
