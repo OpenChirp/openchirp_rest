@@ -19,7 +19,7 @@
     "express": "^4.13.4",
     "express-session": "^1.15.1",
     "helmet": "^3.6.1",
-    "mongoose": "^4.8.0",
+    "mongoose": "^4.13.17",
     "morgan": "^1.7.0",
     "mqtt": "^2.4.0",
     "nconf": "^0.8.4",
