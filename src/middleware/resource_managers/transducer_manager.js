@@ -424,6 +424,7 @@ exports.deleteDeviceTransducer = function(req, callback){
 /** Broadcast Transducers **/
 
 exports.createBroadcastTransducer = function(req, callback ){
+    req.body.is_actuable = true;
     req.devicegroup.broadcast_transducers.push(req.body);
     req.devicegroup.save(callback);
 };
@@ -443,13 +444,17 @@ exports.updateBroadcastTransducer = function(req, callback){
 
     if(typeof req.body.name != 'undefined') transducerToUpdate.name = req.body.name;
     if(typeof req.body.unit != 'undefined') transducerToUpdate.unit = req.body.unit;
-    if(typeof req.body.is_actuable != 'undefined') transducerToUpdate.is_actuable = req.body.is_actuable;
     deviceToUpdate.broadcast_transducers[transducerIndex] = transducerToUpdate;
     deviceToUpdate.save(callback);
 };
 
 exports.publishToBroadcastTransducer = function(req, callback ){
     let tdc = req.broadcastTransducer;
+    if (!tdc) {
+        let error = new Error();
+        error.message = "Missing command transducer";
+        return callback(error);
+    }
     Device.find({ _id: { $in: req.devicegroup.devices },
         transducers: { $elemMatch: { is_actuable: true, name: tdc.name, unit: tdc.unit}}},
         { name: 1, owner: 1, transducers: {
@@ -492,7 +497,7 @@ exports.publishToBroadcastTransducer = function(req, callback ){
 
             if (errorMsg) {
                 let error = new Error();
-                error.message = (deviceCount - failures.length - noAccess.length) + "/" + deviceCount + " succeeded. " + errorMsg + "Value";
+                error.message = (deviceCount - failures.length - noAccess.length) + "/" + deviceCount + " succeeded. " + errorMsg + "Name";
                 return callback(error);
             } else {
                 let done = {};

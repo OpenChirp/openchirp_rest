@@ -7,7 +7,7 @@ const deviceManager = require('../middleware/resource_managers/device_manager');
 const deviceGroupManager = require('../middleware/resource_managers/device_group_manager');
 const transducerManager = require('../middleware/resource_managers/transducer_manager');
 // var serviceManager = require('../middleware/resource_managers/service_manager');
-// var commandManager = require('../middleware/resource_managers/command_manager');
+const commandManager = require('../middleware/resource_managers/command_manager');
 const thingTokenManager = require('../middleware/resource_managers/thing_token_manager');
 
 const deviceAuthorizer = require('../middleware/accesscontrol/device_authorizer');
@@ -241,6 +241,56 @@ router.get('/:_id/broadcastTransducer/:_broadcastTransducerId', function(req, re
 /* Delete broadcast transducer */
 router.delete('/:_id/broadcastTransducer/:_broadcastTransducerId', deviceAuthorizer.checkWriteAccess, function(req, res, next ){
     transducerManager.deleteBroadcastTransducer(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
+/*************** Commands ***************************/
+
+/* Add a command to device */
+router.post('/:_id/broadcastCommand', deviceAuthorizer.checkWriteAccess,  function(req, res, next ){
+    commandManager.createBroadcastCommand(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
+/* Get all commands for a given device */
+router.get('/:_id/broadcastCommand', function(req, res, next){
+    commandManager.getAllBroadcastCommands(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
+/* Execute a command */
+router.post('/:_id/broadcastCommand/:_commandId', deviceAuthorizer.checkExecuteAccess, function(req, res, next ){
+    commandManager.executeBroadcastCommand(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
+/* Create a public link for a command */
+router.post('/:_id/broadcastCommand/:_commandId/publiclink', deviceAuthorizer.checkExecuteAccess, function(req, res, next ){
+    commandManager.createPublicLink(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
+/* Get public link for a command */
+router.get('/:_id/broadcastCommand/:_commandId/publiclink', deviceAuthorizer.checkExecuteAccess, function(req, res, next ){
+    commandManager.getPublicLink(req, function(err, result){
+        if(err) { return next(err); }
+        return res.json(result);
+    })
+});
+
+/* Delete command */
+router.delete('/:_id/broadcastCommand/:_commandId', deviceAuthorizer.checkWriteAccess,  function(req, res, next ){
+    commandManager.deleteBroadcastCommand(req, function(err, result){
         if(err) { return next(err); }
         return res.json(result);
     })
