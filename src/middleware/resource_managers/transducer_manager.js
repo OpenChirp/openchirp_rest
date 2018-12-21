@@ -122,6 +122,49 @@ var getTransducerLastValuesRedis = function (redisClient, device, callback) {
 
 };
 
+// Use Redis to fetch the last value and timestamp for a single transducer
+// for a given device.
+// The result will be an array of transducer info with the value and timestamp
+// fields included.
+var getTransducerLastValueRedis = function (redisClient, device, transducer, callback) {
+	// Grab the array of transducers to add value and timestamp to
+	var transducers = device.transducers;
+
+	// Start a multi get transaction
+	var multi = redisClient.multi();
+
+	transducers.forEach(function (tdc) {
+		var devPrefix = redisOCDevicePrefix + device._id + ':' + tdc.name;
+		multi.get(devPrefix);
+		multi.get(devPrefix + ":time");
+	})
+
+	multi.execAsync().then(
+		function (values) {
+			var results = [];
+
+			/*
+			   Results should have all transducer information combined with
+			   the last values and timestamps.
+			*/
+			for (var i = 0; i < transducers.length; i++) {
+				results[i] = transducers[i];
+
+				if ((typeof values[i * 2] != 'undefined') && (typeof values[(i * 2) + 1] != 'undefined')) {
+					results[i].value = values[i * 2];
+					results[i].timestamp = values[(i * 2) + 1];
+				}
+			}
+
+			callback(null, results);
+		},
+		function (err) {
+			console.log('Redis error:', err)
+			callback(new Error('Redis Error'), null);
+		});
+
+};
+
 // Use InfluxDB to fetch the last value and timestamp for all transducers
 // listed in the given device.
 // The result will be an array of transducer info with the value and timestamp
@@ -315,85 +358,112 @@ exports.publish = function(user, device, transducerId, message, callback){
     mqttClient.publish(topic, message, callback);
 };
 
+
+var getDeviceTransducerTimeseries = function(req, res){
+ 	/* influxdb url */
+     var influxdb_url = "http://"+ nconf.get('influxdb:host') + ":" + nconf.get("influxdb:port") + "/query";
+
+     /* use device id to get transducer info and construct measurement name */
+     var transducer = req.device.transducers.id(req.params._transducerId);
+     measurement = req.device._id+'_'+transducer.name;
+
+     // parameters added to the http get query string
+     var query_string = {
+             "db" : "openchirp",
+             "pretty": req.query.pretty,
+     };
+
+     /* construct limit, offset and chunked query parameters */
+     var limit=""
+     var offset="";
+     query_string.q = "select value from \""+ measurement+"\"";
+     query_string.chunked=true; // default is chunked response
+     if (typeof req.query.limit != 'undefined') {
+         var ilimit = parseInt(req.query.limit);
+         if (ilimit > 10000 || ilimit <= 0) ilimit = 10000;
+         query_string.q += " LIMIT " + ilimit;
+         query_string.chunked=false;
+     }
+     //console.log("q2:" + query_string.q);
+     if (typeof req.query.page != 'undefined') {
+         var ilimit=10000;
+         if (limit == "") {
+             limit=" LIMIT 10000";
+         } else {
+             ilimit=parseInt(req.query.limit);
+         }
+         query_string.q += " OFFSET " + Math.max(parseInt(req.query.page)-1, 0)*ilimit;
+         query_string.chunked=false;
+     }
+     if (query_string.chunked == true)
+         query_string.chunk_size = "10000"; //by default, if no limit is given, the response is divided in chunks of 10000 values
+
+     /* construct start time and end time query parameters */
+     var time_query="";
+     if (typeof req.query.stime != 'undefined') {
+           console.log("start time:"+req.query.stime);
+           time_query=util.format(' where time > %s', req.query.stime);
+     }
+     if (typeof req.query.etime != 'undefined') {
+         console.log("end time:"+req.query.etime);
+           time_query+=util.format(' and time < %s', req.query.etime);
+     }
+     if(time_query.length > 0){
+         query_string.q += time_query;
+     }
+     //console.log("q5:"+ query_string.q);
+       /* the influxdb query */
+ /*
+     query_string.q = SqlString.format('select value from ? ? ? ?', [measurement, time_query, limit, offset]);
+     query_string.q = query_string.q.replace(new RegExp('\'', 'g'), '"');
+     query_string.q = query_string.q.replace(new RegExp('\ \\"\\\"', 'g'), ''); // remove empty strings
+     /* if request type is csv, tell influxdb to return csv (by adding Accept header); otherwise, default is json */
+     var http_headers = {};
+     if (typeof req.headers['content-type'] != 'undefined') {
+         if (req.headers['content-type'].includes("text/csv")
+             || req.headers['content-type'].includes("application/csv")) {
+                 http_headers = { "Accept": "application/csv" };
+         }
+     }
+
+     /* construct final influxdb request options */
+     var options = {
+         url: influxdb_url,
+         headers: http_headers,
+         qs: query_string
+     };
+
+     //console.log("Query:" + JSON.stringify(options, null, 3));
+
+      // pipe the incoming response from influxdb to the response sent to the browser
+     req.pipe(request(options)).pipe(res);
+}
+
 exports.getDeviceTransducer = function(req, res){
-  	/* influxdb url */
-    var influxdb_url = "http://"+ nconf.get('influxdb:host') + ":" + nconf.get("influxdb:port") + "/query";
+    getDeviceTransducerHistory(req, res);
+};
 
-	/* use device id to get transducer info and construct measurement name */
-	var deviceId = req.device._id;
-	var transducer = req.device.transducers.id(req.params._transducerId);
-    measurement = req.device._id+'_'+transducer.name;
+exports.getDeviceTransducer = function(req, res){
+    var device = req.device;
+    var transducer = req.device.transducers.id(req.params._transducerId);
 
-	// parameters added to the http get query string
-	var query_string = {
-			"db" : "openchirp",
-			"pretty": req.query.pretty,
-	};
+    // If timeseries parameter is not specified for set to false
+    // return only last value
+    if (typeof req.query.timeseries=='undefined' || req.query.timeseries==false) {
+        // Grab last value only
+        if (nconf.get('redis_last_value')) {
+            var redisClient = req.app.get('redis');
+            getTransducerLastValueRedis(redisClient, device, transducer, function(err, result){
+                if(err) { return next(err); }
+                return res.send(result);
+            })
+        } else {
 
-	/* construct limit, offset and chunked query parameters */
-	var limit=""
-	var offset="";
-	query_string.q = "select value from \""+ measurement+"\"";
-	query_string.chunked=true; // default is chunked response
-	if (typeof req.query.limit != 'undefined') {
-		var ilimit = parseInt(req.query.limit);
-		if (ilimit > 10000 || ilimit <= 0) ilimit = 10000;
-		query_string.q += " LIMIT " + ilimit;
-		query_string.chunked=false;
-	}
-	//console.log("q2:" + query_string.q);
-	if (typeof req.query.page != 'undefined') {
-		var ilimit=10000;
-		if (limit == "") {
-			limit=" LIMIT 10000";
-		} else {
-			ilimit=parseInt(req.query.limit);
-		}
-		query_string.q += " OFFSET " + Math.max(parseInt(req.query.page)-1, 0)*ilimit;
-		query_string.chunked=false;
-	}
-	if (query_string.chunked == true)
-		query_string.chunk_size = "10000"; //by default, if no limit is given, the response is divided in chunks of 10000 values
-
-	/* construct start time and end time query parameters */
-	var time_query="";
-	if (typeof req.query.stime != 'undefined') {
-  		console.log("start time:"+req.query.stime);
-		  time_query=util.format(' where time > %s', req.query.stime);
-	}
-	if (typeof req.query.etime != 'undefined') {
-		console.log("end time:"+req.query.etime);
-  		time_query+=util.format(' and time < %s', req.query.etime);
-	}
-	if(time_query.length > 0){
-		query_string.q += time_query;
-	}
-	//console.log("q5:"+ query_string.q);
-  	/* the influxdb query */
-/*
-	query_string.q = SqlString.format('select value from ? ? ? ?', [measurement, time_query, limit, offset]);
-	query_string.q = query_string.q.replace(new RegExp('\'', 'g'), '"');
-	query_string.q = query_string.q.replace(new RegExp('\ \\"\\\"', 'g'), ''); // remove empty strings
-	/* if request type is csv, tell influxdb to return csv (by adding Accept header); otherwise, default is json */
-	var http_headers = {};
-	if (typeof req.headers['content-type'] != 'undefined') {
-		if (req.headers['content-type'].includes("text/csv")
-			|| req.headers['content-type'].includes("application/csv")) {
-				http_headers = { "Accept": "application/csv" };
-		}
-	}
-
-	/* construct final influxdb request options */
-	var options = {
-		url: influxdb_url,
-		headers: http_headers,
-		qs: query_string
-	};
-
-	//console.log("Query:" + JSON.stringify(options, null, 3));
-
- 	// pipe the incoming response from influxdb to the response sent to the browser
-    req.pipe(request(options)).pipe(res);
+        }
+    } else {
+        // Grab total timeseries data
+        getDeviceTransducerTimeseries(req, res);
+    }
 };
 
 exports.deleteDeviceTransducer = function(req, callback){
