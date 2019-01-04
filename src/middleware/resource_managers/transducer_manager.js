@@ -126,43 +126,18 @@ var getTransducerLastValuesRedis = function (redisClient, device, callback) {
 // for a given device.
 // The result will be an array of transducer info with the value and timestamp
 // fields included.
-var getTransducerLastValueRedis = function (redisClient, device, transducer, callback) {
-	// Grab the array of transducers to add value and timestamp to
-	var transducers = device.transducers;
-
+const getTransducerLastValueRedis = function (redisClient, device, transducer, callback) {
 	// Start a multi get transaction
-	var multi = redisClient.multi();
+	const multi = redisClient.multi();
+    const devPrefix = redisOCDevicePrefix + device._id + ':' + transducer.name;
 
-	transducers.forEach(function (tdc) {
-		var devPrefix = redisOCDevicePrefix + device._id + ':' + tdc.name;
-		multi.get(devPrefix);
-		multi.get(devPrefix + ":time");
-	})
-
-	multi.execAsync().then(
-		function (values) {
-			var results = [];
-
-			/*
-			   Results should have all transducer information combined with
-			   the last values and timestamps.
-			*/
-			for (var i = 0; i < transducers.length; i++) {
-				results[i] = transducers[i];
-
-				if ((typeof values[i * 2] != 'undefined') && (typeof values[(i * 2) + 1] != 'undefined')) {
-					results[i].value = values[i * 2];
-					results[i].timestamp = values[(i * 2) + 1];
-				}
-			}
-
-			callback(null, results);
+	multi.getAsync(devPrefix).then((res) => {
+			callback(null, res);
 		},
 		function (err) {
-			console.log('Redis error:', err)
+			console.log('Redis error:', err);
 			callback(new Error('Redis Error'), null);
 		});
-
 };
 
 // Use InfluxDB to fetch the last value and timestamp for all transducers
@@ -359,7 +334,7 @@ exports.publish = function(user, device, transducerId, message, callback){
 };
 
 
-var getDeviceTransducerTimeseries = function(req, res){
+const getDeviceTransducerTimeseries = function(req, res) {
  	/* influxdb url */
      var influxdb_url = "http://"+ nconf.get('influxdb:host') + ":" + nconf.get("influxdb:port") + "/query";
 
@@ -437,28 +412,27 @@ var getDeviceTransducerTimeseries = function(req, res){
 
       // pipe the incoming response from influxdb to the response sent to the browser
      req.pipe(request(options)).pipe(res);
-}
-
-exports.getDeviceTransducer = function(req, res){
-    getDeviceTransducerHistory(req, res);
 };
 
+
 exports.getDeviceTransducer = function(req, res){
-    var device = req.device;
-    var transducer = req.device.transducers.id(req.params._transducerId);
+    const device = req.device;
+    const transducer = req.device.transducers.id(req.params._transducerId);
 
     // If timeseries parameter is not specified for set to false
     // return only last value
     if (typeof req.query.timeseries=='undefined' || req.query.timeseries==false) {
         // Grab last value only
         if (nconf.get('redis_last_value')) {
-            var redisClient = req.app.get('redis');
+            const redisClient = req.app.get('redis');
             getTransducerLastValueRedis(redisClient, device, transducer, function(err, result){
                 if(err) { return next(err); }
                 return res.send(result);
             })
         } else {
-
+            var error = new Error();
+            error.message = "Redis unavailable";
+            return next(error);
         }
     } else {
         // Grab total timeseries data
