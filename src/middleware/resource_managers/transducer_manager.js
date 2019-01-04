@@ -12,22 +12,22 @@ const deviceAuthorizer = Promise.promisifyAll(require('../accesscontrol/device_a
 const redisOCDevicePrefix = nconf.get('redis_device_prefix');
 
 exports.createDeviceTransducer = function(req, callback ){
-	req.device.transducers.push(req.body);
-	req.device.save(callback);
+    req.device.transducers.push(req.body);
+    req.device.save(callback);
 };
 
 exports.getAllDeviceTransducers = function(req, callback ){
-	var deviceId = req.device._id;
-	Device.findById(deviceId).exec(function(err, result){
-		if(err) { return callback(err); }
-		if (nconf.get('redis_last_value')) {
-			var redisClient = req.app.get('redis');
-			getTransducerLastValuesRedis(redisClient, result, callback);
-		} else {
-			getTransducerLastValuesInflux(result, callback);
-		}
+    var deviceId = req.device._id;
+    Device.findById(deviceId).exec(function(err, result){
+        if(err) { return callback(err); }
+        if (nconf.get('redis_last_value')) {
+            var redisClient = req.app.get('redis');
+            getTransducerLastValuesRedis(redisClient, result, callback);
+        } else {
+            getTransducerLastValuesInflux(result, callback);
+        }
 
-	})
+    })
 };
 
 exports.getAllDeviceGroupTransducers = function(req, callback ){
@@ -50,10 +50,10 @@ exports.getTransducerDevices = function(query, callback) {
     let searchParams = [];
     for (let i = 0; i < searchStrings.length; i++) {
         searchParams.push({ $elemMatch: {name: searchStrings[i]} });
-	}
+    }
     Device.find({transducers: {$all: searchParams}})
-	.select("name transducers")
-	.exec(function (err, result) {
+    .select("name transducers")
+    .exec(function (err, result) {
         if (err) { return callback(err); }
         return callback(null, result);
     })
@@ -84,41 +84,41 @@ exports.updateTransducer = function(req, callback){
 // The result will be an array of transducer info with the value and timestamp
 // fields included.
 var getTransducerLastValuesRedis = function (redisClient, device, callback) {
-	// Grab the array of transducers to add value and timestamp to
-	var transducers = device.transducers;
+    // Grab the array of transducers to add value and timestamp to
+    var transducers = device.transducers;
 
-	// Start a multi get transaction
-	var multi = redisClient.multi();
+    // Start a multi get transaction
+    var multi = redisClient.multi();
 
-	transducers.forEach(function (tdc) {
-		var devPrefix = redisOCDevicePrefix + device._id + ':' + tdc.name;
-		multi.get(devPrefix);
-		multi.get(devPrefix + ":time");
-	})
+    transducers.forEach(function (tdc) {
+        var devPrefix = redisOCDevicePrefix + device._id + ':' + tdc.name;
+        multi.get(devPrefix);
+        multi.get(devPrefix + ":time");
+    })
 
-	multi.execAsync().then(
-		function (values) {
-			var results = [];
+    multi.execAsync().then(
+        function (values) {
+            var results = [];
 
-			/*
-			   Results should have all transducer information combined with
-			   the last values and timestamps.
-			*/
-			for (var i = 0; i < transducers.length; i++) {
-				results[i] = transducers[i];
+            /*
+               Results should have all transducer information combined with
+               the last values and timestamps.
+            */
+            for (var i = 0; i < transducers.length; i++) {
+                results[i] = transducers[i];
 
-				if ((typeof values[i * 2] != 'undefined') && (typeof values[(i * 2) + 1] != 'undefined')) {
-					results[i].value = values[i * 2];
-					results[i].timestamp = values[(i * 2) + 1];
-				}
-			}
+                if ((typeof values[i * 2] != 'undefined') && (typeof values[(i * 2) + 1] != 'undefined')) {
+                    results[i].value = values[i * 2];
+                    results[i].timestamp = values[(i * 2) + 1];
+                }
+            }
 
-			callback(null, results);
-		},
-		function (err) {
-			console.log('Redis error:', err)
-			callback(new Error('Redis Error'), null);
-		});
+            callback(null, results);
+        },
+        function (err) {
+            console.log('Redis error:', err)
+            callback(new Error('Redis Error'), null);
+        });
 
 };
 
@@ -127,17 +127,17 @@ var getTransducerLastValuesRedis = function (redisClient, device, callback) {
 // The result will be an array of transducer info with the value and timestamp
 // fields included.
 const getTransducerLastValueRedis = function (redisClient, device, transducer, callback) {
-	// Start a multi get transaction
-	const multi = redisClient.multi();
+    // Start a multi get transaction
+    const multi = redisClient.multi();
     const devPrefix = redisOCDevicePrefix + device._id + ':' + transducer.name;
 
-	multi.getAsync(devPrefix).then((res) => {
-			callback(null, res);
-		},
-		function (err) {
-			console.log('Redis error:', err);
-			callback(new Error('Redis Error'), null);
-		});
+    multi.getAsync(devPrefix).then((res) => {
+            callback(null, res);
+        },
+        function (err) {
+            console.log('Redis error:', err);
+            callback(new Error('Redis Error'), null);
+        });
 };
 
 // Use InfluxDB to fetch the last value and timestamp for all transducers
@@ -145,49 +145,49 @@ const getTransducerLastValueRedis = function (redisClient, device, transducer, c
 // The result will be an array of transducer info with the value and timestamp
 // fields included.
 var getTransducerLastValuesInflux = function(device, callback){
-	var transducers  = device.transducers;
-	var measurements = [];
-	var lastValues = [];
-	var getFromInfluxdb = function(measurement, index, next){
-		var url = "http://"+ nconf.get('influxdb:host') + ":" + nconf.get("influxdb:port") +"/query" ;
+    var transducers  = device.transducers;
+    var measurements = [];
+    var lastValues = [];
+    var getFromInfluxdb = function(measurement, index, next){
+        var url = "http://"+ nconf.get('influxdb:host') + ":" + nconf.get("influxdb:port") +"/query" ;
 
-		var query = "select \"value\" from \""+measurement+"\" ORDER BY time DESC LIMIT 1";
-		var props = {
-			"db" : "openchirp",
-			"q" : query
-		};
+        var query = "select \"value\" from \""+measurement+"\" ORDER BY time DESC LIMIT 1";
+        var props = {
+            "db" : "openchirp",
+            "q" : query
+        };
 
         request({url : url, qs : props}, function(err, response, body) {
-  			if(err) { console.log(err);  }
-			 var data  = JSON.parse(body);
-			 if(data.results && data.results.length >0){
-			 	var series = data.results[0].series;
-			 	if(series && series.length >0 ){
-			 		var values = series[0].values[0];
-					lastValues[index] = {};
-			 		lastValues[index].timestamp  = values[0];
-			 		lastValues[index].value = values[1];
-				 }
-			 }
-			 return next(null, null);
-		});
-	};
-	transducers.forEach(function(tdc){
-		measurements.push(device._id+"_"+tdc.name.toLowerCase());
-	})
+              if(err) { console.log(err);  }
+             var data  = JSON.parse(body);
+             if(data.results && data.results.length >0){
+                 var series = data.results[0].series;
+                 if(series && series.length >0 ){
+                     var values = series[0].values[0];
+                    lastValues[index] = {};
+                     lastValues[index].timestamp  = values[0];
+                     lastValues[index].value = values[1];
+                 }
+             }
+             return next(null, null);
+        });
+    };
+    transducers.forEach(function(tdc){
+        measurements.push(device._id+"_"+tdc.name.toLowerCase());
+    })
 
-	async.forEachOf(measurements, getFromInfluxdb, function(err, result) {
-		var results = [];
-		for (var i = 0; i < transducers.length ; i++){
-			results[i] = transducers[i];
-			if(typeof lastValues[i] != 'undefined'){
-				results[i].timestamp = lastValues[i].timestamp;
-				results[i].value = lastValues[i].value;
-			}
-		}
-		return callback(null, results);
+    async.forEachOf(measurements, getFromInfluxdb, function(err, result) {
+        var results = [];
+        for (var i = 0; i < transducers.length ; i++){
+            results[i] = transducers[i];
+            if(typeof lastValues[i] != 'undefined'){
+                results[i].timestamp = lastValues[i].timestamp;
+                results[i].value = lastValues[i].value;
+            }
+        }
+        return callback(null, results);
 
-	})
+    })
 
 };
 
@@ -335,7 +335,7 @@ exports.publish = function(user, device, transducerId, message, callback){
 
 
 const getDeviceTransducerTimeseries = function(req, res) {
- 	/* influxdb url */
+     /* influxdb url */
      var influxdb_url = "http://"+ nconf.get('influxdb:host') + ":" + nconf.get("influxdb:port") + "/query";
 
      /* use device id to get transducer info and construct measurement name */
@@ -441,28 +441,28 @@ exports.getDeviceTransducer = function(req, res){
 };
 
 exports.deleteDeviceTransducer = function(req, callback){
-	var tdcId = req.params._transducerId;
-	var commands = req.device.commands;
-	var cmdsToDelete = [];
+    var tdcId = req.params._transducerId;
+    var commands = req.device.commands;
+    var cmdsToDelete = [];
 
-	if(commands){
-		commands.forEach(function(cmd) {
-			if ( String(cmd.transducer_id) === String(tdcId)){
-				cmdsToDelete.push(cmd._id);
-			}
-		});
-	}
-	cmdsToDelete.forEach(function(cid){
-		req.device.commands.id(cid).remove();
-	});
+    if(commands){
+        commands.forEach(function(cmd) {
+            if ( String(cmd.transducer_id) === String(tdcId)){
+                cmdsToDelete.push(cmd._id);
+            }
+        });
+    }
+    cmdsToDelete.forEach(function(cid){
+        req.device.commands.id(cid).remove();
+    });
 
-	req.device.transducers.id(tdcId).remove();
-	req.device.save( function(err) {
-		if(err) { return callback(err); }
-		var result = new Object();
+    req.device.transducers.id(tdcId).remove();
+    req.device.save( function(err) {
+        if(err) { return callback(err); }
+        var result = new Object();
         result.message = "Done";
         return callback(null, result);
-	})
+    })
 };
 
 /** Broadcast Transducers **/
