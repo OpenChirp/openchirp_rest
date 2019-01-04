@@ -128,10 +128,9 @@ var getTransducerLastValuesRedis = function (redisClient, device, callback) {
 // fields included.
 const getTransducerLastValueRedis = function (redisClient, device, transducer, callback) {
     // Start a multi get transaction
-    const multi = redisClient.multi();
     const devPrefix = redisOCDevicePrefix + device._id + ':' + transducer.name;
 
-    multi.getAsync(devPrefix).then((res) => {
+    redisClient.getAsync(devPrefix).then((res) => {
             callback(null, res);
         },
         function (err) {
