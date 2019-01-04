@@ -128,10 +128,22 @@ var getTransducerLastValuesRedis = function (redisClient, device, callback) {
 // fields included.
 const getTransducerLastValueRedis = function (redisClient, device, transducer, callback) {
     // Start a multi get transaction
+    const multi = redisClient.multi();
     const devPrefix = redisOCDevicePrefix + device._id + ':' + transducer.name;
+    multi.get(devPrefix);
+    multi.get(devPrefix + ":time");
 
-    redisClient.getAsync(devPrefix).then((res) => {
-            callback(null, res);
+
+    multi.execAsync().then((res) => {
+            let result = {
+                value: null,
+                timestamp: null
+            };
+            if ((typeof res[0] != 'undefined') && (typeof res[1] != 'undefined')) {
+                result.value = res[0];
+                result.timestamp = res[1];
+            }
+            callback(null, result);
         },
         function (err) {
             console.log('Redis error:', err);
@@ -426,7 +438,12 @@ exports.getDeviceTransducer = function(req, res){
             const redisClient = req.app.get('redis');
             getTransducerLastValueRedis(redisClient, device, transducer, function(err, result){
                 if(err) { return next(err); }
-                return res.send(result);
+                if (typeof req.headers['content-type'] != 'undefined' && req.headers['content-type'].includes("application/json")) {
+                    return res.json(result);
+                } else {
+                    res.set('Content-Type', 'text/plain');
+                    return res.send(result.value);
+                }
             })
         } else {
             var error = new Error();
