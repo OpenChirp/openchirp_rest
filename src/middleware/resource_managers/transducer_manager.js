@@ -432,7 +432,7 @@ exports.getDeviceTransducer = function(req, res){
 
     // If timeseries parameter is not specified for set to false
     // return only last value
-    if (typeof req.query.timeseries=='undefined' || req.query.timeseries==false) {
+    if (typeof req.query.timeseries=='undefined' || req.query.timeseries=="false") {
         // Grab last value only
         if (nconf.get('redis_last_value')) {
             const redisClient = req.app.get('redis');
