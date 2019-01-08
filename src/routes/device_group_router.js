@@ -200,7 +200,7 @@ router.param('_broadcastTransducerId', function(req, res, next, transducerId) {
 });
 
 /* Add a broadcast transducer to device */
-router.post('/:_id/broadcastTransducer', deviceAuthorizer.checkWriteAccess,  function(req, res, next ){
+router.post('/:_id/broadcasttransducer', deviceAuthorizer.checkWriteAccess,  function(req, res, next ){
     transducerManager.createBroadcastTransducer(req, function(err, result){
         if(err) { return next(err); }
         return res.json(result);
@@ -208,12 +208,12 @@ router.post('/:_id/broadcastTransducer', deviceAuthorizer.checkWriteAccess,  fun
 });
 
 /* Get all broadcast transducers for a given device */
-router.get('/:_id/broadcastTransducer', function(req, res, next){
+router.get('/:_id/broadcasttransducer', function(req, res, next){
     return res.json(req.devicegroup.broadcast_transducers);
 });
 
 /* Update broadcast transducer  */
-router.put('/:_id/broadcastTransducer/:_broadcastTransducerId', deviceAuthorizer.checkWriteAccess,  function(req, res, next ){
+router.put('/:_id/broadcasttransducer/:_broadcastTransducerId', deviceAuthorizer.checkWriteAccess,  function(req, res, next ){
     transducerManager.updateBroadcastTransducer(req, function(err, result){
         if(err) { return next(err); }
         return res.json(result);
@@ -222,10 +222,10 @@ router.put('/:_id/broadcastTransducer/:_broadcastTransducerId', deviceAuthorizer
 
 
 /* Register extra body parsers only for publishing broadcast transducer values */
-router.post('/:_id/broadcastTransducer/:_broadcastTransducerId', bodyParser.text(), bodyParser.raw());
+router.post('/:_id/broadcasttransducer/:_broadcastTransducerId', bodyParser.text(), bodyParser.raw());
 
 /* Publish to broadcast transducer */
-router.post('/:_id/broadcastTransducer/:_broadcastTransducerId', deviceAuthorizer.checkExecuteAccess, function(req, res, next ){
+router.post('/:_id/broadcasttransducer/:_broadcastTransducerId', deviceAuthorizer.checkExecuteAccess, function(req, res, next ){
     transducerManager.publishToBroadcastTransducer(req, function(err, result){
         if(err) { return next(err); }
         return res.json(result);
@@ -233,13 +233,13 @@ router.post('/:_id/broadcastTransducer/:_broadcastTransducerId', deviceAuthorize
 });
 
 /* Get broadcast transducer values */
-router.get('/:_id/broadcastTransducer/:_broadcastTransducerId', function(req, res, next ){
+router.get('/:_id/broadcasttransducer/:_broadcastTransducerId', function(req, res, next ){
     /* getDeviceTransducer will directly pipe the incoming response from influxdb to the browser (so no callback) */
     transducerManager.getBroadcastTransducer(req, res);
 });
 
 /* Delete broadcast transducer */
-router.delete('/:_id/broadcastTransducer/:_broadcastTransducerId', deviceAuthorizer.checkWriteAccess, function(req, res, next ){
+router.delete('/:_id/broadcasttransducer/:_broadcastTransducerId', deviceAuthorizer.checkWriteAccess, function(req, res, next ){
     transducerManager.deleteBroadcastTransducer(req, function(err, result){
         if(err) { return next(err); }
         return res.json(result);
@@ -249,7 +249,7 @@ router.delete('/:_id/broadcastTransducer/:_broadcastTransducerId', deviceAuthori
 /*************** Commands ***************************/
 
 /* Add a command to device */
-router.post('/:_id/broadcastCommand', deviceAuthorizer.checkWriteAccess,  function(req, res, next ){
+router.post('/:_id/broadcastcommand', deviceAuthorizer.checkWriteAccess,  function(req, res, next ){
     commandManager.createBroadcastCommand(req, function(err, result){
         if(err) { return next(err); }
         return res.json(result);
@@ -257,7 +257,7 @@ router.post('/:_id/broadcastCommand', deviceAuthorizer.checkWriteAccess,  functi
 });
 
 /* Get all commands for a given device */
-router.get('/:_id/broadcastCommand', function(req, res, next){
+router.get('/:_id/broadcastcommand', function(req, res, next){
     commandManager.getAllBroadcastCommands(req, function(err, result){
         if(err) { return next(err); }
         return res.json(result);
@@ -265,7 +265,7 @@ router.get('/:_id/broadcastCommand', function(req, res, next){
 });
 
 /* Execute a command */
-router.post('/:_id/broadcastCommand/:_commandId', deviceAuthorizer.checkExecuteAccess, function(req, res, next ){
+router.post('/:_id/broadcastcommand/:_commandId', deviceAuthorizer.checkExecuteAccess, function(req, res, next ){
     commandManager.executeBroadcastCommand(req, function(err, result){
         if(err) { return next(err); }
         return res.json(result);
@@ -273,7 +273,7 @@ router.post('/:_id/broadcastCommand/:_commandId', deviceAuthorizer.checkExecuteA
 });
 
 /* Create a public link for a command */
-router.post('/:_id/broadcastCommand/:_commandId/publiclink', deviceAuthorizer.checkExecuteAccess, function(req, res, next ){
+router.post('/:_id/broadcastcommand/:_commandId/publiclink', deviceAuthorizer.checkExecuteAccess, function(req, res, next ){
     commandManager.createPublicLink(req, function(err, result){
         if(err) { return next(err); }
         return res.json(result);
@@ -281,7 +281,7 @@ router.post('/:_id/broadcastCommand/:_commandId/publiclink', deviceAuthorizer.ch
 });
 
 /* Get public link for a command */
-router.get('/:_id/broadcastCommand/:_commandId/publiclink', deviceAuthorizer.checkExecuteAccess, function(req, res, next ){
+router.get('/:_id/broadcastcommand/:_commandId/publiclink', deviceAuthorizer.checkExecuteAccess, function(req, res, next ){
     commandManager.getPublicLink(req, function(err, result){
         if(err) { return next(err); }
         return res.json(result);
@@ -289,7 +289,7 @@ router.get('/:_id/broadcastCommand/:_commandId/publiclink', deviceAuthorizer.che
 });
 
 /* Delete command */
-router.delete('/:_id/broadcastCommand/:_commandId', deviceAuthorizer.checkWriteAccess,  function(req, res, next ){
+router.delete('/:_id/broadcastcommand/:_commandId', deviceAuthorizer.checkWriteAccess,  function(req, res, next ){
     commandManager.deleteBroadcastCommand(req, function(err, result){
         if(err) { return next(err); }
         return res.json(result);
