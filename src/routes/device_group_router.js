@@ -232,12 +232,6 @@ router.post('/:_id/broadcasttransducer/:_broadcastTransducerId', deviceAuthorize
     })
 });
 
-/* Get broadcast transducer values */
-router.get('/:_id/broadcasttransducer/:_broadcastTransducerId', function(req, res, next ){
-    /* getDeviceTransducer will directly pipe the incoming response from influxdb to the browser (so no callback) */
-    transducerManager.getBroadcastTransducer(req, res);
-});
-
 /* Delete broadcast transducer */
 router.delete('/:_id/broadcasttransducer/:_broadcastTransducerId', deviceAuthorizer.checkWriteAccess, function(req, res, next ){
     transducerManager.deleteBroadcastTransducer(req, function(err, result){
