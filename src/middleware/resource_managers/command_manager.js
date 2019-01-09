@@ -89,7 +89,10 @@ exports.executeCommand = function(req, callback){
 
 exports.doExecute = function(user, device, commandId, callback){
     let command = device.commands.id(commandId);
-    let broadcast_command = device.broadcast_commands.id(commandId);
+    let broadcast_command;
+    if (device.broadcast_commands) {
+        broadcast_command = device.broadcast_commands.id(commandId);
+    }
     if(!command && !broadcast_command){
         var error = new Error();
         error.message = "Invalid command id";
