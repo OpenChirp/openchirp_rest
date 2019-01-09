@@ -472,7 +472,7 @@ exports.publishToBroadcastTransducer = function(req, callback ){
             for (let i = 0; i < deviceCount; i++) {
                 let device = res[i];
                 let d = {};
-                d.pubsub = { endpoint: 'openchirp/service/' + device._id };
+                d.pubsub = { endpoint: 'openchirp/device/' + device._id };
                 d.transducers = device.transducers;
                 let reqCopy = {
                     user: req.user,
