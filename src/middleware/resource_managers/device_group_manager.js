@@ -158,6 +158,13 @@ exports.getAllDevices = function(req, callback) {
 
 exports.addDevice = function(req, callback) {
     let devicegroup = req.devicegroup;
+    for (let i = 0; i < devicegroup.devices.length; i++) {
+        if (devicegroup.devices[i].id == req.device.id) {
+            let error = new Error();
+            error.message = "Device already exists in device group";
+            return callback(error);
+        }
+    }
     devicegroup.devices.push(req.device._id);
     devicegroup.save(callback);
 };
