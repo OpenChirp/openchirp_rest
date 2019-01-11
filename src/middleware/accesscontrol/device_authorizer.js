@@ -72,12 +72,19 @@ exports.checkPublicLinkAccess = function(user, device, next){
 }
 
 exports.checkWriteAccess = function(req, res, next){
-	checkAccess( 2, req.user, req.device, next);
+	if (req.devicegroup) {
+        checkAccess( 2, req.user, req.devicegroup, next);
+	} else {
+		checkAccess( 2, req.user, req.device, next);
+    }
 }
 
 exports.checkExecuteAccess = function(req, res, next){
-	checkAccess( 1, req.user, req.device, next);
-
+    if (req.devicegroup) {
+        checkAccess( 1, req.user, req.devicegroup, next);
+    } else {
+        checkAccess( 1, req.user, req.device, next);
+    }
 }
 
 exports.checkAclReadAccess = function(req, res, next){

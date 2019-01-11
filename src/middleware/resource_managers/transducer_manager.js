@@ -5,6 +5,8 @@ var async = require('async');
 var nconf = require('nconf');
 var util = require('util');
 var SqlString = require('sqlstring');
+const Promise = require('bluebird');
+const deviceAuthorizer = Promise.promisifyAll(require('../accesscontrol/device_authorizer'));
 
 // Prefix entries in Redis for last values
 const redisOCDevicePrefix = nconf.get('redis_device_prefix');
@@ -27,6 +29,20 @@ exports.getAllDeviceTransducers = function(req, callback ){
 
 	})
 };
+
+exports.getAllDeviceGroupTransducers = function(req, callback ){
+    let deviceIDs = req.devicegroup.devices.map(d => d._id);
+    Device.find({ '_id': { $in: deviceIDs }}).exec( (err, result) => {
+        if(err) { return callback(err); }
+        if (nconf.get('redis_last_value')) {
+            let redisClient = req.app.get('redis');
+            getManyTransducerLastValuesRedis(redisClient, result, callback);
+        } else {
+            getManyTransducerLastValuesInflux(result, callback);
+        }
+    });
+};
+
 
 exports.getTransducerDevices = function(query, callback) {
     let searchStrings = query.split(',').map(item => item.trim());
@@ -155,6 +171,122 @@ var getTransducerLastValuesInflux = function(device, callback){
 
 	})
 
+};
+
+// Use Redis to fetch the last value and timestamp for all transducers
+// listed in the given array of devices.
+// The result will be an array of transducer info with the value and timestamp
+// fields included.
+getManyTransducerLastValuesRedis = function (redisClient, devices, callback) {
+    // Grab the array of transducers to add value and timestamp to
+    let transducers = [];
+    devices.forEach((device) => {
+        device.transducers.forEach((tdc) => {
+            let tdcAdd = {
+                devicename: device.name,
+                deviceid: device._id,
+                is_actuable: tdc.is_actuable,
+                properties: tdc.properties,
+                name: tdc.name,
+                unit: tdc.unit
+            };
+            transducers.push(tdcAdd);
+        });
+    });
+    // Start a multi get transaction
+    let multi = redisClient.multi();
+
+    transducers.forEach(function (tdc) {
+        let devPrefix = redisOCDevicePrefix + tdc.deviceid + ':' + tdc.name;
+        multi.get(devPrefix);
+        multi.get(devPrefix + ":time");
+    })
+
+    multi.execAsync().then(
+        function (values) {
+            var results = [];
+
+            /*
+               Results should have all transducer information combined with
+               the last values and timestamps.
+            */
+            for (var i = 0; i < transducers.length; i++) {
+                results[i] = transducers[i];
+
+                if ((typeof values[i * 2] != 'undefined') && (typeof values[(i * 2) + 1] != 'undefined')) {
+                    results[i].value = values[i * 2];
+                    results[i].timestamp = values[(i * 2) + 1];
+                }
+            }
+
+            callback(null, results);
+        },
+        function (err) {
+            console.log('Redis error:', err)
+            callback(new Error('Redis Error'), null);
+        });
+};
+
+// Use InfluxDB to fetch the last value and timestamp for all transducers
+// listed in the given array of devices.
+// The result will be an array of transducer info with the value and timestamp
+// fields included.
+let getManyTransducerLastValuesInflux = function(devices, callback){
+    let transducers = [];
+    devices.forEach((device) => {
+        device.transducers.forEach((tdc) => {
+            let tdcAdd = {
+                devicename: device.name,
+                deviceid: device._id,
+                is_actuable: tdc.is_actuable,
+                properties: tdc.properties,
+                name: tdc.name,
+                unit: tdc.unit
+            };
+            transducers.push(tdcAdd);
+        });
+    });
+    let measurements = [];
+    let lastValues = [];
+    let getFromInfluxdb = function(measurement, index, next){
+        var url = "http://"+ nconf.get('influxdb:host') + ":" + nconf.get("influxdb:port") +"/query" ;
+
+        var query = "select \"value\" from \""+measurement+"\" ORDER BY time DESC LIMIT 1";
+        var props = {
+            "db" : "openchirp",
+            "q" : query
+        };
+
+        request({url : url, qs : props}, function(err, response, body) {
+            if(err) { console.log(err);  }
+            var data  = JSON.parse(body);
+            if(data.results && data.results.length >0){
+                var series = data.results[0].series;
+                if(series && series.length >0 ){
+                    var values = series[0].values[0];
+                    lastValues[index] = {};
+                    lastValues[index].timestamp  = values[0];
+                    lastValues[index].value = values[1];
+                }
+            }
+            return next(null, null);
+        });
+    };
+    transducers.forEach(function(tdc){
+        measurements.push(tdc.deviceid+"_"+tdc.name.toLowerCase());
+    });
+
+    async.forEachOf(measurements, getFromInfluxdb, function(err, result) {
+        let results = [];
+        for (let i = 0; i < transducers.length ; i++){
+            results[i] = transducers[i];
+            if(typeof lastValues[i] != 'undefined'){
+                results[i].timestamp = lastValues[i].timestamp;
+                results[i].value = lastValues[i].value;
+            }
+        }
+        return callback(null, results);
+    })
 };
 
 exports.publishToDeviceTransducer = function(req, callback ){
@@ -287,6 +419,144 @@ exports.deleteDeviceTransducer = function(req, callback){
         result.message = "Done";
         return callback(null, result);
 	})
+};
+
+/** Broadcast Transducers **/
+
+exports.createBroadcastTransducer = function(req, callback ){
+    req.body.is_actuable = true;
+    req.devicegroup.broadcast_transducers.push(req.body);
+    req.devicegroup.save(callback);
+};
+
+exports.updateBroadcastTransducer = function(req, callback){
+    let deviceToUpdate = req.devicegroup;
+    let transducerToUpdate = {};
+    let transducerIndex = -1;
+
+    for (var i = 0; i < deviceToUpdate.broadcast_transducers.length; i++) {
+        if (req.params._broadcastTransducerId == deviceToUpdate.broadcast_transducers[i].id) {
+            transducerToUpdate = deviceToUpdate.broadcast_transducers[i];
+            transducerIndex = i;
+            break;
+        }
+    }
+
+    if(typeof req.body.name != 'undefined') transducerToUpdate.name = req.body.name;
+    if(typeof req.body.unit != 'undefined') transducerToUpdate.unit = req.body.unit;
+    deviceToUpdate.broadcast_transducers[transducerIndex] = transducerToUpdate;
+    deviceToUpdate.save(callback);
+};
+
+exports.publishToBroadcastTransducer = function(req, callback ){
+    let tdc = req.broadcastTransducer;
+    if (!tdc) {
+        let error = new Error();
+        error.message = "Missing command transducer";
+        return callback(error);
+    }
+    Device.find({ _id: { $in: req.devicegroup.devices },
+        transducers: { $elemMatch: { is_actuable: true, name: tdc.name, unit: tdc.unit}}},
+        { name: 1, owner: 1, transducers: {
+            $elemMatch: { is_actuable: true, name: tdc.name, unit: tdc.unit }
+        }}).exec( async (err, res) => {
+        if (err) { return callback(err); }
+        let deviceCount = res.length;
+        if (deviceCount === 0) {
+            let error = new Error();
+            error.message = "No devices with matching transducer";
+            return callback(error);
+        } else {
+            let failures = [];
+            let noAccess = [];
+            for (let i = 0; i < deviceCount; i++) {
+                let device = res[i];
+                let d = {};
+                d.pubsub = { endpoint: 'openchirp/device/' + device._id };
+                d.transducers = device.transducers;
+                let reqCopy = {
+                    user: req.user,
+                    device: device
+                };
+                let checkAccess = await deviceAuthorizer.checkExecuteAccessAsync(reqCopy, null).catch((err) => {
+                    noAccess.push(device.name);
+                });
+                if (!checkAccess) {
+                    await exports.asyncPublish(req.user, d, device.transducers[0]._id, req.body).catch((err) => {
+                        failures.push(device.name);
+                    });
+                }
+            }
+            let errorMsg = "";
+            if (failures.length) {
+                errorMsg = "MQTT Failures: [" + failures.join(', ') + "]. ";
+            }
+            if (noAccess.length) {
+                errorMsg += "Device Access Failures: [" + noAccess.join(', ') + "]. ";
+            }
+
+            if (errorMsg) {
+                let error = new Error();
+                error.message = (deviceCount - failures.length - noAccess.length) + "/" + deviceCount + " succeeded. " + errorMsg + "Name";
+                return callback(error);
+            } else {
+                let done = {};
+                done.message = "Done";
+                callback(null, done);
+            }
+        }
+    });
+};
+
+exports.asyncPublish = util.promisify(exports.publish);
+
+exports.publish = function(user, device, transducerId, message, callback){
+    // Note: If thing_type is not defined (say when authentication is
+    //       disabled), we cannot determine if accessors is a user,
+    //       device, or service. In this case, the current action
+    //       is to not enforce the is_actuator check.
+    var isTypeUser = !user.thing_type;
+    var transducer = device.transducers.id(transducerId);
+    // only disallow users from posting ti a non-actuator
+    if (!transducer.is_actuable && isTypeUser) {
+        var error = new Error();
+        error.message = 'Transducer not actuable';
+        //console.log(error);
+        return callback(error);
+    }
+    var topic = device.pubsub.endpoint+'/'+ transducer.name ;
+    console.log('publishing to', topic);
+    // MQTT Client only accepts strings and Buffers
+    if (!(typeof message == 'string') && !(message instanceof Buffer)) {
+        message = JSON.stringify(message);
+    }
+    mqttClient.publish(topic, message, callback);
+};
+
+
+exports.deleteBroadcastTransducer = function(req, callback){
+    var tdcId = req.params._broadcastTransducerId;
+    var commands = req.devicegroup.broadcast_commands;
+    var cmdsToDelete = [];
+
+    if(commands){
+        commands.forEach(function(cmd) {
+            if ( String(cmd.transducer_id) === String(tdcId)){
+                cmdsToDelete.push(cmd._id);
+            }
+        });
+    }
+    cmdsToDelete.forEach(function(cid){
+        req.devicegroup.broadcast_commands.id(cid).remove();
+    });
+
+    req.devicegroup.broadcast_transducers.id(tdcId).remove();
+    req.devicegroup.save( function(err) {
+        if(err) { return callback(err); }
+        var result = new Object();
+        result.message = "Done";
+        return callback(null, result);
+    })
 };
 
 module.exports = exports;

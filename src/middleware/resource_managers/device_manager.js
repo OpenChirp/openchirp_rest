@@ -15,9 +15,9 @@ exports.getAllDevices = function(req, callback){
         var name = req.query.name;
     }
     if(name){
-        var query = Device.find({ $text: { $search: name }});
+        var query = Device.find({ $text: { $search: name }, '__t': { $ne: "DeviceGroup" }});
     }else{
-       var query = Device.find();
+       var query = Device.find({'__t': { $ne: "DeviceGroup" }});
     }
     query.populate('owner location_id', 'name email');
     query.select("name pubsub");
@@ -178,12 +178,24 @@ exports.getDevicesByOwner = function(req, callback) {
     }
     // This currently does not perform a search on name, as it's limited by userid...
     if(name){
-        Device.find({"owner" : userId, $text: { $search: name }}).exec(callback);
+        Device.find({"owner" : userId, $text: { $search: name }, '__t': { $ne: "DeviceGroup" }}).exec(callback);
     }else{
-        Device.find({"owner" : userId}).exec(callback);
+        Device.find({"owner" : userId, '__t': { $ne: "DeviceGroup" }}).exec(callback);
     }
 };
 
+exports.getDeviceGroupsByOwner = function(req, callback) {
+    var userId = req.user._id;
+    if(req.query && req.query.name ){
+        var name = req.query.name;
+    }
+    // This currently does not perform a search on name, as it's limited by userid...
+    if(name){
+        Device.find({"owner" : userId, $text: { $search: name }, '__t': 'DeviceGroup' }).exec(callback);
+    }else{
+        Device.find({"owner" : userId, '__t': 'DeviceGroup' }).exec(callback);
+    }
+};
 
 
 exports.linkService = function(req, callback){

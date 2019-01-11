@@ -20,10 +20,14 @@ exports.createCommand = function(req, callback ){
 };
 
 exports.createPublicLink = function(req, callback ){
-    var deviceId = req.device._id;
-    var userId = req.user._id;
-    var commandId = req.params._commandId;
-    var command = req.device.commands.id(commandId);
+    let deviceId = (req.device && req.device._id);
+    let userId = req.user._id;
+    let commandId = req.params._commandId;
+    let command = (req.device && req.device.commands.id(commandId));
+    if (req.devicegroup) {
+        deviceId = req.devicegroup._id;
+        command = req.devicegroup.broadcast_commands.id(commandId);
+    }
     if(!command){
         var error = new Error();
         error.message = "Invalid command id";
@@ -36,6 +40,9 @@ exports.createPublicLink = function(req, callback ){
            publicLink.device_id = deviceId;
            publicLink.user_id = userId;
            publicLink.command_id = commandId;
+           if (req.devicegroup) {
+               publicLink.is_broadcast = true;
+           }
         // publicLink.payload = Buffer.from(String(publicLink._id)).toString('base64');
            publicLink.save(function(err, result){
                 if(err) { return callback(err); }
@@ -50,7 +57,7 @@ exports.createPublicLink = function(req, callback ){
 };
 
 exports.getPublicLink = function(req, callback){
-    var deviceId = req.device._id;
+    let deviceId = (req.device && req.device._id) || (req.devicegroup && req.devicegroup._id);
     var userId = req.user._id;
     var commandId = req.params._commandId;
     PublicLink.find({user_id : userId, device_id: deviceId, command_id: commandId }).exec(function (err, result) {
@@ -81,14 +88,28 @@ exports.executeCommand = function(req, callback){
 };
 
 exports.doExecute = function(user, device, commandId, callback){
-    var command = device.commands.id(commandId);
-    if(!command){
+    let command = device.commands.id(commandId);
+    let broadcast_command;
+    if (device.broadcast_commands) {
+        broadcast_command = device.broadcast_commands.id(commandId);
+    }
+    if(!command && !broadcast_command){
         var error = new Error();
         error.message = "Invalid command id";
         return callback(error);
     }
-    var message = command.value;
-    transducerManager.publish(user, device, command.transducer_id, message, callback);
+    if (broadcast_command) {
+        let req = {
+            devicegroup: device,
+            user: user,
+            body: broadcast_command.value,
+            broadcastTransducer: device.broadcast_transducers.id(broadcast_command.transducer_id)
+        };
+        transducerManager.publishToBroadcastTransducer(req, callback);
+    } else {
+        let message = command.value;
+        transducerManager.publish(user, device, command.transducer_id, message, callback);
+    }
 };
 
 exports.deleteCommand = function(req, callback){
@@ -97,6 +118,44 @@ exports.deleteCommand = function(req, callback){
     req.device.save( function(err) {
         if(err) { return callback(err); }
         var result = new Object();
+        return callback(null, result);
+    })
+};
+
+
+/** Broadcast **/
+
+exports.createBroadcastCommand = function(req, callback ){
+    let command = new Object(req.body);
+    let transducer = req.devicegroup.broadcast_transducers.id(command.transducer_id);
+    let error = new Error();
+    if(!transducer){
+        error.message = "Invalid device transducer id value";
+        return callback(error);
+    }
+    req.devicegroup.broadcast_commands.push(command);
+    req.devicegroup.save(callback);
+};
+
+exports.getAllBroadcastCommands = function(req, callback ){
+    let deviceId = req.devicegroup._id;
+    Device.findById(deviceId).exec(function(err, result){
+        if(err) { return callback(err); }
+        let commands = result.broadcast_commands;
+        return callback(null, commands);
+    })
+};
+
+exports.executeBroadcastCommand = function(req, callback){
+    exports.doExecute(req.user, req.devicegroup, req.params._commandId, callback);
+};
+
+exports.deleteBroadcastCommand = function(req, callback){
+    let commandId = req.params._commandId;
+    req.devicegroup.broadcast_commands.id(commandId).remove();
+    req.devicegroup.save( function(err) {
+        if(err) { return callback(err); }
+        let result = new Object();
         return callback(null, result);
     })
 };

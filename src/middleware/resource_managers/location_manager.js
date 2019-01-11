@@ -1,5 +1,6 @@
 var Location = require('../../models/location');
 var Device = require('../../models/device');
+var DeviceGroup = require('../../models/device_group');
 var async = require('async');
 
 exports.getRootLocation = function(callback){
@@ -160,7 +161,7 @@ exports.getAllDevices = function(location_id, callback){
                 if(err) { return next(err); }
                 if(loc){
                     Array.prototype.push.apply(out.locations, loc.children);
-                    Device.find({ location_id : loc._id }).select('name location_id pubsub').exec(function(err, result){
+                    Device.find({ location_id : loc._id, '__t': { $ne: "DeviceGroup" }}).select('name location_id pubsub').exec(function(err, result){
                         if(err) { return next(err);}
                         if (result && result.length > 0){
                             Array.prototype.push.apply(out.devices, result);
@@ -183,7 +184,11 @@ exports.getAllDevices = function(location_id, callback){
 };
 
 exports.getDevices = function(req, callback){
-    Device.find({ location_id : req.params._id }).select('name pubsub location_id').exec(callback);
+    Device.find({ location_id : req.params._id, '__t': { $ne: "DeviceGroup" }}).select('name pubsub location_id').exec(callback);
+};
+
+exports.getDeviceGroups = function(req, callback){
+    DeviceGroup.find({ location_id : req.params._id}).select('name pubsub location_id').exec(callback);
 };
 
 exports.getLocationsByOwner = function(req, callback) {

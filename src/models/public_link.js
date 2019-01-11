@@ -7,7 +7,8 @@ var publicLinkSchema = new Schema({
 	user_id : { type:Schema.Types.ObjectId, ref:"User", required: true},
 	device_id: { type: Schema.Types.ObjectId, ref: "Device", required: true },
 	command_id: { type: Schema.Types.ObjectId, required : true},
-	payload:{ type: String }
+	payload:{ type: String },
+	is_broadcast: {type: Boolean, default: false }
  },
  schemaOptions
  );
