@@ -24,7 +24,7 @@ exports.getAllDevices = function(req, callback){
     query.exec(callback);
 };
 
-var addDeviceAclAndNotifyService = function(device, service, newLink, owner, callback){
+exports.addDeviceAclAndNotifyService = function(device, service, newLink, owner, callback){
      //Needs more than read permission
     if(service.device_permission > 0){
         var deviceAcl = new DeviceAcl();
@@ -41,7 +41,7 @@ var addDeviceAclAndNotifyService = function(device, service, newLink, owner, cal
     }
 };
 
-var deleteDeviceAclAndNotifyService = function(device, service, owner, callback){
+exports.deleteDeviceAclAndNotifyService = function(device, service, owner, callback){
     service_pubsub.publishDeleteDevice(service, device, owner, function(err, result){
         if(err) { return callback(err); }
         DeviceAcl.remove({ device_id: device._id, entity_id: service._id}).exec(function(err, result){
@@ -87,7 +87,7 @@ exports.createNewDevice = function(req, callback){
             Service.findById( link.service_id, function (err, service) {
                  if(err) { return next(err) ; }
                  if(service){
-                    addDeviceAclAndNotifyService(newDevice, service, link, req.user, next);
+                    exports.addDeviceAclAndNotifyService(newDevice, service, link, req.user, next);
                 }else{
                     return next();
                 }
@@ -221,7 +221,7 @@ exports.linkService = function(req, callback){
         populate('owner').
         exec(function(err, result){
             if(err) { return callback(err); }
-            addDeviceAclAndNotifyService(req.device, req.service, newLink, result.owner, callback);
+            exports.addDeviceAclAndNotifyService(req.device, req.service, newLink, result.owner, callback);
         })
     }
 };
@@ -270,7 +270,7 @@ exports.delinkService = function(req, callback){
         populate('owner').
         exec(function(err, result){
             if(err) { return callback(err); }
-            deleteDeviceAclAndNotifyService(req.device, req.service, result.owner, callback);
+            exports.deleteDeviceAclAndNotifyService(req.device, req.service, result.owner, callback);
         })
     }else{
         var result = new Object();
