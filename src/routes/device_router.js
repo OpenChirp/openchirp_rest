@@ -158,7 +158,11 @@ router.put('/:_id/transducer/:_transducerId', deviceAuthorizer.checkWriteAccess,
 });
 
 
-/* Register extra body parsers only for publishing transducer values */
+/*
+ * Register extra body parsers only for publishing transducer values.
+ * The default body parser is for JSON. This allows plain/text and
+ * application/octet-stream data.
+ */
 router.post('/:_id/transducer/:_transducerId', bodyParser.text(), bodyParser.raw());
 
 /* Publish to device transducer */
