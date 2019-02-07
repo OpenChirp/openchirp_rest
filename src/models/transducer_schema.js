@@ -1,8 +1,8 @@
 // Dependencies
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var schemaOptionsNoTimestamp = require('./schema_options_notimestamp');
 
+var schemaOptionsNoTimestamp = require('./schema_options_notimestamp');
 var tdcSchema = new Schema({
   name: { type: String , required: true },
   unit: { type: String},
