@@ -1,6 +1,7 @@
 // Dependencies
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var schemaOptionsNoTimestamp = require('./schema_options_notimestamp');
 
 var tdcSchema = new Schema({
   name: { type: String , required: true },
@@ -9,7 +10,9 @@ var tdcSchema = new Schema({
   properties : { type: Schema.Types.Mixed },
   value: {type: String},
   timestamp: {type: String}
-});
+},
+schemaOptionsNoTimestamp
+);
 
 tdcSchema.pre('save', function(next) {
   var tdcName = this.name;
