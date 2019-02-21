@@ -32,6 +32,14 @@ exports.createUserPass = function(user, callback){
              error.message = "User already signed up with this email";
             return callback(error);
         }
+
+        // Abort if no password was given
+        if (typeof user.password == 'undefined') {
+            var error = Error();
+            error.message = "No password given";
+            return callback(error);
+        }
+
         auth.hashPassword(user.password, function(error2, hashedPassword){
             if(error2) { return callback(error2); }
             var newUser = new User();
