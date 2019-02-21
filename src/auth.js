@@ -25,7 +25,7 @@ var config = {
  */
 function hashPassword(password, callback) {
   // generate a salt for pbkdf2
-  crypto.randomBytes(config.saltLen, function(err, result) {
+  crypto.randomBytes(config.saltLen, function (err, result) {
     if (err) {
       return callback(err);
 
@@ -33,16 +33,16 @@ function hashPassword(password, callback) {
     var salt = result.toString('base64');
 
     crypto.pbkdf2(password, salt, config.iterations, config.hashLen, config.digest,
-      function(err, hash) {
+      function (err, hash) {
 
-      if (err) {
-        return callback(err);
-      }
+        if (err) {
+          return callback(err);
+        }
 
-      var result = "PBKDF2$"+config.digest+"$"+config.iterations+"$" +salt+"$"+hash.toString('base64');
+        var result = "PBKDF2$" + config.digest + "$" + config.iterations + "$" + salt + "$" + hash.toString('base64');
 
-      return callback(null, result);
-    });
+        return callback(null, result);
+      });
   });
 }
 
@@ -66,11 +66,11 @@ function verifyPassword(password, hashedPassword, callback) {
 
 
   // verify the salt and hash against the password
-  crypto.pbkdf2(password, salt_base64, iterations, config.hashLen, digest, function(err, verify) {
+  crypto.pbkdf2(password, salt_base64, iterations, config.hashLen, digest, function (err, verify) {
     if (err) {
       return callback(err, false);
     }
-   return callback(null, verify.toString('base64') === hash_base64);
+    return callback(null, verify.toString('base64') === hash_base64);
   });
 }
 
