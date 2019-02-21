@@ -233,6 +233,21 @@ function ensureAuthenticated(req, res, next) {
   }
 
 }
+
+function setTestUser(req, res, next){
+  //Set test user for debugging in development/test mode
+  var testUser = {};
+  testUser.email = "test@test.com";
+
+  userManager.createUser(testUser, function(err, result){
+    if(err) { return next(err); }
+    req.user = result;
+    groupManager.doCreateGroup(result._id, "developer",function(err, result){
+         return next();
+    })
+  })
+}
+
 //Configuration to disable auth for development/test environments. By default, auth is enabled.
 var enableAuth = true;
 if(nconf.get("enable_auth") == 'false'){
@@ -240,20 +255,10 @@ if(nconf.get("enable_auth") == 'false'){
 }
 if(enableAuth){
   app.use('/api/*', ensureAuthenticated);
+  app.use('/apiv1/*', ensureAuthenticated);
 } else{
-  app.use('/api/*', function(req, res, next){
-    //Set test user for debugging in development/test mode
-    var testUser = {};
-    testUser.email = "test@test.com";
-
-    userManager.createUser(testUser, function(err, result){
-      if(err) { return next(err); }
-      req.user = result;
-      groupManager.doCreateGroup(result._id, "developer",function(err, result){
-           return next();
-      })
-    })
-  });
+  app.use('/api/*', setTestUser);
+  app.use('/apiv1/*', setTestUser);
 }
 
 /*******************************************************/
@@ -288,14 +293,11 @@ else{
 
 // Public Link Route
 app.use('/pc', require('./routes/public_link_router'));
+app.use('/pcv1', require('./routes/public_link_router'));
 
 // REST API Routes
 app.use('/api', require('./routes/api_router'));
-
-// HACK for docker.. add routers for apiv1 for mapper service that uses go framework with hardcoded apiv1
-if(environment == "docker"){
-    app.use('/apiv1', require('./routes/api_router'));
-}
+app.use('/apiv1', require('./routes/api_router'));
 
 /********End Routing Section for api and public link routes*******************/
 
