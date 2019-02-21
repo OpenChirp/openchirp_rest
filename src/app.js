@@ -34,40 +34,40 @@ app.use(cookieParser());
 /***************Load Config File *******************/
 nconf.env();
 var environment = process.env.NODE_ENV || 'development';
-var filename = path.join(__dirname, '../config/'+environment+".json")
+var filename = path.join(__dirname, '../config/' + environment + ".json")
 nconf.file({ file: filename });
 /*******************************************************/
 
 
-var allowCrossDomain = function(req, res, next) {
-    var origin = req.get('origin');
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Accept, Origin, Content-Type, Authorization, Content-Length, X-Requested-With');
+var allowCrossDomain = function (req, res, next) {
+  var origin = req.get('origin');
+  res.header('Access-Control-Allow-Origin', origin);
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Accept, Origin, Content-Type, Authorization, Content-Length, X-Requested-With');
 
-    if (req.method == 'OPTIONS') {
-        res.sendStatus(200);
-    }
-    else {
-        next();
-    }
+  if (req.method == 'OPTIONS') {
+    res.sendStatus(200);
+  }
+  else {
+    next();
+  }
 
 };
 
 app.use(allowCrossDomain);
 
 /************* Initialize Mongo DB connection *************/
-var dbConnect = function(){
-   var options = {
-      server: {
-         socketOptions:{
-            keepAlive : 1
-         }
+var dbConnect = function () {
+  var options = {
+    server: {
+      socketOptions: {
+        keepAlive: 1
       }
-   };
-   mongoose.Promise = require('q').Promise;
-   mongoose.connect(nconf.get('db'),options);
+    }
+  };
+  mongoose.Promise = require('q').Promise;
+  mongoose.connect(nconf.get('db'), options);
 };
 
 dbConnect();
@@ -77,14 +77,14 @@ dbConnect();
 /************* Initialize Redis DB connection *************/
 
 // This redis connection assumed localhost port 6379 - db 1
-const redisURI = 'tcp://'+nconf.get('redis').host+':'+nconf.get('redis').port;
+const redisURI = 'tcp://' + nconf.get('redis').host + ':' + nconf.get('redis').port;
 var redisClient = redis.createClient(redisURI);
 
 // if you'd like to select database 3, instead of 0 (default), call
 redisClient.select(1);
 
 redisClient.on("error", function (err) {
-    console.log("Redis Error " + err);
+  console.log("Redis Error " + err);
 });
 
 app.set('redis', redisClient);
@@ -97,21 +97,21 @@ serviceStatusManager.start();
 
 
 /**************Begin User Session Setup *****************/
-passport.serializeUser(function(user, next) {
+passport.serializeUser(function (user, next) {
   next(null, user._id);
 
 });
 
-passport.deserializeUser(function(id, next) {
-  userManager.getUserById(id, next );
+passport.deserializeUser(function (id, next) {
+  userManager.getUserById(id, next);
 });
 
 //Configure session store
 app.use(session({
-    store: new RedisStore( nconf.get("redis") ),
-    secret: nconf.get("session_secret"),
-    resave: true,
-    saveUninitialized: true
+  store: new RedisStore(nconf.get("redis")),
+  secret: nconf.get("session_secret"),
+  resave: true,
+  saveUninitialized: true
 }));
 
 
@@ -126,93 +126,93 @@ app.use(passport.session());
 /*********Begin configuration of user authenticators **********/
 
 // Fetch profile from Google ID token
-var fetchProfileFromToken =  function(parsedToken, googleId, next) {
-    var payload = parsedToken.payload;
-    var userCopy = {};
-    userCopy.email = payload.email;
-    userCopy.name = payload.name;
-    userCopy.google_id = googleId;
+var fetchProfileFromToken = function (parsedToken, googleId, next) {
+  var payload = parsedToken.payload;
+  var userCopy = {};
+  userCopy.email = payload.email;
+  userCopy.name = payload.name;
+  userCopy.google_id = googleId;
 
-    userManager.createUser(userCopy, function(err, result){
-      if(err) { return next(err); }
-      if(result) { return next(null, result); }
-      var error = new Error();
-      error.message = "Error in creating user in database";
-      return next(error);
-    })
+  userManager.createUser(userCopy, function (err, result) {
+    if (err) { return next(err); }
+    if (result) { return next(null, result); }
+    var error = new Error();
+    error.message = "Error in creating user in database";
+    return next(error);
+  })
 };
 
 // Google Token Validator
-passport.use(new GoogleTokenStrategy({ clientID: nconf.get("auth_google.clientID") }, fetchProfileFromToken ));
+passport.use(new GoogleTokenStrategy({ clientID: nconf.get("auth_google.clientID") }, fetchProfileFromToken));
 
 // User/Password Validator
 passport.use(new Strategy(
-  function(email, password, done) {
-    userManager.checkPassword(email, password, function(err, user) {
+  function (email, password, done) {
+    userManager.checkPassword(email, password, function (err, user) {
       if (err) { return done(err); }
       return done(null, user);
     });
-}));
+  }));
 
 /*********End configuration of user authenticators **********/
 
 /******Begin routing for all auth routes *****************/
 
 //This call does session setup for login using google auth
-app.post('/auth/google/token',  passport.authenticate('google-id-token'),
- function(req, res) {
+app.post('/auth/google/token', passport.authenticate('google-id-token'),
+  function (req, res) {
     res.send(req.user);
-});
+  });
 
 //This call does session setup for login using user/pass
-app.post('/auth/basic',  passport.authenticate('local'),
- function(req, res) {
+app.post('/auth/basic', passport.authenticate('local'),
+  function (req, res) {
     console.log("auth done");
     res.send(req.user);
-});
+  });
 
 // New User Signup
-app.post('/auth/signup', function(req, res) {
+app.post('/auth/signup', function (req, res) {
   var user = {};
 
-  if(typeof req.body.email != 'undefined') {
-      let username = String(req.body.email).toLowerCase();
-      if(userManager.validateEmail(username)){
-          user.email = username;
-      }else{
-          var badEmailError = new Error();
-          badEmailError.message = "Username should be a valid email"
-          res.status(500);
-          res.send({error: badEmailError});
-          return;
-      }
+  if (typeof req.body.email != 'undefined') {
+    let username = String(req.body.email).toLowerCase();
+    if (userManager.validateEmail(username)) {
+      user.email = username;
+    } else {
+      var badEmailError = new Error();
+      badEmailError.message = "Username should be a valid email"
+      res.status(500);
+      res.send({ error: badEmailError });
+      return;
+    }
   }
 
-  if(typeof req.body.password != 'undefined') user.password = req.body.password;
-  if(typeof req.body.name != 'undefined') user.name = req.body.name;
-  userManager.createUserPass(user, function(err, result){
-      if(err) {
-         res.status(500);
-         res.send({error: err });
-         return;
-      }
-      if(result) {
-         res.send({"message":"Done"});
-         return;
-      }else{
-        var signUperror = new Error();
-        signUperror.message = "Error in signup ! ";
-        res.status(500);
-        res.send({error: signUperror});
-        return;
-      }
-    })
+  if (typeof req.body.password != 'undefined') user.password = req.body.password;
+  if (typeof req.body.name != 'undefined') user.name = req.body.name;
+  userManager.createUserPass(user, function (err, result) {
+    if (err) {
+      res.status(500);
+      res.send({ error: err });
+      return;
+    }
+    if (result) {
+      res.send({ "message": "Done" });
+      return;
+    } else {
+      var signUperror = new Error();
+      signUperror.message = "Error in signup ! ";
+      res.status(500);
+      res.send({ error: signUperror });
+      return;
+    }
+  })
 });
 
 // Logout
-app.get('/auth/logout', function(req, res) {
+app.get('/auth/logout', function (req, res) {
   req.logout();
-  res.send({ });
+  res.send({});
 });
 
 /******End routing for all auth routes *****************/
@@ -224,39 +224,39 @@ app.get('/auth/logout', function(req, res) {
 /**********Add authentication check for all routes in /api/* **********/
 
 function ensureAuthenticated(req, res, next) {
-  if(req.isAuthenticated()) {
+  if (req.isAuthenticated()) {
     //For users using a browser (which means they have a session)
     return next();
-  }else{
+  } else {
     //For programs that provide user/pass in every API call and have no session
-    doAuthenticate(req, res,next);
+    doAuthenticate(req, res, next);
   }
 
 }
 
-function setTestUser(req, res, next){
+function setTestUser(req, res, next) {
   //Set test user for debugging in development/test mode
   var testUser = {};
   testUser.email = "test@test.com";
 
-  userManager.createUser(testUser, function(err, result){
-    if(err) { return next(err); }
+  userManager.createUser(testUser, function (err, result) {
+    if (err) { return next(err); }
     req.user = result;
-    groupManager.doCreateGroup(result._id, "developer",function(err, result){
-         return next();
+    groupManager.doCreateGroup(result._id, "developer", function (err, result) {
+      return next();
     })
   })
 }
 
 //Configuration to disable auth for development/test environments. By default, auth is enabled.
 var enableAuth = true;
-if(nconf.get("enable_auth") == 'false'){
+if (nconf.get("enable_auth") == 'false') {
   enableAuth = false;
 }
-if(enableAuth){
+if (enableAuth) {
   app.use('/api/*', ensureAuthenticated);
   app.use('/apiv1/*', ensureAuthenticated);
-} else{
+} else {
   app.use('/api/*', setTestUser);
   app.use('/apiv1/*', setTestUser);
 }
@@ -271,18 +271,18 @@ var accessLogStream = rfs('access.log', {
 });
 
 morgan.token('remote-user', function (req, res) {
-    if(req.user) {
-      return req.user.email || req.user.thing_type +"_" + req.user.username
-    } else{
-      return "";
-    }
+  if (req.user) {
+    return req.user.email || req.user.thing_type + "_" + req.user.username
+  } else {
+    return "";
+  }
 });
 
-if(environment == "development"){
+if (environment == "development") {
   app.use(morgan('common'));
 }
-else{
-  app.use(morgan('common', {stream: accessLogStream}));
+else {
+  app.use(morgan('common', { stream: accessLogStream }));
 }
 
 /***************End Logging Section***********************/
@@ -304,14 +304,14 @@ app.use('/apiv1', require('./routes/api_router'));
 
 
 
-var verifyDigestAuth = function(id, password, done) {
-   thingTokenManager.validateToken(id, password, function(err, thingCredential) {
-      if (err) { console.log("Invalid password for "+id); return done(err); }
-      return done(null, thingCredential);
-    });
+var verifyDigestAuth = function (id, password, done) {
+  thingTokenManager.validateToken(id, password, function (err, thingCredential) {
+    if (err) { console.log("Invalid password for " + id); return done(err); }
+    return done(null, thingCredential);
+  });
 };
 
-var doAuthenticate = function(req, res, next){
+var doAuthenticate = function (req, res, next) {
   var error_401 = new Error();
   error_401.status = 401;
 
@@ -335,20 +335,20 @@ var doAuthenticate = function(req, res, next){
   if (!userid || !password) {
     return next(error_401);
   }
-  verifyDigestAuth(userid, password, function(err, thingCred){
-    if(err) { return next(error_401); }
-    if(!thingCred) { return next(error_401); }
+  verifyDigestAuth(userid, password, function (err, thingCred) {
+    if (err) { return next(error_401); }
+    if (!thingCred) { return next(error_401); }
     //if it is user token, then load user's profile
-    if(thingCred.thing_type == "user"){
-        userManager.getUserById(thingCred.owner, function(err, owner){
-          if(err) { return next(err); }
-          req.user = owner;
-          return next();
-        })
-    }else{
-        req.user = thingCred;
-        req.ownerid = thingCred.owner;
+    if (thingCred.thing_type == "user") {
+      userManager.getUserById(thingCred.owner, function (err, owner) {
+        if (err) { return next(err); }
+        req.user = owner;
         return next();
+      })
+    } else {
+      req.user = thingCred;
+      req.ownerid = thingCred.owner;
+      return next();
     }
   })
 }
@@ -362,10 +362,10 @@ var doAuthenticate = function(req, res, next){
  * return 404 for everything else
  */
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   var err = new Error();
   err.status = 404;
-  err.message = 'Not Found '+ req.url;
+  err.message = 'Not Found ' + req.url;
   next(err);
 });
 
@@ -373,7 +373,7 @@ app.use(function(req, res, next) {
 /* Catch errors and add a 500 http status code
  *  if no status exists
  */
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.send({ error: err });
 });
