@@ -309,12 +309,14 @@ morgan.token('remote-user', function (req, res) {
 
 // If log_dir is specified in the conf then we will use it to log to file
 if (nconf.get('log_dir') != undefined && nconf.get('log_dir') != "") {
+  console.log('Logging to ', nconf.get("log_dir"));
   var accessLogStream = rfs('access.log', {
     interval: '1d', // rotate daily
     path: nconf.get("log_dir")
   });
   app.use(morgan('common', { stream: accessLogStream }));
 } else {
+  console.log('Logging to console');
   app.use(morgan('common'));
 }
 
