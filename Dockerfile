@@ -1,7 +1,7 @@
 # Compile oc utility
 FROM golang:alpine AS buildoc
 RUN apk add --no-cache git
-RUN go get github.com/openchirp/oc
+RUN go get -v github.com/openchirp/oc
 
 FROM node:alpine
 
