@@ -80,7 +80,7 @@ dbConnect();
 const redisURI = 'tcp://' + nconf.get('redis').host + ':' + nconf.get('redis').port;
 var redisClient = redis.createClient(redisURI);
 
-// if you'd like to select database 3, instead of 0 (default), call
+// Select database 1, instead of the default database 0
 redisClient.select(1);
 
 redisClient.on("error", function (err) {
