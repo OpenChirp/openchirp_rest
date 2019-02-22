@@ -79,9 +79,20 @@ dbConnect();
 // This redis connection assumed localhost port 6379 - db 1
 const redisURI = 'tcp://' + nconf.get('redis').host + ':' + nconf.get('redis').port;
 var redisClient = redis.createClient(redisURI);
+var redisStatus = 0;
 
 // Select database 1, instead of the default database 0
 redisClient.select(1);
+
+redisClient.on("ready", function () {
+  console.log("Redis Ready");
+  redisStatus = 1;
+});
+
+redisClient.on("end", function () {
+  console.log("Redis Ended");
+  redisStatus = 0;
+});
 
 redisClient.on("error", function (err) {
   console.log("Redis Error " + err);
@@ -217,8 +228,31 @@ app.get('/auth/logout', function (req, res) {
 
 /******End routing for all auth routes *****************/
 
+/******Begin routing for health routes *****************/
 
+// Health check route - Currently this is more of a ping
+app.get('/check', function (req, res) {
+  var connectedCount = 0;
 
+  if (mongoose.connection.readyState == 1) {
+    connectedCount++;
+  }
+  if (redisStatus == 1) {
+    connectedCount++;
+  }
+
+  var status = 'degraded';
+  if (connectedCount == 2) {
+    status = 'ok;'
+  }
+
+  res.send({
+    status: status
+  });
+
+});
+
+/******End routing for health routes *****************/
 
 
 /**********Add authentication check for all routes in /api/* **********/

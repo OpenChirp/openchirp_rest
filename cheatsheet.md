@@ -16,6 +16,9 @@
 
 # REST Targets
 
+## `/check`
+- GET - Fetches the health of the rest server. It returns a JSON object with one key `status`, which can be ok or degraded. An ok indicates that both the mongodb and redis connections are in the connected state connected.
+
 ## `/user`
 - GET - Fetch user profile info
 - PUT - Update user info
