@@ -243,7 +243,7 @@ app.get('/check', function (req, res) {
 
   var status = 'degraded';
   if (connectedCount == 2) {
-    status = 'ok;'
+    status = 'ok'
   }
 
   res.send({
