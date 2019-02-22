@@ -117,6 +117,11 @@ passport.deserializeUser(function (id, next) {
   userManager.getUserById(id, next);
 });
 
+if (nconf.get("session_secret") == undefined || nconf.get("session_secret") == "") {
+  console.error("Error session_secret was not defined in config file");
+  process.abort();
+}
+
 //Configure session store
 app.use(session({
   store: new RedisStore(nconf.get("redis")),
