@@ -232,6 +232,8 @@ app.get('/auth/logout', function (req, res) {
 
 // Health check route - Currently this is more of a ping
 app.get('/check', function (req, res) {
+  console.log("Running Health Check");
+
   var connectedCount = 0;
 
   if (mongoose.connection.readyState == 1) {
