@@ -265,11 +265,6 @@ if (enableAuth) {
 
 /************Begin Loggging section *********************/
 
-var accessLogStream = rfs('access.log', {
-  interval: '1d', // rotate daily
-  path: nconf.get("log_dir")
-});
-
 morgan.token('remote-user', function (req, res) {
   if (req.user) {
     return req.user.email || req.user.thing_type + "_" + req.user.username
@@ -278,11 +273,15 @@ morgan.token('remote-user', function (req, res) {
   }
 });
 
-if (environment == "development") {
-  app.use(morgan('common'));
-}
-else {
+// If log_dir is specified in the conf then we will use it to log to file
+if (nconf.get('log_dir') != undefined && nconf.get('log_dir') != "") {
+  var accessLogStream = rfs('access.log', {
+    interval: '1d', // rotate daily
+    path: nconf.get("log_dir")
+  });
   app.use(morgan('common', { stream: accessLogStream }));
+} else {
+  app.use(morgan('common'));
 }
 
 /***************End Logging Section***********************/
