@@ -1,6 +1,13 @@
+# Compile oc utility
+FROM golang:alpine AS buildoc
+RUN apk add --no-cache git
+RUN go get github.com/openchirp/oc
+
 FROM node:alpine
 
-RUN apk add curl
+# Add the oc utility and the locahost occonfig.toml
+COPY --from=buildoc /go/bin/oc /usr/local/bin
+ADD https://raw.githubusercontent.com/OpenChirp/oc/master/configexamples/localhost-occonfig.toml /etc/occonfig.toml
 
 # RUN mkdir -p /home/node/openchirp
 ADD src /home/node/openchirp/src
@@ -18,5 +25,5 @@ ENV PORT=7000
 EXPOSE 7000
 
 
-HEALTHCHECK CMD curl -f http://localhost:7000/api || exit 1
+HEALTHCHECK CMD oc check -c || exit 1
 CMD [ "./bin/www" ]
