@@ -25,5 +25,5 @@ ENV PORT=7000
 EXPOSE 7000
 
 
-HEALTHCHECK CMD oc check -c || exit 1
+HEALTHCHECK CMD oc check -e || exit 1
 CMD [ "./bin/www" ]
