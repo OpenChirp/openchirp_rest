@@ -59,7 +59,7 @@
 - GET - Get root location
 - POST - Create new location at root
 
-* `<loc_id>`
+* `/<loc_id>`
     - GET - Fetch location info
     - POST - Create new child location
     - PUT - Update a location
