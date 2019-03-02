@@ -5,6 +5,7 @@
     - [`/group`](#group)
     - [`/location`](#location)
     - [`/device`](#device)
+    - [`/devicegroup`](#devicegroup)
     - [`/devicetemplate`](#devicetemplate)
     - [`/service`](#service)
     - [`/admin`](#admin)
@@ -119,6 +120,9 @@
 * `/search/transducer?q=<query>`
     - GET - Search by transducer name.
     (Optional: search by comma separated list of names)
+
+## `/devicegroup`
+- TODO
 
 ## `/devicetemplate`
 - TODO
