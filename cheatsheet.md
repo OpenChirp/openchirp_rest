@@ -43,8 +43,17 @@
 
 ## `/group`
 - GET- Fetch all group info
-- TODO
+* `/<group_id>`
+    - GET - Fetch info for a group
+    - DELETE - Delete a group
 
+    * `/members`
+      - GET - Get memebrs for a group
+    * `/notmembers`
+      - GET - Get member not in group
+    * `/member`
+      - PUT - Remove a member from a group
+      - POST - Add a member to a group
 
 ## `/location`
 - GET - Get root location
