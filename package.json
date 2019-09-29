@@ -16,7 +16,7 @@
     "debug": "^3.2.6",
     "express": "^4.16.4",
     "express-session": "^1.15.1",
-    "helmet": "^3.15.0",
+    "helmet": "^3.21.1",
     "mongoose": "^4.13.17",
     "morgan": "^1.9.1",
     "mqtt": "^2.18.8",
