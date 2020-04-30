@@ -1,16 +1,29 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.7.1
+version: v1.14.1
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
   'npm:http-signature:20150122':
     - passport-google-id-token > request > http-signature:
-        reason: No easy fix at the time; Waiting for next version of passport-google-id-token
+        reason: >-
+          No easy fix at the time; Waiting for next version of
+          passport-google-id-token
   'npm:qs:20170213':
     - passport-google-id-token > request > qs:
-        reason: No easy fix at the time; Waiting for next version of passport-google-id-token
+        reason: >-
+          No easy fix at the time; Waiting for next version of
+          passport-google-id-token
   'npm:ms:20170412':
     - passport-google-id-token > jsonwebtoken > ms:
-        reason: No easy fix at the time; Waiting for next version of passport-google-id-token
+        reason: >-
+          No easy fix at the time; Waiting for next version of
+          passport-google-id-token
   'npm:request:20160119':
     - passport-google-id-token > request:
-        reason: No easy fix at the time; Waiting for next version of passport-google-id-token
+        reason: >-
+          No easy fix at the time; Waiting for next version of
+          passport-google-id-token
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-567746:
+    - async > lodash:
+        patched: '2020-04-30T21:59:41.946Z'
