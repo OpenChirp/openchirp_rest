@@ -9,7 +9,7 @@
     "prepare": "npm run snyk-protect"
   },
   "dependencies": {
-    "async": "^2.1.5",
+    "async": "^3.2.2",
     "bluebird": "^3.5.3",
     "body-parser": "^1.15.1",
     "connect-redis": "^3.4.0",
