@@ -77,7 +77,7 @@ dbConnect();
 /************* Initialize Redis DB connection *************/
 
 // This redis connection assumed localhost port 6379 - db 1
-const redisURI = 'tcp://' + nconf.get('redis').host + ':' + nconf.get('redis').port;
+const redisURI = 'redis://' + nconf.get('redis').host + ':' + nconf.get('redis').port;
 var redisClient = redis.createClient(redisURI);
 var redisStatus = 0;
 
@@ -124,7 +124,7 @@ if (nconf.get("session_secret") == undefined || nconf.get("session_secret") == "
 
 //Configure session store
 app.use(session({
-  store: new RedisStore(nconf.get("redis")),
+  store: new RedisStore({client: redisClient}),
   secret: nconf.get("session_secret"),
   resave: true,
   saveUninitialized: true
