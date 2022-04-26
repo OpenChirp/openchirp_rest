@@ -5,10 +5,11 @@
   "scripts": {
     "start": "supervisor ./bin/www",
     "test": "mocha --timeout 10000",
-    "snyk-protect": "snyk protect",
+    "snyk-protect": "snyk-protect",
     "prepare": "npm run snyk-protect"
   },
   "dependencies": {
+    "@snyk/protect": "^1.912.0",
     "async": "^3.2.2",
     "bluebird": "^3.5.3",
     "body-parser": "^1.15.1",
@@ -33,7 +34,6 @@
     "request": "^2.88.0",
     "rotating-file-stream": "^1.4.0",
     "serve-favicon": "^2.3.0",
-    "snyk": "^1.611.0",
     "sqlstring": "^2.2.0",
     "supervisor": "^0.12.0"
   },
