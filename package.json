@@ -50,7 +50,7 @@
     "@types/request": "^2.48.1",
     "chai": "^3.5.0",
     "chai-http": "^2.0.1",
-    "mocha": "^2.4.5",
+    "mocha": "^10.1.0",
     "typescript": "^2.9.2"
   },
   "snyk": true
